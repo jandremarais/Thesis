@@ -1,0 +1,72 @@
+---
+output: 
+  pdf_document:
+    citation_package: natbib
+    template: us_template2.tex
+    toc: true
+    toc_depth: 3
+    number_sections: true
+bibliography: library.bib
+documentclass: memoir
+lang: afrikaans,UKenglish
+fontsize: 12pt
+papersize: letter
+classoption: oneside, openany
+margin-ratio: goldenblock
+title: "Multi-Label Learning with Feature Selection for Video Classification"
+titel: "Multi-Etiket leer met Veranderlikeseleksie vir Videoklassifikasie"
+author: Jan André Marais
+author-short: J.\ A.\ Marais
+degree-short: MCom (Mathematical Statistics)
+degree: Master of Commerce (Mathematical Statistics)
+graad-short: MCom (Wiskundige Statistiek)
+graad: Magister in die Handelswetenskappe (Wiskundige Statistiek)
+faculty: Faculty of Economic and Management Sciences
+fakulteit: Fakulteit Ekonomiese en Bestuurswetenskappe
+supervisor: Dr.\ S.\ Bierman
+year: 2017
+month: 12
+abstract: abstract.Rmd
+acknowledgements: acknowledgements.Rmd
+lot: true
+lof: true
+nomenclature: nomenclature.Rmd
+header-includes:
+- \usepackage{tikz}
+- \usetikzlibrary{arrows,shapes,positioning,shadows,trees}
+---
+
+```{r child = 'chapter1.Rmd'}
+```
+
+```{r child = 'chapter-2-example-1.Rmd'}
+```
+
+```{r child = 'chapter-3-example-1.Rmd'}
+```
+
+```{r child = 'chapter4.Rmd'}
+```
+
+```{r child = 'chapter5.Rmd'}
+```
+
+```{r child = 'chapter6.Rmd'}
+```
+
+```{r child = 'chapter7.Rmd'}
+```
+
+```{r child = 'chapter8.Rmd'}
+```
+
+\appendix
+\appendixpage\relax
+
+```{r child = 'appendixA.Rmd'}
+```
+
+```{r child = 'appendixB.Rmd'}
+```
+
+\clearpage

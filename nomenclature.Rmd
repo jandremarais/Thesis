@@ -1,0 +1,21 @@
+\chapter{Nomenclature}
+
+\begin{Nomencl}
+ \NomGroup{Constants}
+   \item[$\mathrm{g} = $] $\mathrm{9.81\,m/s^2}$
+
+ \NomGroup{Variables}
+   \item[$\mathit{Re}_\mathrm{\,D}$]
+                      \UnitLine{Reynolds number (diameter)}{~}
+   \item[$x$]         \UnitLine{Coordinate                }{m}
+   \item[$\ddot{x}$]  \UnitLine{Acceleration              }{m/s^2}\\
+   \item[$\theta$]    \UnitLine{Rotation angle            }{rad}
+   \item[$\tau$]      \UnitLine{Moment                    }{N{\cdot}m}
+
+ \NomGroup{Vectors and Tensors}
+   \item[$\overrightarrow{\bm{v}}$] Physical vector, see equation ...
+
+ \NomGroup{Subscripts}
+   \item[$\mathrm{a}$] Adiabatic
+   \item[$a$]          Coordinate
+\end{Nomencl}

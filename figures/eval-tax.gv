@@ -1,0 +1,6 @@
+digraph G {
+  
+  'Evaluation Metrics' [shape = box, style = filled, fillcolor = red, alpha = 5];
+  'Evaluation Metrics' -> {'Example-based' 'Label-based'};
+
+}

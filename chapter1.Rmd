@@ -1,0 +1,32 @@
+# Introduction
+\label{chp:intro}
+
+## Motivation and Thesis Objectives
+
+> give short aim of the study
+
+### Motivation
+
+> desribe why this thesis is created. Mention things like relevance of field / wide applicability, lack of statistical perspective, lack of recent review, unsolved problems, YouTube Challenge.
+
+### Thesis Objectives
+
+> What I want to achieve with this thesis/ readers to take away. Mention things like: understanding the basics and scope of MLC, being able to apply it to large problems.
+
+> maybe say something of generating ML data and comment on ML data repositories.
+
+> maybe comment on statistical learning vs machine learning.
+
+## Data, Code and Reproducibility
+
+> Got this header from Arnu's thesis - not sure if I will include this. But it may be appropriate to indicate here where to find the code for the thesis, etc.
+
+## Important Concepts and Terminology
+
+> Briefly introduce the important concepts to be grasped in order to follow the main thread of the thesis. It seems reasonable to introduce the problem of supervised learning here. The rest still needs to be decided on.
+
+### Supervised Learning
+
+## Outline
+
+> Give an overview of the outline of the thesis, which is (thus far): review of current ML literature, investigation of label dependence, ways of selecting features for ML problems, considerations for extreme MLC, introduction to video classification and tagging and finally the YT8M challenge.

@@ -1,0 +1,48 @@
+# Input Space Reduction
+
+## Introduction
+
++ Importance (use)
++ Difficulties (different from typical contexts)
++ few results for ML FS [@Spolaor2013]
+
+### Single-Label Framework
+
+## Feature Selection
+
++ Feature Selection (FS) plays an important role in machine learning and data mining, and it is often applied as a data pre-processing step. FS aims to find a small number of features that describes the dataset as well as the original set of features does [14], providing support to tackle the “curse of dimensionality” problem when learning from high-dimensional data. Feature selection can effectively reduce data dimen- sionality by removing irrelevant and/or redundant features, speeding up learning algorithms and sometimes improving their performance. In fact, various studies show that features can be removed without performance deterioration. [@Spolaor2013]
++ individual evaluation vs subset evaluation [@Spolaor2013]
++ standard to transform into single lable problems and then selecting features
+
+### Filter Approaches
+
++ The filter approach filters out irrelevant features independently of the learning algorithm
++ may not choose the best features for specific learning algorithms
++ fast and simple
++ most frequently used
++ several feature importance measures
++ Information gain; ReliefF, fisher score, Gini index, CFS, Rough set
+
+### Wrapper Approaches
+
++ The wrapper approach requires a specific learning algorithm to evaluate and to determine which features are selected.
++ high computational cost
+
+### Embedded Approaches
+
++ incorporate feature selection as part of the training process
+
+## Feature Extraction
+
+## Meta-analysis
+
++ see [@Spolaor2016] for systematic review
+
+## Summary 
+
+
++ [@Tsoumakasc] mentions a feature selection approach under experimental setup.
++ also for FS:  Multi-label learning with label-specific feature reduction
++ important for FS: A systematic review of multi-label feature selection and a new method based on label construction
++ and other of spolaor
++ See the LIFT approach by Zhang and Wu and in this paper they also refer to other FS papers [@Zhanga].

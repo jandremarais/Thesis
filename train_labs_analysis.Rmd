@@ -1,0 +1,89 @@
+---
+title: "Analysis of Training Labels"
+author: "Jan Marais"
+date: "28 February 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Necessary packages.
+
+```{r}
+library(tidyverse)
+library(stringr)
+```
+
+
+Load the training data labels .csv file downloadable from Kaggle into R. Then get it into the right format. It is too big to be stored as an indicator matrix.
+
+```{r, cache = TRUE}
+train_labels <- read_csv("/home/jan/Downloads/train_labels.csv", col_names = FALSE)
+labels_as_int <- train_labels$X2 %>% str_extract_all(pattern = "[0-9]+")
+labels_as_int <- lapply(labels_as_int, as.numeric)
+rm(train_labels)
+```
+
+How many unique labels?
+```{r, cache = TRUE}
+K <- max(sapply(labels_as_int, max)) + 1 # since the first label is named 0
+K
+```
+
+
+Get the frequencies of the labels:
+
+```{r}
+lab_tab <- table(unlist(labels_as_int))
+```
+
+Range of the frequencies:
+
+```{r}
+range(lab_tab)
+```
+
+This is a huge difference. This unbalance is highlighted even more by a plot of say the first 100 highest occuring labels:
+
+```{r}
+lab_tab %>% 
+  head(100) %>% 
+  as.data.frame() %>% 
+  ggplot(aes(factor(Var1), Freq)) + 
+  geom_histogram(stat = "identity") +
+  theme_minimal() +
+  theme(axis.text.x = element_blank()) +
+  xlab("Label")
+```
+
+Important to determine whether this inbalance has an effect on the global average precision.
+
+Global average precision @ $k$ where $k=20$. Submit for each video a list of predicted labels and their corresponding confidence scores. The evaluation takes the predicted labels that have the highest $k$ confidence scores for each video, then treats each prediction and the confidence score as an individual data point in a long list of global predictions, to compute the average precision across all of the predictions and all the videos. If a submission has $N$ predicitions (label/confidence pairs) sorted by its confidence score, the the GAP is computed as
+$$
+GAP = \sum_{i=1}^{N}p(i)\Delta r(i),
+$$
+
+where $N$ is the number of final predictions (if there are 20 predictions for each video then $N = 20 \times \#Videos$), $p(i)$ is the precision and $r(i)$ is the recall.
+
+The area under the blended precision recall curve. In other words, it's the same score that would be computed by sklearn.metrics.average_precision_score, provided that you 'forgot' the identity of each of the labels and treated them as the same label. There is no averaging across classes or across examples. This score is designed to approximate the experience users of YouTube would have while browsing the site or performing searches. We are using the prevalence of videos with a given label as a proxy for the popularity of that label for browsers of the website.
+
+Let's check the distribution of the number of labels per video:
+
+```{r, cache=TRUE}
+summary(sapply(labels_as_int, length))
+```
+
+Seems like 75% of the videos have 1-5 number of relevant labels.
+
+```{r, cache = TRUE}
+table(sapply(labels_as_int, length)) %>% 
+  as.data.frame() %>% 
+  ggplot(aes(Var1, Freq)) + geom_histogram(stat = "identity") +
+  theme_minimal() +
+  xlab("#labels")
+```
+
+
+

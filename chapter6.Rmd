@@ -1,0 +1,49 @@
+# Video Tagging
+
+## Introduction
+
+## General Approaches
+
+## Mutli-Label Tagging
+
+> should I include single label papers?
+
+## Introduction
+
++ why is it necessary/relevant now? [@Qi] for search, navigation and browsing. More videos than ever - yt
+
++ mention how video classification is unsolved since not many large diverse datasets until recently [@Abu-El-Haija2016].
+
++ can use many techniques from image classification but need to take temporal differences into account.
+
++ briefly why it is difficult: large datasets
+
++ maybe explain how video features are extracted (frame vs video)
+
++ multi-instance learning?
+
+## Definition
+
++ what are the labels representing? [@Tang2012] Content based Video Information Retrieval, Video Semantic Concept Classification
+
+## Existing datasets
+
++ yt8m
++ mediamill
++ Sports-1M benchmarks 
+
+## Other approaches
+
++ [@Abu-El-Haija2016]
+
++ [@Qi]: Individual concept vs context based conceptual fusion vs integrated ML annotation
+
++ [@Tang2012]
+
++ [@Ng2015]
+
+## Scalabiltiy
+
+### Active/Online Learning
+
+### Output reduction

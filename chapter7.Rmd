@@ -1,0 +1,6 @@
+# YouTube-8m Challenge
+
++ chapter describing methods and results for yt8m
+
+## Describe the challenge
+## Results
