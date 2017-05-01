@@ -1,23 +1,30 @@
 # Introduction
 \label{chp:intro}
 
-## Motivation and Thesis Objectives
+## Motivation
 
-> give short aim of the study
+> desribe why this thesis is created. Mention things like relevance of field / wide applicability, lack of statistical perspective, lack of recent review, unsolved problems.
 
-### Motivation
++ MLL is still a new field
++ but widely applicable
++ lack of benchmark datasets
++ many unsolved problems
++ lack of theory/statistical perspective
++ lack of how theory relates to practice (dont know if this is true)
++ then the need from the Planet side: see kaggle description
 
-> desribe why this thesis is created. Mention things like relevance of field / wide applicability, lack of statistical perspective, lack of recent review, unsolved problems, YouTube Challenge.
-
-### Thesis Objectives
+## Thesis Objectives
 
 > What I want to achieve with this thesis/ readers to take away. Mention things like: understanding the basics and scope of MLC, being able to apply it to large problems.
 
-> maybe say something of generating ML data and comment on ML data repositories.
++ build/explore (an) end to end solution(s)
++ review the theory and apply it to satellite images (in all stages of MLL)
 
-> maybe comment on statistical learning vs machine learning.
+## Data
 
-## Data, Code and Reproducibility
++ describe the satellite images dataset
+
+## Code and Reproducibility
 
 > Got this header from Arnu's thesis - not sure if I will include this. But it may be appropriate to indicate here where to find the code for the thesis, etc.
 
