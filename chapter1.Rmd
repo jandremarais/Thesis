@@ -52,10 +52,30 @@ The main focus points for this thesis are:
 
 > Make sure this is how an introduction is allowed to look.
 
+> should I have a section on contributions?
 
 ## Data
 
-+ describe the satellite images dataset
+This section covers an initial introduction to the data. The elements of the data important to know before moving on will be discussed here and the rest will be adressed throughout the thesis, as it becomes relevant to the discussion.
+
+### Collection and Labelling of the Images
+
+The data for this task comes from a set of images (also referred to as chips). Each chip is a small excerpt from a larger image of a specific scene in the Amazon taken by satellites. The chip size in pixels is 256$\times$256, representing roughly 90 hectares of land, and is taken from a larger scene of 6600$\times$2200 pixels. All of the satellite images were taken between January 1, 2016 and February 1, 2017. The format of these images differ from the standard image format. Each image contains four bands of data: red (R), green (G), blue (B) and near infrared (NIR), where the standard format images usually only contain R, G and B. The additional NIR colour channel is common in remote sensing[^remsens] applications and supposedly allows for clear distinction between water and vegetation in satellite images, for example. Another difference between these images and the usual format is that these have pixel intensities in 16-bit digital number format as opposed to the usual 8-bit of standard RGB images. This allows the colours in the images to have a much higher range since 16-bit pixel intensities have 65536 (2^16) levels, compared to 256 levels of 8-bit images. This becomes useful, for example, to distinguish between different levels of darkness in an image. Thus each chip can be represented by a vector of size 262144 ($256\times 256 \times 4). This might prove to require to much computational power but strategies to reduce the size of such a vector exist, *e.g.* filtering or resizing of the image.
+
+[^remsens]: The use of satellite- or aircraft-based sensor technologies to detect and classify objects on Earth [https://en.wikipedia.org/wiki/Remote_sensing].
+
+
+
+### Class Labels
+
+### Training and Test Split
+
+TIFF files have 3 major advantages over JPEG
+
+    It may have much higher dynamic range. For example, JPEG could have only 256 levels for each channel and TIFF up to 16 bit (65353 levels). It is important when there are very dark and very bright spots in the same image.
+
+How important all of this in that competition -- is open question.
+
 
 ## Code and Reproducibility
 
@@ -65,8 +85,8 @@ The main focus points for this thesis are:
 
 > Briefly introduce the important concepts to be grasped in order to follow the main thread of the thesis. It seems reasonable to introduce the problem of supervised learning here. The rest still needs to be decided on.
 
-### Supervised Learning
-
 ## Outline
 
 > Give an overview of the outline of the thesis, which is (thus far): review of current ML literature, investigation of label dependence, ways of selecting features for ML problems, considerations for extreme MLC, introduction to video classification and tagging and finally the YT8M challenge.
+
++ follows the process of building a multi-label classifier - at each step we will critically review the literature on that topic and then do empirical evaluations of the proposed methods.
