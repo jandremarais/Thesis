@@ -23,30 +23,6 @@ The rapid growth of the ML learning is probably owed to the vast and expanding r
 
 > Say something of video classification? Create my own list of applications?
 
-> The searches were not identical since they were limited to the search features of the databases. On Scopus the search was for all documents (conference papers, articles, conference, articles in press, reviews, book chapters and books) in any subject area with either the words *multi-label* or *multilabel* and either the words *learning* or *classification* found in either their titles, abstracts or keywords. The Semantic Scholar search is based on machine learning principles and thus automatically decides which research documents are relevant to a specific search query. The query used was *multilabel multi-label learning classification*. The search only returns research in the computer science and neuroscience fields of study. More technical details can be found on the respective engine's websites. 
-
-> probably need to reference the engines
-
-```{r pubsperyear, include=FALSE, eval = FALSE}
-library(tidyverse)
-library(ggthemes)
-pubsperyear_data <- read_csv("data/Scopus-2251-Analyze-Year.csv")
-p <- pubsperyear_data %>% gather(database, No, -YEAR) %>% 
-  #mutate(ind2017 = YEAR >= 2017) %>% 
-  filter(YEAR < 2017) %>% 
-  ggplot(aes(YEAR, No)) +
-  geom_line() +
-  theme_minimal() +
-  labs(x = "Year", y = "# Documents") +
-  facet_wrap(~database, labeller = function(variable, value) {
-    dnames <- list(Scopus = "Scopus", SemSchol = "Semantic Scholar")
-    return(dnames[value])}) 
-
-ggsave("pubsperyear.png", plot = p, device = "png", path = "figures", width = 7, height = 4)
-```
-
-![Line graph per database of the number of relevant ML documents released per year for.\label{pubsperyear}](figures/pubsperyear.png)
-
 The key challenge in ML learning is to exploit dependecies amongst labels, *e.g.* using the information on the relevance of label $l_{i}$ to predict label $l_{j}$, $i,j \in \{1,2,\dots,K\}$, $i\neq j$. This is especially difficult for a ML learner when there are many labels. It is not uncommon for ML datasets to have hundreds of thousands of labels. Proof of this can be found at [this](https://manikvarma.github.io/downloads/XC/XMLRepository.html) ML data repository. Algorithms that can accurately and efficiently model label dependence on these datasets are rare [@Sorower]. This is a focus area of recent ML research, called extreme multi-label learning [@Xu2016]. A more formal definition of label dependence will be given later on. An in-depth discussion on the unique challenges (thorough list by [@Gibaja2014]) that arise from dealing with label dependence and some of the possible strategies to follow will also be covered.
 
 It is important to note that we will define the utlimate task of ML learning as assigning of multiple labels to an observation. ML learning covers to very similar approaches, namely, ML classification and ML ranking. ML classification algorithms output whether or not labels are relevant to an observation (binary) and ML ranking algorithms outputs a real-valued score assigned to each label indicating its relative importance to an observation. Thus with ML ranking, for each observation we seek a list of labels ordered by their scores representing the confidence in how relevant they are to the specific observation. Many classifiers base their final (categorical) prediction on the thresholding of the real-valued output of the algorithm and thus can also be used for ranking. Similarly, ranking algorithms can also be used for classification if a thresholding function is applied to the real-valued output. 
