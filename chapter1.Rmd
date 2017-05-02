@@ -3,15 +3,13 @@
 
 ## Motivation
 
-> desribe why this thesis is created. Mention things like relevance of field / wide applicability, lack of statistical perspective, lack of recent review, unsolved problems.
+The motivation for this thesis is two-fold:
 
-+ MLL is still a new field
-+ but widely applicable
-+ lack of benchmark datasets
-+ many unsolved problems
-+ lack of theory/statistical perspective
-+ lack of how theory relates to practice (dont know if this is true)
-+ then the need from the Planet side: see kaggle description
+1. Multi-label learning is a highly relevant field in machine learning and statistics becuase of its wide range of applications. To varying degrees of success, it has been applied to problems in text categorisation, multimedia, biology, chemical data analysis, social network mining and e-learning amongst others (review list). Despite the rapid increase in multi-label learning literature (see Figure ??), the field is nowhere near the maturity level of its single-label counterpart. Consistently effective and efficient multi-label learning strategies are scarce. Researchers in the field have not yet reached consensus on many of the aspects when learning from multi-labelled data such as how to handle dependent labels or how to apply dimension reduction techniques. The field can gain from an up-to-date review of the literature (latest thorough review in 2014), more statistical perspectives on some of the challenges, additional benchmark datasets and quality empirical evaluations of the theory. 
+
+Researchers in the field have yet to find clear-cut solutions to many of the challenging scenarios of multi-label problems, mostly related to finding consistently efficient and effective multi-label learners.
+
+2. Deforestation is a massive global problem. It contributes to reduced biodiversity, habitat loss, climate change and other devastating effects. It is said that the world loses an area of forest the size of 48 football fields per minute and the area most affected is in the Amazon Basin (cite Kaggle).
 
 ## Thesis Objectives
 
