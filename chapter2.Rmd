@@ -2,8 +2,86 @@
 
 ## Introduction
 
-Multi-label (ML) learning belongs to the supervised learning paradigm and can be viewed as a generalisation of the traditional single-label learning problem. Suppose the dataset to be analysed consists of a set of observations each representing a real-world object such as an image or a text document. In the single-label context each object is restricted to belonging to a single, mutually exclusive class, *i.e.* each observation is associated with a single label. One can quite effortlessly come up with tasks that will not fit into this framework: an image annotation problem where each image contains more than one semantic object, a text classification task where each document has multiple topics or an acoustic classification task where the recordings contain the sounds of multiple bird species. Therefore the need for a ML learner that can assign a set of labels to an observation. Let $L=\{l_{1},l_{2},\dots,l_{K}\}$ denote the complete set of possible labels that can be assigned to an observation. Whereas a single-label learner aims to find which single label $l_{k}$, $k=1,2,\dots,K$, belongs to a given observation, a ML learner is capable of assigning a set of labels $l\subseteq L$ to the observation. 
+Multi-label (ML) learning belongs to the supervised learning paradigm and can be viewed as a generalisation of the traditional single-label learning problem. Suppose the data set to be analysed consists of a set of observations each representing a real-world object such as an image or a text document. In the single-label context each object is restricted to belonging to a single, mutually exclusive class, *i.e.* each observation is associated with a single label. One can quite effortlessly come up with tasks that will not fit into this framework: an image annotation problem where each image contains more than one semantic object, a text classification task where each document has multiple topics or an acoustic classification task where the recordings contain the sounds of multiple bird species. Therefore the need for a ML learner that can assign a set of labels to an observation. Let $\mathcal{L}=\{l_{1},l_{2},\dots,l_{K}\}$ denote the complete set of possible labels that can be assigned to an observation. Whereas a single-label learner aims to find which single label $l_{k}$, $k=1,2,\dots,K$, belongs to a given observation, a ML learner is capable of assigning a set of labels $L \subseteq \mathcal{L}$ to the observation. 
 
 A more formal definition of the ML learning task will be given in the following chapter. However, it is important to note that we will define the utlimate task of ML learning as the assigning of multiple labels to an observation. ML learning covers to very similar approaches, namely, ML classification and ML ranking. ML classification algorithms output whether or not labels are relevant to an observation (binary) and ML ranking algorithms outputs a real-valued score assigned to each label indicating its relative importance to an observation. Thus with ML ranking, for each observation we seek a list of labels ordered by their scores representing the confidence in how relevant they are to the specific observation. Many classifiers base their final (categorical) prediction on the thresholding of the real-valued output of the algorithm and thus can also be used for ranking. Similarly, ranking algorithms can also be used for classification if a thresholding function is applied to the real-valued output. 
 
-In this chapter we are interested in the properties of multi-label data. Due to the multiple outputs of a multi-label problem, ...
+In this chapter we are interested in the properties of multi-label data. Due to the multidimensionality of the outputs, the data has some unique properties to consider that are not applicable in the traditional single-label case. First, the notation for multi-label data is introduced, then ... (outline)
+
+## Notation
+
+The following notation will be used throughout the thesis. Define the input matrix as
+$$
+X=
+\begin{bmatrix}
+x_{11} & x_{12} & \dots & x_{1p} \\
+x_{21} & x_{22} & \dots & x_{2p} \\
+\vdots & \vdots & \ddots & \vdots \\
+x_{n1} & x_{n2} & \dots & x_{np}
+\end{bmatrix} =
+\begin{bmatrix}
+\boldsymbol{x}_{1}^{\intercal} & \boldsymbol{x}_{2}^{\intercal} & \dots & \boldsymbol{x}_{n}^{\intercal}
+\end{bmatrix},
+$$
+where $n$ is the number of observations and $p$ is the number of features. $\boldsymbol{x}_{i}^{\intercal}$ represents the $p$-dimensional vector that forms the $i$-th row of $X$. For a text classification problem, $x_{ij}$ might indicate the number of times a word $j$ appeared in document $i$. Define the label or output matrix as 
+$$
+Y = 
+\begin{bmatrix}
+y_{11} & y_{12} & \dots & y_{1K} \\
+y_{21} & y_{22} & \dots & y_{2K} \\
+\vdots & \vdots & \ddots & \vdots \\
+y_{n1} & y_{n2} & \dots & y_{nK}
+\end{bmatrix} =
+\begin{bmatrix}
+\boldsymbol{y}_{1}^{\intercal} & \boldsymbol{y}_{2}^{\intercal} & \dots & \boldsymbol{y}_{K}^{\intercal}
+\end{bmatrix} = 
+\begin{bmatrix}
+\boldsymbol{Y}_{(1)} & \boldsymbol{Y}_{(2)} & \dots & \boldsymbol{Y}_{(K)}
+\end{bmatrix},
+$$
+where $K$ is the size of the label set $\mathcal{L}$. $Y$ only contains zeros and ones, *i.e.* $y_{ik}=1$ if label $l_{k}$, $k=1,\dots,K$, is present for observation $i$ and $y_{ik}=0$ if it is absent. Thus $\boldsymbol{Y}_{(k)}$ is a $n$-dimensional binary vector indicating which observations are associated with label $l_{k}$. A ML data set will be defined as $D=\begin{bmatrix} X & Y \end{bmatrix}$, which contains the $n$ input-output pairs, $\{\left(\boldsymbol{x}_{i},\boldsymbol{y}_{i}\right)|i=1,\dots,n\}$. Note that, $\boldsymbol{y}_{i}=(y_{1},y_{2},\dots,y_{K})$, $y_{k}\in \{0,1\}$, used here is the label vector, however, it is also common to use the label set notation, *i.e.* $L_{i} \subseteq \mathcal{L}$, where $\mathcal{L}$ is the complete label set and $L_{i}$ is the set of relevant labels for observation $i$.
+
+## Multi-Label Indicators
+
+As with all supervised learning problems, no one algorithm performs optimally on all data sets. The performance of a ML classifier depends on the data set and the type of problem. Therefore it is important to measure some characteristics of the data set that can influence the performance of a proposed classifier. Very little research has been done on the effect of multi-labeled data set properties on the performance of a ML classifier. [@Chekina2011] compared the performance of several ML algorithms in order to develop a set of rules on how to choose an optimal algorithm according to a specific data set and target evaluation measure. 
+
+
+*label cardinality*
+
++ average number of labels per example [Zhang2014]
++ standard [@Read2011a]
++ This measure gives a good idea of label frequency, but gives no indication of the regularity or uniformity of the labelling scheme. [@Read2011a]
++ origin [@Tsoumakas]
+
+*label density*
+
++ normalises cardinality (number of labels independent)
++ origin [@Tsoumakas]
+
+*label diversity*
+
++ number of distinct label sets 
+
+
+*proportion of distinct label sets*
+
++ normalise diversity (all four found in [@Zhang2014])
++ introduced by the authors of [@Read2011a]
+
+*proportion of label set with the maximum frequency*
+
++ This represents the proportion of examples associated with themost frequently occurring label sets and, in combination with PUNIQ, gives an indication of regularity and uniformity of the labelling scheme, where high values indicate a skewed or irregular distribution. [@Read2011a] origin
+
+*general*
+
++ Two data sets with the same label cardinality but with a great difference in the number of labels (different label density) might not exhibit the same properties and cause different behaviour to the multi-label classification methods. [@Tsoumakas] (actually refers to density and cardinality)
++ In multi-label this means that a relatively high number of examples are associated with the most common labelsets while a rel- atively high number of examples are associated with infrequent labelsets. Label skew becomes class imbalance when each label is considered separately as a binary prob- lem. [@Gibaja2015]
++ [@Chekina2011] The main goal of this paper is to compare the classification performance of several multi-label algorithms and to develop a set of rules or tools that will help in selecting the optimal algorithm according to a specific dataset and target evaluation measure. We utilize a meta-learning approach allowing fast automatic selection of the most appropriate algorithm for an unseen dataset based on its descriptive characteristics. We also define a list of characteristics specific for multi-label datasets.
+
+## Benchmark Data Sets
+
++ [@Read2011a] defines a complexity measures as $n\times p\times K$
+
+
+
+
