@@ -5,7 +5,7 @@
 
 The motivation for this thesis is two-fold:
 
-1. Multi-label learning is a highly relevant field in machine learning and statistics becuase of its wide range of applications. To varying degrees of success, it has been applied to problems in text categorisation, multimedia, biology, chemical data analysis, social network mining and e-learning amongst others (review list). Despite the rapid increase in multi-label learning literature (see \autoref{pubsperyear}), the field is nowhere near the maturity level of its single-label counterpart. Consistently effective and efficient multi-label learning strategies are scarce. Researchers in the field have not yet reached consensus on many of the aspects when learning from multi-labelled data such as how to handle dependent labels or how to apply dimension reduction techniques. The field can gain from an up-to-date review of the literature (latest thorough review in 2014), more statistical perspectives on some of the challenges, additional benchmark datasets and quality empirical evaluations of the theory. 
+1. Multi-label learning is a highly relevant field in machine learning and statistics because of its wide range of applications. To varying degrees of success, it has been applied to problems in text categorisation, multimedia, biology, chemical data analysis, social network mining and e-learning among others (review list). Despite the rapid increase in multi-label learning literature (see \autoref{pubsperyear}), the field is nowhere near the maturity level of its single-label counterpart. Consistently effective and efficient multi-label learning strategies are scarce. Researchers in the field have not yet reached consensus on many of the aspects when learning from multi-labelled data such as how to handle dependent labels or how to apply dimension reduction techniques. The field can gain from an up-to-date review of the literature (latest thorough review in 2014), more statistical perspectives on some of the challenges, additional benchmark datasets and quality empirical evaluations of the theory. 
 
 ```{r pubsperyear, include=FALSE, eval = FALSE}
 library(tidyverse)
@@ -27,12 +27,12 @@ ggsave("pubsperyear.png", plot = p, device = "png", path = "figures", width = 7,
 
 ![Line graphs illustrating the rise in multi-label learning publications per year for two databases. The database searches were done on 24-03-2017. The searches were not identical since they were limited to the search features of the databases. (a) The search on Scopus (cite) was for all documents (conference papers, articles, conference, articles in press, reviews, book chapters and books) in any subject area with either the words *multi-label* or *multilabel* and either the words *learning* or *classification* found in either their titles, abstracts or keywords. (b) The search on Semantic Scholar was based on machine learning principles and thus automatically decides which research documents are relevant to a specific search query. The query used was *multilabel multi-label learning classification*. The search only returns research in the computer science and neuroscience fields of study. More technical details can be found on the respective engine's websites. \label{pubsperyear}](figures/pubsperyear.png)
 
-2. Deforestation is a massive global problem[^deforest]. It contributes to reduced biodiversity, habitat loss, climate change and other devastating effects. It is said that the world loses an area of forest the size of 48 football fields per minute and the area most affected is in the Amazon basin (cite Kaggle). This problem can be fought more effectively by goverments and local stakeholders if better data about the location of deforestation and human invasion on forests are continuously available to them - an ideal task for machine learning! Planet[^planet] and SCCON[^sccon] constructed a dataset of labelled satellite images taken of the Amazon basin and released it as part of a competition on Kaggle[^kaggle], challenging competitors to build algorithms that can automatically label these images with atmospheric conditions and various classes of land use/cover[^usecover]. Resulting algorithms will help the global community better understand where, how, and why deforestation happens all over the world - and ultimately how to respond.
+2. Deforestation is a massive global problem[^deforest]. It contributes to reduced biodiversity, habitat loss, climate change and other devastating effects. It is said that the world loses an area of forest the size of 48 football fields per minute and the area most affected is in the Amazon basin (cite Kaggle). This problem can be fought more effectively by governments and local stakeholders if better data about the location of deforestation and human invasion on forests are continuously available to them - an ideal task for machine learning! Planet[^planet] and SCCON[^sccon] constructed a dataset of labelled satellite images taken of the Amazon basin and released it as part of a competition on Kaggle[^kaggle], challenging competitors to build algorithms that can automatically label these images with atmospheric conditions and various classes of land use/cover[^usecover]. Resulting algorithms will help the global community better understand where, how, and why deforestation happens all over the world - and ultimately how to respond.
 
 [^deforest]: I saw in another paper that the rate of decline is decreasing (cite)
-[^planet]: Designer and builder of the world's largest constellation of Earth-imageing satellites - www.planet.com
+[^planet]: Designer and builder of the world's largest constellation of Earth-imaging satellites - www.planet.com
 [^sccon]: Remote sensing experts - www.sccon.com.br/eng
-[^kaggle]: Runs programming contests to crowdsource machine learning solutions - www.kaggle.com
+[^kaggle]: Runs programming contests to crowd source machine learning solutions - www.kaggle.com
 [^usecover]: Land cover indicates the physical land type such as forest or open water whereas land use documents how people are using the land.
 
 ## Thesis Objectives
@@ -41,7 +41,7 @@ This thesis works towards building a multi-label learner that can label satellit
 
 1. Identify the most important and latest developments in the multi-label literature, as well as in satellite image classification.
 2. Provide an extensive review and discussion of these methods and how they compare to each other.
-3. Empirically evaluate and compare them on the satellite image data in order to find the best strategies for our labelling task.
+3. Empirically evaluate and compare them on the satellite image data in order to find the best strategies for our labeling task.
 
 The main focus points for this thesis are:
 
@@ -57,7 +57,7 @@ The main focus points for this thesis are:
 
 ## Data
 
-This section covers an initial introduction to the data. The elements of the data important to know before moving on will be discussed here and the rest will be adressed throughout the thesis, as it becomes relevant to the discussion.
+This section covers an initial introduction to the data. The elements of the data important to know before moving on will be discussed here and the rest will be addressed throughout the thesis, as it becomes relevant to the discussion.
 
 ### Image Format
 
@@ -69,7 +69,7 @@ Another difference between these images and the usual format is that these have 
 
 ### Collection and Labelling of the Images
 
-The image collection was created by first specifying a "wish list" of scences containing the phenomena the creators wanted to be included and also a rough estimate of the number of such scenes that are necessary for a sufficient representation in the final collection. This set of scenes was then searched for manually on Planet Explorer[^planexp]. From these scenes the 4-band chips were created. The chips were labelled manually by crowd sourcing. The utmost care was taken to get a large and well-labelled dataset, but that does not mean the labels all correspond to the ground-truth, *i.e.* the data will contain some inherent error. The creators believe that the data has a reasonable high signal to noise ratio.
+The image collection was created by first specifying a "wish list" of scenes containing the phenomena the creators wanted to be included and also a rough estimate of the number of such scenes that are necessary for a sufficient representation in the final collection. This set of scenes was then searched for manually on Planet Explorer[^planexp]. From these scenes the 4-band chips were created. The chips were labelled manually by crowd sourcing. The utmost care was taken to get a large and well-labelled dataset, but that does not mean the labels all correspond to the ground-truth, *i.e.* the data will contain some inherent error. The creators believe that the data has a reasonable high signal to noise ratio.
 
 [^planexp]: A web based interactive map of Earth consisting of satellite images, similar to Google Earth - www.planet.com/explorer
 
@@ -114,7 +114,7 @@ ggsave("figures/atmos.png", grid.arrange(grobs = grobs_arranged, ncol = 1))
 
 ![Examples of chips with atmospheric labels. These (along with all the other chips plotted throughout the thesis) are the JPEG conversions of the original 4-band, 16-bit images.\label{fig:atmos-egs}](figures/atmos.png)
 
-Examples of chips with atmospheric labels can be found in \autoref{fig:atmos-egs}. Each chip should only have one atmospheric label and therefore this classifying task simplifies to a multiclass problem. This allows for the option to break up the labeling task of all the labels into two tasks: a multiclass classification problem for the atmospheric labels and a multi-label classifcation problem for the land cover/use labels. This approach might save some computational time and give extra information to the multi-label learners for classifying the land cover/use labels. We will experiment with these approaches in Chapter ??.
+Examples of chips with atmospheric labels can be found in \autoref{fig:atmos-egs}. Each chip should only have one atmospheric label and therefore this classifying task simplifies to a multiclass problem. This allows for the option to break up the labeling task of all the labels into two tasks: a multiclass classification problem for the atmospheric labels and a multi-label classification problem for the land cover/use labels. This approach might save some computational time and give extra information to the multi-label learners for classifying the land cover/use labels. We will experiment with these approaches in Chapter ??.
 
 The common land cover/use labels are: *primary*, *agriculture*, *water*, *habitation*, *road*, *cultivation* and *bare ground*. They are relevant to a chip when:
 
@@ -123,8 +123,8 @@ The common land cover/use labels are: *primary*, *agriculture*, *water*, *habita
 + water: it contains any one of the following: rivers, reservoirs, or oxbow lakes.
 + habitation: it contains human homes or buildings.
 + road: it contains any type of road.
-+ cultivation: it shows signs of smaller-scale/informaly cleared land for farming.
-+ bare ground: it contains naturally (not the caused by humans) occuring tree-free areas.
++ cultivation: it shows signs of smaller-scale/informally cleared land for farming.
++ bare ground: it contains naturally (not the caused by humans) occurring tree-free areas.
 
 ```{r, include=FALSE, eval = FALSE}
 common_cover_labels <- c("primary", "agriculture", "water", "habitation", "road", "cultivation", "bare_ground")
@@ -189,6 +189,20 @@ Examples of chips with these less common land cover/use labels are given in \aut
 
 ## Outline
 
-> Give an overview of the outline of the thesis, which is (thus far): review of current ML literature, investigation of label dependence, ways of selecting features for ML problems, considerations for extreme MLC, introduction to video classification and tagging and finally the YT8M challenge.
+The structure of this thesis is built to mimic the workflow of fitting a supervised learning model to data. At each step, the relevant literature will be critically reviewed and discussed. Thereafter the proposed and recommended strategies will be applied to our data to see if the results match the literature and to find the best methods for our application.
 
-+ follows the process of building a multi-label classifier - at each step we will critically review the literature on that topic and then do empirical evaluations of the proposed methods.
+In any supervised learning problem, it is essential to become familiar with the data and the task at hand before moving on to the training process. The background information of the data has already been discussed. In Chapter ?? the unique proppertes of multi-label data will be investigated and what steps are recommended to follow for data with certain properties. It is very important to clearly define the objective of the supervised learning task. For this thesis, prediction accuracy is more important than making inferences on the data (models also giving insight into the data is a bonus). The evaluation metric for our task will be introduced and discussed in Chapter ?? along with other ways to evaluate multi-label classifiers.
+
+Other things still to mention:
+
++ basic ML strategies
++ ML resampling strategies for class imbalance and error estimates
++ orders of complexity
++ label dependence
++ input space reduction
++ output space reduction
++ final predictions and evaluations (maybe MDS of actual vs predicted)
+
++ might want to include short history/timeline of ML
++ might want to do a meta analysis of the literature on main topics
+

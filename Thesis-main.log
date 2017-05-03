@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2017.4.12)  3 MAY 2017 13:48
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2017.4.12)  3 MAY 2017 17:02
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1697,7 +1697,7 @@ LaTeX Font Info:    External font `lmex10' loaded for size
 (Font)              <7> on input line 161.
 LaTeX Font Info:    External font `lmex10' loaded for size
 (Font)              <5> on input line 161.
-<UScrest-WM.jpg, id=433, 49.8663pt x 69.3792pt>
+<UScrest-WM.jpg, id=429, 49.8663pt x 69.3792pt>
 File: UScrest-WM.jpg Graphic file (type jpg)
 <use UScrest-WM.jpg>
 Package pdftex.def Info: UScrest-WM.jpg used on input line 161.
@@ -1752,96 +1752,101 @@ Underfull \hbox (badness 10000) in paragraph at lines 11--12
 ) [10
 
 
-] <figures/pubsperyear.png, id=629, 505.89pt x 289.08pt>
+] <figures/pubsperyear.png, id=624, 505.89pt x 289.08pt>
 File: figures/pubsperyear.png Graphic file (type png)
 <use figures/pubsperyear.png>
 Package pdftex.def Info: figures/pubsperyear.png used on input line 220.
 (pdftex.def)             Requested size: 398.0045pt x 227.43114pt.
+
+Underfull \hbox (badness 4316) in paragraph at lines 258--258
+[][] [][][]\T1/lmr/m/n/10 (+20) Runs pro-gram-ming con-tests to crowd source ma
+-chine learn-ing so-lu-tions -
+ []
+
 [1
 
 
-] [2 <./figures/pubsperyear.png>] [3] [4] <figures/atmos.png, id=671, 505.89pt 
+] [2 <./figures/pubsperyear.png>] [3] [4] <figures/atmos.png, id=666, 505.89pt 
 x 505.89pt>
 File: figures/atmos.png Graphic file (type png)
 <use figures/atmos.png>
-Package pdftex.def Info: figures/atmos.png used on input line 399.
+Package pdftex.def Info: figures/atmos.png used on input line 406.
 (pdftex.def)             Requested size: 398.0045pt x 398.0045pt.
-[5 <./figures/atmos.png (PNG copy)>] <figures/common-cover.png, id=677, 505.89p
-t x 505.89pt>
+<figures/common-cover.png, id=668, 505.89pt x 505.89pt>
 File: figures/common-cover.png Graphic file (type png)
 <use figures/common-cover.png>
-Package pdftex.def Info: figures/common-cover.png used on input line 446.
+Package pdftex.def Info: figures/common-cover.png used on input line 453.
 (pdftex.def)             Requested size: 398.0045pt x 398.0045pt.
-[6] <figures/rare-cover.png, id=683, 505.89pt x 505.89pt>
+[5] [6 <./figures/atmos.png (PNG copy)>] [7 <./figures/common-cover.png (PNG co
+py)>] <figures/rare-cover.png, id=682, 505.89pt x 505.89pt>
 File: figures/rare-cover.png Graphic file (type png)
 <use figures/rare-cover.png>
-Package pdftex.def Info: figures/rare-cover.png used on input line 500.
+Package pdftex.def Info: figures/rare-cover.png used on input line 507.
 (pdftex.def)             Requested size: 398.0045pt x 398.0045pt.
-[7 <./figures/common-cover.png (PNG copy)>] [8 <./figures/rare-cover.png (PNG c
-opy)>] [9] [10
+[8 <./figures/rare-cover.png (PNG copy)>] [9] [10] [11
 
-] [11] [12] [13] [14] [15]
+] [12] [13] [14] [15] [16]
 
-Package xcolor Warning: Incompatible color definition on input line 961.
+Package xcolor Warning: Incompatible color definition on input line 991.
 
-LaTeX Font Info:    Try loading font information for T1+lmtt on input line 962.
+LaTeX Font Info:    Try loading font information for T1+lmtt on input line 992.
 
 (/usr/share/texmf/tex/latex/lm/t1lmtt.fd
 File: t1lmtt.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
 LaTeX Font Info:    Font shape `T1/lmtt/bx/n' in size <12> not available
-(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 963.
-LaTeX Font Info:    Try loading font information for TS1+lmtt on input line 963
+(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 993.
+LaTeX Font Info:    Try loading font information for TS1+lmtt on input line 993
 .
 (/usr/share/texmf/tex/latex/lm/ts1lmtt.fd
 File: ts1lmtt.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
 
-Package xcolor Warning: Incompatible color definition on input line 966.
+Package xcolor Warning: Incompatible color definition on input line 996.
 
 
-Package xcolor Warning: Incompatible color definition on input line 966.
+Package xcolor Warning: Incompatible color definition on input line 996.
 
-<figures/eval-tax.png, id=837, 356.33125pt x 145.54375pt>
+<figures/eval-tax.png, id=836, 356.33125pt x 145.54375pt>
 File: figures/eval-tax.png Graphic file (type png)
 <use figures/eval-tax.png>
-Package pdftex.def Info: figures/eval-tax.png used on input line 970.
+Package pdftex.def Info: figures/eval-tax.png used on input line 1000.
 (pdftex.def)             Requested size: 356.34666pt x 145.55003pt.
-[16 <./figures/eval-tax.png>] [17] [18] [19] <figures/mll-tax.png, id=896, 524.
+[17 <./figures/eval-tax.png>] [18] [19] [20] <figures/mll-tax.png, id=896, 524.
 96124pt x 145.54375pt>
 File: figures/mll-tax.png Graphic file (type png)
 <use figures/mll-tax.png>
-Package pdftex.def Info: figures/mll-tax.png used on input line 1173.
+Package pdftex.def Info: figures/mll-tax.png used on input line 1203.
 (pdftex.def)             Requested size: 398.01346pt x 110.34789pt.
-[20 <./figures/mll-tax.png>] [21] [22] [23] [24]
+[21 <./figures/mll-tax.png>] [22] [23] [24] [25]
 
 Package amsmath Warning: Foreign command \atopwithdelims;
 (amsmath)                \frac or \genfrac should be used instead
-(amsmath)                 on input line 1492.
+(amsmath)                 on input line 1522.
 
-[25] [26] [27] [28] [29
+[26] [27] [28] [29] [30
 
-] [30] [31]
+] [31] [32]
 \c@thm=\count273
 \c@defn=\count274
 \c@exmp=\count275
 
-Underfull \hbox (badness 10000) in paragraph at lines 1857--1858
+Underfull \hbox (badness 10000) in paragraph at lines 1887--1888
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1871--1872
+Underfull \hbox (badness 10000) in paragraph at lines 1901--1902
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1904--1905
+Underfull \hbox (badness 10000) in paragraph at lines 1934--1935
 
  []
 
-[32]
-Overfull \hbox (21.6104pt too wide) detected at line 1929
+[33]
+Overfull \hbox (21.6104pt too wide) detected at line 1959
 \OML/lmm/m/it/12 P\OT1/lmr/m/n/12 (\OML/lmm/m/it/12 Y[] \OT1/lmr/m/n/12 = 0\OML
 /lmm/m/it/12 ; Y[] \OT1/lmr/m/n/12 = 0\OMS/lmsy/m/n/12 j\OML/lmm/m/it/12 x[] \O
 T1/lmr/m/n/12 = 1) = 0 \OMS/lmsy/m/n/12 6\OT1/lmr/m/n/12 = \OML/lmm/m/it/12 P\O
@@ -1853,31 +1858,31 @@ lmsy/m/n/12 ^^B \OT1/lmr/m/n/12 0\OML/lmm/m/it/12 :\OT1/lmr/m/n/12 25\OML/lmm/m
 /it/12 ;
  []
 
-[33]
-Underfull \hbox (badness 10000) in paragraph at lines 1987--1988
+[34]
+Underfull \hbox (badness 10000) in paragraph at lines 2017--2018
 
  []
 
-[34] [35]
-Underfull \hbox (badness 10000) in paragraph at lines 2117--2118
+[35] [36]
+Underfull \hbox (badness 10000) in paragraph at lines 2147--2148
 
  []
 
-[36] [37] [38] [39] [40] [41] [42] [43] [44] [45] [46] [47] [48] [49] [50
+[37] [38] [39] [40] [41] [42] [43] [44] [45] [46] [47] [48] [49] [50] [51
 
-] [51] [52
+] [52] [53
 
-] [53
+] [54
 
-] [54] [55
-
-] [56
+] [55] [56
 
 ] [57
 
 ] [58
 
 ] [59
+
+] [60
 
 ] (./Thesis-main.bbl (/usr/local/share/texmf/tex/usbib.eng)
 LaTeX Font Info:    External font `lmex10' loaded for size
@@ -1906,7 +1911,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 96--103
 ] marburg . de / fb12 / kebi /
  []
 
-[60
+[61
 
 
 
@@ -1964,7 +1969,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 187--195
  Label{_}Learning /
  []
 
-[61]
+[62]
 Underfull \hbox (badness 10000) in paragraph at lines 287--292
 \T1/lmr/m/n/10.95 (+20) Available at: []$https : / / pdfs . semanticscholar . o
 rg / 57ed /
@@ -1994,7 +1999,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 318--324
  / record . url ? eid = 2 -[] s2 . 0 -[]
  []
 
-[62]
+[63]
 Underfull \hbox (badness 10000) in paragraph at lines 327--335
 \T1/lmr/m/n/10.95 (+20) Available at: []$http : / / jmread . github . io / pape
 rs / Read ,[] Holmen -[]
@@ -2030,7 +2035,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 384--389
 }25252F978 -[] 3 -[]
  []
 
-[63]
+[64]
 Underfull \hbox (badness 10000) in paragraph at lines 440--447
 \T1/lmr/m/n/10.95 (+20) Available at: []$https : / / pdfs . semanticscholar . o
 rg / 6d49 /
@@ -2078,13 +2083,13 @@ Underfull \hbox (badness 10000) in paragraph at lines 508--517
  volume12 / tsoumakas11a /
  []
 
-[64]
+[65]
 Underfull \hbox (badness 1635) in paragraph at lines 563--570
 \T1/lmr/m/n/10.95 (+20) Available at: []$http : / / citeseerx . ist . psu . edu
  / viewdoc / download ? doi = 10 . 1 . 1 . 297 .
  []
 
-[65]) [66]
+[66]) [67]
 \tf@toc=\write7
 \openout7 = `Thesis-main.toc'.
 
@@ -2094,25 +2099,25 @@ Underfull \hbox (badness 1635) in paragraph at lines 563--570
 \tf@lot=\write9
 \openout9 = `Thesis-main.lot'.
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 3174.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 3174.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 3204.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 3204.
 (./Thesis-main.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 3174.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 3174.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 3204.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 3204.
 
 Package rerunfilecheck Info: File `Thesis-main.out' has not changed.
-(rerunfilecheck)             Checksum: 23871C2D660C4D983B0EBEBBAAE143D7;15083.
+(rerunfilecheck)             Checksum: 430ABA143DC1FE6AF4B5C1D1D57E03AF;14896.
 
 LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 3174.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 3204.
  ) 
 Here is how much of TeX's memory you used:
- 30523 strings out of 494365
- 542514 string characters out of 6164699
- 687045 words of memory out of 5000000
- 32686 multiletter control sequences out of 15000+600000
- 178771 words of font info for 273 fonts, out of 8000000 for 9000
+ 30519 strings out of 494365
+ 542440 string characters out of 6164699
+ 686958 words of memory out of 5000000
+ 32684 multiletter control sequences out of 15000+600000
+ 178688 words of font info for 272 fonts, out of 8000000 for 9000
  350 hyphenation exceptions out of 8191
  60i,16n,82p,1148b,707s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texmf/fonts/enc/dvips/lm/lm-mathsy.enc}{/usr/share/texmf/fonts/en
@@ -2134,10 +2139,10 @@ ublic/lm/lmsy10.pfb></usr/share/texmf/fonts/type1/public/lm/lmsy6.pfb></usr/sha
 re/texmf/fonts/type1/public/lm/lmsy8.pfb></usr/share/texmf/fonts/type1/public/l
 m/lmtk10.pfb></usr/share/texmf/fonts/type1/public/lm/lmtt12.pfb></usr/share/tex
 live/texmf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb>
-Output written on Thesis-main.pdf (77 pages, 7514739 bytes).
+Output written on Thesis-main.pdf (78 pages, 7515857 bytes).
 PDF statistics:
- 1608 PDF objects out of 1728 (max. 8388607)
- 1465 compressed objects within 15 object streams
+ 1607 PDF objects out of 1728 (max. 8388607)
+ 1463 compressed objects within 15 object streams
  289 named destinations out of 1000 (max. 500000)
- 31664 words of extra memory for PDF output out of 35830 (max. 10000000)
+ 31656 words of extra memory for PDF output out of 35830 (max. 10000000)
 
