@@ -110,7 +110,41 @@ grobs_arranged <- lapply(1:length(atmos_grobs), function(a){
 ggsave("figures/atmos.png", grid.arrange(grobs = grobs_arranged, ncol = 1))
 ```
 
-![Examples of chips with atmospheric labels.](figures/atmos.png)
+![Examples of chips with atmospheric labels. These (along with all the other chips plotted throughout the thesis) are the JPEG conversions of the original 4-band, 16-bit images.\label{fig:atmos-egs}](figures/atmos.png)
+
+Examples of chips with atmospheric labels can be found in \autoref{fig:atmos-egs}. Each chip should only have one atmospheric label and therefore this classifying task simplifies to a multiclass problem. This allows for the option to break up the labeling task of all the labels into two tasks: a multiclass classification problem for the atmospheric labels and a multi-label classifcation problem for the land cover/use labels. This approach might save some computational time and give extra information to the multi-label learners for classifying the land cover/use labels. We will experiment with these approaches in Chapter ??.
+
+The common land cover/use labels are: *primary*, *agriculture*, *water*, *habitation*, *road*, *cultivation* and *bare ground*. They are relevant to a chip when:
+
++ primary: it is primarily consisting of rain forest (virgin forest), *i.e.* dense tree cover.
++ agriculture: it contains any land cleared of trees that is being used for agriculture or range land.
++ water: it contains any one of the following: rivers, reservoirs, or oxbow lakes.
++ habitation: it contains human homes or buildings.
++ road: it contains any type of road.
++ cultivation: it shows signs of smaller-scale/informaly cleared land for farming.
++ bare ground: it contains naturally (not the caused by humans) occuring tree-free areas.
+
+```{r, include=FALSE, eval = FALSE}
+common_cover_labels <- c("primary", "agriculture", "water", "habitation", "road", "cultivation", "bare_ground")
+common_cover_files <- lapply(common_cover_labels, function(a) {
+  lab_ind <- sapply(label_list, function(b) a %in% b)
+  train_labels$image_name[lab_ind][1:3]
+})
+
+common_cover_paths <- lapply(common_cover_files, function(a) paste0("~/Documents/Kaggle/Amazon/train-jpg/", a, ".jpg"))
+common_cover_imgs <- lapply(common_cover_paths, function(a) lapply(a, readJPEG))
+common_cover_grobs <- lapply(common_cover_imgs, function(a) lapply(a, ggimage))
+
+grobs_arranged <- lapply(1:length(common_cover_grobs), function(a){
+  arrangeGrob(grobs = common_cover_grobs[[a]], ncol = length(common_cover_grobs[[a]]), respect = TRUE, left = common_cover_labels[a])
+})
+
+ggsave("figures/common-cover.png", grid.arrange(grobs = grobs_arranged, ncol = 1))
+```
+
+![Examples of chips with common land cover/use labels. \label{fig:common-cover-egs}](figures/common-cover.png)
+
+Examples of chips with common land cover/use labels are found in \autoref{fig:common-cover-egs}. According to the competition page on Kaggle, small, single-dwelling habitations are often difficult to spot but usually appear as clumps of a few pixels that are bright white. Roads sometimes look very similar to rivers and therefore these two labels might be noisy. The NIR band might give a classifier additional information to help distinguish between the two. Cultivation is a subset of agriculture and is normally found near smaller villages, along major rivers or at the outskirts of agricultural areas. It typically covers very small areas.
 
 ### Training and Test Split
 
