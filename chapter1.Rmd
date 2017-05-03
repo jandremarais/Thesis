@@ -73,6 +73,8 @@ The image collection was created by first specifying a "wish list" of scences co
 
 [^planexp]: A web based interactive map of Earth consisting of satellite images, similar to Google Earth - www.planet.com/explorer
 
+Note, the training and test splits was determined by the Kaggle competition creators. The training chips are labeled but the test chips are not. Predicted labels for the test chips can be submitted for Kaggle to evaluate in terms of an evaluation metric. This setup prevents competitors from using the test chips for training a classifier. There are 40479 training chips and 40669 test chips.
+
 ### Class Labels
 
 The class labels for the images can be broken into three groups: atmospheric conditions, common land cover/use phenomena and rare land cover/use phenomena. Each chip will have one atmospheric label and zero or more common and rare labels. Chips that are labeled as cloudy should have no other labels, but there are some labeling errors.
@@ -176,8 +178,6 @@ ggsave("figures/rare-cover.png", grid.arrange(grobs = grobs_arranged, ncol = 1))
 ![Examples of chips with less common land cover/use labels. \label{fig:rare-cover-egs}](figures/rare-cover.png)
 
 Examples of chips with these less common land cover/use labels are given in \autoref{fig:rare-cover-egs}. These labels are more challenging to identify in the chips and since they also appear less frequently, it might be difficult for the classifier to learn these labels.
-
-### Training and Test Split
 
 ## Code and Reproducibility
 
