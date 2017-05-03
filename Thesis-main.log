@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2017.4.12)  3 MAY 2017 21:43
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2017.4.12)  3 MAY 2017 21:46
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1769,17 +1769,7 @@ Package pdftex.def Info: figures/rare-cover.png used on input line 467.
 (pdftex.def)             Requested size: 398.0045pt x 398.0045pt.
 [8 <./figures/rare-cover.png (PNG copy)>] [9] [10] [11
 
-]
-
-Package natbib Warning: Citation `Chekina2011' on page 12 undefined on input li
-ne 641.
-
-[12]
-
-Package natbib Warning: Citation `Chekina2011' on page 13 undefined on input li
-ne 719.
-
-[13] [14] [15
+] [12] [13] [14] [15
 
 ] [16] [17]
 \c@thm=\count270
@@ -1843,25 +1833,25 @@ Underfull \hbox (badness 10000) in paragraph at lines 1160--1161
 LaTeX Font Info:    External font `lmex10' loaded for size
 (Font)              <10.95> on input line 34.
 
-Underfull \hbox (badness 10000) in paragraph at lines 57--64
+Underfull \hbox (badness 10000) in paragraph at lines 68--75
 \T1/lmr/m/n/10.95 (+20) Available at: []$http : / / machinelearning . wustl . e
 du / mlpapers / paper{_}^^\les /
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 57--64
+Underfull \hbox (badness 10000) in paragraph at lines 68--75
 \T1/lmr/m/n/10.95 (+20) icml2010{_}DembczynskiCH10 . pdfhttp : / / www . uni -[
 ] marburg . de / fb12 / kebi /
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 105--113
+Underfull \hbox (badness 10000) in paragraph at lines 116--124
 \T1/lmr/m/n/10.95 (+20) Available at: []$https : / / www . researchgate . net /
  pro^^\le / Sebastian{_}Ventura /
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 105--113
+Underfull \hbox (badness 10000) in paragraph at lines 116--124
 \T1/lmr/m/n/10.95 (+20) publication / 270337594{_}A{_}Tutorial{_}on{_}Multi -[]
  Label{_}Learning /
  []
@@ -1871,88 +1861,84 @@ Underfull \hbox (badness 10000) in paragraph at lines 105--113
 
 
 ]
-Underfull \hbox (badness 10000) in paragraph at lines 161--166
+Underfull \hbox (badness 10000) in paragraph at lines 172--177
 \T1/lmr/m/n/10.95 (+20) Available at: []$https : / / pdfs . semanticscholar . o
 rg / 57ed /
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 161--166
+Underfull \hbox (badness 10000) in paragraph at lines 172--177
 \T1/lmr/m/n/10.95 (+20) 4de2c8ea9c865dcf4273f0576eb746263475 . pdf ? {_}ga = 1 
 . 106149697 . 379343330 .
  []
 
 
-Underfull \hbox (badness 4505) in paragraph at lines 170--181
+Underfull \hbox (badness 4505) in paragraph at lines 181--192
 \T1/lmr/m/n/10.95 (+20) Available at: []$http : / / citeseerx . ist . psu . edu
  / viewdoc / download ? doi = 10 . 1 . 1 . 88 .
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 170--181
+Underfull \hbox (badness 10000) in paragraph at lines 181--192
 \T1/lmr/m/n/10.95 (+20) 4803{&}rep = rep1{&}type = pdfhttp : / / portal . acm .
  org / citation . cfm ? doid =
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 184--192
+Underfull \hbox (badness 10000) in paragraph at lines 195--203
 \T1/lmr/m/n/10.95 (+20) Available at: []$http : / / jmread . github . io / pape
 rs / Read ,[] Holmen -[]
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 220--229
+Underfull \hbox (badness 10000) in paragraph at lines 231--240
 \T1/lmr/m/n/10.95 (+20) Available at: []$http : / / download . springer . com /
  static / pdf / 44 / art{%}253A10 .
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 220--229
+Underfull \hbox (badness 10000) in paragraph at lines 231--240
 \T1/lmr/m/n/10.95 (+20) 1007{%}252Fs10994 -[] 011 -[] 5256 -[] 5 . pdf ? origin
 Url = http{%}3A{%}2F{%}2Flink .
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 220--229
+Underfull \hbox (badness 10000) in paragraph at lines 231--240
 \T1/lmr/m/n/10.95 (+20) springer . com{%}2Farticle{%}2F10 . 1007{%}2Fs10994 -[]
  011 -[] 5256 -[] 5{&}token2 =
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 220--229
+Underfull \hbox (badness 10000) in paragraph at lines 231--240
 \T1/lmr/m/n/10.95 (+12) exp = 1490608886{~}acl = {%}2Fstatic{%}2Fpdf{%}2F44{%}2
 Fart{%}25253A10 .
  []
 
 [47]
-Underfull \hbox (badness 10000) in paragraph at lines 260--267
+Underfull \hbox (badness 10000) in paragraph at lines 271--278
 \T1/lmr/m/n/10.95 (+20) Available at: []$https : / / pdfs . semanticscholar . o
 rg / 6d49 /
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 260--267
+Underfull \hbox (badness 10000) in paragraph at lines 271--278
 \T1/lmr/m/n/10.95 (+20) 8611e1d30c5d1928573c199db02fc538d8d4 . pdf ? {_}ga = 1 
 . 107724480 . 379343330 .
  []
 
 
-Underfull \hbox (badness 1990) in paragraph at lines 273--285
+Underfull \hbox (badness 1990) in paragraph at lines 284--296
 \T1/lmr/m/n/10.95 (+20) Available at: []$http : / / lpis . csd . auth . gr / pu
 blications / tsoumakas -[] mld09 . pdfhttp :
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 273--285
+Underfull \hbox (badness 10000) in paragraph at lines 284--296
 \T1/lmr/m/n/10.95 (+20) / / www . ecmlpkdd2009 . net / wp -[] content / uploads
  / 2008 / 09 / learning -[] from -[] multi -[]
  []
 
-[48])
-
-Package natbib Warning: There were undefined citations.
-
-[49]
+[48]) [49]
 \tf@toc=\write6
 \openout6 = `Thesis-main.toc'.
 
@@ -1976,13 +1962,13 @@ LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
 Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 2217.
  ) 
 Here is how much of TeX's memory you used:
- 29721 strings out of 494365
- 529778 string characters out of 6164699
- 668314 words of memory out of 5000000
- 32031 multiletter control sequences out of 15000+600000
- 172149 words of font info for 244 fonts, out of 8000000 for 9000
+ 29724 strings out of 494365
+ 529838 string characters out of 6164699
+ 669380 words of memory out of 5000000
+ 32033 multiletter control sequences out of 15000+600000
+ 172141 words of font info for 244 fonts, out of 8000000 for 9000
  350 hyphenation exceptions out of 8191
- 60i,16n,82p,1148b,645s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 60i,16n,82p,1148b,647s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texmf/fonts/enc/dvips/lm/lm-mathsy.enc}{/usr/share/texmf/fonts/en
 c/dvips/lm/lm-rm.enc}{/usr/share/texmf/fonts/enc/dvips/lm/lm-mathit.enc}{/usr/s
 hare/texmf/fonts/enc/dvips/lm/lm-mathex.enc}{/usr/share/texmf/fonts/enc/dvips/l
@@ -2001,10 +1987,10 @@ sr/share/texmf/fonts/type1/public/lm/lmro12.pfb></usr/share/texmf/fonts/type1/p
 ublic/lm/lmsy10.pfb></usr/share/texmf/fonts/type1/public/lm/lmsy6.pfb></usr/sha
 re/texmf/fonts/type1/public/lm/lmsy8.pfb></usr/share/texlive/texmf-dist/fonts/t
 ype1/public/amsfonts/symbols/msam10.pfb>
-Output written on Thesis-main.pdf (60 pages, 7378016 bytes).
+Output written on Thesis-main.pdf (60 pages, 7378380 bytes).
 PDF statistics:
- 1130 PDF objects out of 1200 (max. 8388607)
- 1014 compressed objects within 11 object streams
- 210 named destinations out of 1000 (max. 500000)
+ 1136 PDF objects out of 1200 (max. 8388607)
+ 1020 compressed objects within 11 object streams
+ 211 named destinations out of 1000 (max. 500000)
  31486 words of extra memory for PDF output out of 35830 (max. 10000000)
 
