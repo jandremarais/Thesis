@@ -91,18 +91,23 @@ train_labels <- read_csv("~/Documents/Kaggle/Amazon/train.csv")
 label_list <- strsplit(train_labels$tags, " ")
 
 atmos_labels <- c("clear", "haze", "partly_cloudy", "cloudy")
-atmos_files <- unlist(lapply(atmos_labels, function(a) {
+atmos_files <- lapply(atmos_labels, function(a) {
   lab_ind <- sapply(label_list, function(b) a %in% b)
   train_labels$image_name[lab_ind][1:3]
-}))
+})
 
 library(jpeg)
 atmos_paths <- lapply(atmos_files, function(a) paste0("~/Documents/Kaggle/Amazon/train-jpg/", a, ".jpg"))
-atmos_imgs <- lapply(atmos_paths, readJPEG)
+atmos_imgs <- lapply(atmos_paths, function(a) lapply(a, readJPEG))
 library(ggmap)
 library(gridExtra)
-atmos_grobs <- lapply(atmos_imgs, ggimage)
-ggsave("figures/atmos.png", grid.arrange(grobs = atmos_grobs, ncol = 3, respect = TRUE))
+atmos_grobs <- lapply(atmos_imgs, function(a) lapply(a, ggimage))
+
+grobs_arranged <- lapply(1:length(atmos_grobs), function(a){
+  arrangeGrob(grobs = atmos_grobs[[a]], ncol = length(atmos_grobs[[a]]), respect = TRUE, left = atmos_labels[a])
+})
+
+ggsave("figures/atmos.png", grid.arrange(grobs = grobs_arranged, ncol = 1))
 ```
 
 ![Examples of chips with atmospheric labels.](figures/atmos.png)
