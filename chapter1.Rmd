@@ -146,6 +146,37 @@ ggsave("figures/common-cover.png", grid.arrange(grobs = grobs_arranged, ncol = 1
 
 Examples of chips with common land cover/use labels are found in \autoref{fig:common-cover-egs}. According to the competition page on Kaggle, small, single-dwelling habitations are often difficult to spot but usually appear as clumps of a few pixels that are bright white. Roads sometimes look very similar to rivers and therefore these two labels might be noisy. The NIR band might give a classifier additional information to help distinguish between the two. Cultivation is a subset of agriculture and is normally found near smaller villages, along major rivers or at the outskirts of agricultural areas. It typically covers very small areas.
 
+The less common land cover/use labels are: *slash and burn*, *selective logging*, *blooming*, *conventional mine*, *artisinal mine* and *blow down*. Chips are tagged with these labels when:
+
++ slash and burn: there are signs of the farming method that involves the cutting and burning of the forest to create a field. These look like cultivation patches with black or dark brown areas.
++ selective logging: winding dirt roads are present adjacent to bare brown patches in otherwise primary rain forest. Selective logging is the practice of selectively removing high values tree species from the rainforest.
++ blooming: there are signs of trees flowering. Blooming is a natural phenomena where particular species of flowering trees bloom, fruit and flower at the same time. These trees are quite big and the phenomena can be seen in the chips. They usually appear as white dots.
++ conventional mine: it contains signs of large-scale legal mining operations.
++ artisinal mine: it contains signs of small-scale (sometimes illegal) mining operations.
++ blow down: there are signs of trees uprooted or broken by wind. High speed winds (~160km/h) in the Amazon are generated when the cold dry air from the Andes settles on top of the warm moist air in the rainforest and then sinks down with incredible force, toppling larger rainforest trees. These open areas are visible from space.
+
+```{r, include=FALSE, eval = FALSE}
+rare_cover_labels <- c("slash_burn", "selective_logging", "blooming", "conventional_mine", "artisinal_mine", "blow_down")
+rare_cover_files <- lapply(rare_cover_labels, function(a) {
+  lab_ind <- sapply(label_list, function(b) a %in% b)
+  train_labels$image_name[lab_ind][1:3]
+})
+
+rare_cover_paths <- lapply(rare_cover_files, function(a) paste0("~/Documents/Kaggle/Amazon/train-jpg/", a, ".jpg"))
+rare_cover_imgs <- lapply(rare_cover_paths, function(a) lapply(a, readJPEG))
+rare_cover_grobs <- lapply(rare_cover_imgs, function(a) lapply(a, ggimage))
+
+grobs_arranged <- lapply(1:length(rare_cover_grobs), function(a){
+  arrangeGrob(grobs = rare_cover_grobs[[a]], ncol = length(rare_cover_grobs[[a]]), respect = TRUE, left = rare_cover_labels[a])
+})
+
+ggsave("figures/rare-cover.png", grid.arrange(grobs = grobs_arranged, ncol = 1))
+```
+
+![Examples of chips with less common land cover/use labels. \label{fig:rare-cover-egs}](figures/rare-cover.png)
+
+Examples of chips with these less common land cover/use labels are given in \autoref{fig:rare-cover-egs}. These labels are more challenging to identify in the chips and since they also appear less frequently, it might be difficult for the classifier to learn these labels.
+
 ### Training and Test Split
 
 ## Code and Reproducibility
