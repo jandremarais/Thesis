@@ -27,12 +27,13 @@ ggsave("pubsperyear.png", plot = p, device = "png", path = "figures", width = 7,
 
 ![Line graphs illustrating the rise in multi-label learning publications per year for two databases. The database searches were done on 24-03-2017. The searches were not identical since they were limited to the search features of the databases. (a) The search on Scopus (cite) was for all documents (conference papers, articles, conference, articles in press, reviews, book chapters and books) in any subject area with either the words *multi-label* or *multilabel* and either the words *learning* or *classification* found in either their titles, abstracts or keywords. (b) The search on Semantic Scholar was based on machine learning principles and thus automatically decides which research documents are relevant to a specific search query. The query used was *multilabel multi-label learning classification*. The search only returns research in the computer science and neuroscience fields of study. More technical details can be found on the respective engine's websites. \label{pubsperyear}](figures/pubsperyear.png)
 
-2. Deforestation is a massive global problem[^deforest]. It contributes to reduced biodiversity, habitat loss, climate change and other devastating effects. It is said that the world loses an area of forest the size of 48 football fields per minute and the area most affected is in the Amazon basin (cite Kaggle). This problem can be fought more effectively by goverments and local stakeholders if better data about the location of deforestation and human invasion on forests are continuously available to them - an ideal task for machine learning! Planet[^planet] and SCCON[^sccon] constructed a dataset of labelled satellite images taken of the Amazon basin and released it as part of a competition on Kaggle[^kaggle], challenging competitors to build algorithms that can automatically label these images with atmospheric conditions and various classes of land use. Resulting algorithms will help the global community better understand where, how, and why deforestation happens all over the world - and ultimately how to respond.
+2. Deforestation is a massive global problem[^deforest]. It contributes to reduced biodiversity, habitat loss, climate change and other devastating effects. It is said that the world loses an area of forest the size of 48 football fields per minute and the area most affected is in the Amazon basin (cite Kaggle). This problem can be fought more effectively by goverments and local stakeholders if better data about the location of deforestation and human invasion on forests are continuously available to them - an ideal task for machine learning! Planet[^planet] and SCCON[^sccon] constructed a dataset of labelled satellite images taken of the Amazon basin and released it as part of a competition on Kaggle[^kaggle], challenging competitors to build algorithms that can automatically label these images with atmospheric conditions and various classes of land use/cover[^usecover]. Resulting algorithms will help the global community better understand where, how, and why deforestation happens all over the world - and ultimately how to respond.
 
 [^deforest]: I saw in another paper that the rate of decline is decreasing (cite)
 [^planet]: Designer and builder of the world's largest constellation of Earth-imageing satellites - www.planet.com
 [^sccon]: Remote sensing experts - www.sccon.com.br/eng
 [^kaggle]: Runs programming contests to crowdsource machine learning solutions - www.kaggle.com
+[^usecover]: Land cover indicates the physical land type such as forest or open water whereas land use documents how people are using the land.
 
 ## Thesis Objectives
 
@@ -60,9 +61,9 @@ This section covers an initial introduction to the data. The elements of the dat
 
 ### Image Format
 
-The data for this task comes from a set of images (also referred to as chips). Each chip is a small excerpt from a larger image of a specific scene in the Amazon taken by satellites. The chip size in pixels is 256$\times$256, representing roughly 90 hectares of land, and is taken from a larger scene of 6600$\times$2200 pixels. All of the satellite images were taken between January 1, 2016 and February 1, 2017. The format of these images differ from the standard image format. Each image contains four bands of data: red (R), green (G), blue (B) and near infrared (NIR), where the standard format images usually only contain R, G and B. The additional NIR colour channel is common in remote sensing[^remsens] applications and supposedly allows for clear distinction between water and vegetation in satellite images, for example. 
+The data for this task comes from a set of images (also referred to as chips). Each chip is a small excerpt from a larger image of a specific scene in the Amazon taken by satellites. The chip size in pixels is $256\times 256$, representing roughly 90 hectares of land, and is taken from a larger scene of $6600\times 2200$ pixels. All of the satellite images were taken between January 1, 2016 and February 1, 2017. The format of these images differ from the standard image format. Each image contains four bands of data: red (R), green (G), blue (B) and near infrared (NIR), where the standard format images usually only contain R, G and B. The additional NIR colour channel is common in remote sensing[^remsens] applications and supposedly allows for clear distinction between water and vegetation in satellite images, for example. 
 
-Another difference between these images and the usual format is that these have pixel intensities in 16-bit digital number format as opposed to the usual 8-bit of standard RGB images. This allows the colours in the images to have a much higher range since 16-bit pixel intensities have 65536 (2^16) levels, compared to 256 levels of 8-bit images. This becomes useful, for example, to distinguish between different levels of darkness in an image. Thus each chip can be represented by a vector of size 262144 ($256\times 256 \times 4). This might prove to require to much computational power but strategies to reduce the size of such a vector exist, *e.g.* filtering or resizing of the image.
+Another difference between these images and the usual format is that these have pixel intensities in 16-bit digital number format as opposed to the usual 8-bit of standard RGB images. This allows the colours in the images to have a much higher range since 16-bit pixel intensities have 65536 (2^16) levels, compared to 256 levels of 8-bit images. This becomes useful, for example, to distinguish between different levels of darkness in an image. Thus each chip can be represented by a vector of size 262144 ($256\times 256 \times 4$). This might prove to require to much computational power but strategies to reduce the size of such a vector exist, *e.g.* filtering or resizing of the image.
 
 [^remsens]: The use of satellite- or aircraft-based sensor technologies to detect and classify objects on Earth [https://en.wikipedia.org/wiki/Remote_sensing].
 
@@ -74,11 +75,43 @@ The image collection was created by first specifying a "wish list" of scences co
 
 ### Class Labels
 
+The class labels for the images can be broken into three groups: atmospheric conditions, common land cover/use phenomena and rare land cover/use phenomena. Each chip will have one atmospheric label and zero or more common and rare labels. Chips that are labeled as cloudy should have no other labels, but there are some labeling errors.
+
+The atmospheric condition labels are: *clear*, *haze*, *partly cloudy* and *cloudy*. They are relevant to a chip when:
+
++ clear: there are no evidence of clouds.
++ haze: clouds are visible but they are not so opaque as to obscure the ground.
++ partly cloudy: scenes show opaque cloud cover over any portion of the image but the land cover/use phenomena are still visible.
++ cloudy: 90% of the image is obscured with opaque cloud cover.
+
+```{r, include=FALSE, eval = FALSE}
+library(tidyverse)
+library(stringr)
+train_labels <- read_csv("~/Documents/Kaggle/Amazon/train.csv")
+label_list <- strsplit(train_labels$tags, " ")
+
+atmos_labels <- c("clear", "haze", "partly_cloudy", "cloudy")
+atmos_files <- unlist(lapply(atmos_labels, function(a) {
+  lab_ind <- sapply(label_list, function(b) a %in% b)
+  train_labels$image_name[lab_ind][1:3]
+}))
+
+library(jpeg)
+atmos_paths <- lapply(atmos_files, function(a) paste0("~/Documents/Kaggle/Amazon/train-jpg/", a, ".jpg"))
+atmos_imgs <- lapply(atmos_paths, readJPEG)
+library(ggmap)
+library(gridExtra)
+atmos_grobs <- lapply(atmos_imgs, ggimage)
+ggsave("figures/atmos.png", grid.arrange(grobs = atmos_grobs, ncol = 3, respect = TRUE))
+```
+
+![Examples of chips with atmospheric labels.](figures/atmos.png)
+
 ### Training and Test Split
 
 ## Code and Reproducibility
 
-> Got this header from Arnu's thesis - not sure if I will include this. But it may be appropriate to indicate here where to find the code for the thesis, etc.
+> Got this header from Arnu's thesis - not sure if I will include this. But it may be appropriate to indicate here where to find the code for the thesis, why it is important, etc.
 
 ## Important Concepts and Terminology
 
