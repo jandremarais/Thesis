@@ -71,16 +71,7 @@ The key challenge in ML learning is to exploit dependecies amongst labels, *e.g.
 
 ### Learning Framework
 
-+ mathematical definition with notation of the task of ML learning.
-+ real-valued output + thresholding function (ranking vs classification)
 
-The task of ML classification is to find a function $h$ that accurately maps the observations contained in $X$ to the label matrix $Y$, i.e., $h:X\to Y$, so that given a new observation, $h$ can determine which labels belong to it. The accuracy aforementioned is a topic that will be discussed shortly. The measurement thereof is another unique problem for ML classification.
-
-On the other hand, the goal of ML ranking is to find a function $f:X\to G$, where $G$ is a similar matrix to $Y$, but with the $g_{ij}$ a real value representing the relative confidence score that label $j$ is relevant to observation $i$. $f$ is found by optimising a ranking metric, also discussed shortly. From the confidence scores of observation $i$, $f(\boldsymbol{x}_{i})$, a ranking $\boldsymbol{r}_{i}$ can be obtained, giving the rank of labels in descending order of $f(\boldsymbol{x}_{i})$.
-
-> mention the calibration factor of [@Zhang2014]. Finding $z_{i}$ from $r_{i}$
-
-$h$ will be referred to as the ML classifier and $f$ as the ML ranker. When ML learner will be a collective term covering both $h$ and $f$. Before different ML learners can be discussed, an understanding of how the output of these algorithms are evaluated is necessary, since fitting $f$ of $h$ envolves optimising an evaluation metric. (always?)
 
 ### Multi-Label Data and Repositories
 

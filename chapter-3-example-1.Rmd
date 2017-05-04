@@ -18,26 +18,6 @@ As mentioned, most mutli-label learning papers display merely an intuitive under
 
 ### The task of multi-label classification
 
-> deurmekaar met wanneer simbole moet hoof- of kleinletters wees.
-
-Let $\mathcal{D}=\{(\boldsymbol{x}_{i},\boldsymbol{y}_{i})\}_{i=1}^{n}$ define a multi-label dataset. $\boldsymbol{x}$, is the feature/input/instance vector of an observation and is given by a $p$-dimensional real-valued vector, $\boldsymbol{x}=(x_{1},x_{2},\dots,x_{p})$, *i.e.* $\boldsymbol{x}\in \mathcal{R}^{p}$. Each instance, $\boldsymbol{x}$ is associated with a subset of labels $L\in 2^{\mathcal{L}}$, where $2^{\mathcal{L}}$ represents the powerset of the full set of labels, $\mathcal{L}=\{l_{1},l_{2},\dots,l_{K}\}$. The subset $L$ is represented as an indicator vector $\boldsymbol{y}=(y_{1},y_{2},\dots,y_{K})$, where $y_{k}=1$ if $l_{k}\in L$ or else $y_{k}=0$, for $k=1,2,\dots,K$. We assume examples in $\mathcal{D}$ to be independently and identically distributed (*i.i.d.*) from $P(\boldsymbol{X},\boldsymbol{Y})$. Let $h$ define a multi-label classifier, which is a mapping, 
-$$
-h:\boldsymbol{X}\to \boldsymbol{Y}
-$$
-(not sure about this notation). The risk of $h$ is defined as the expected loss over the joint distribution $P(\boldsymbol{X},\boldsymbol{Y})$:
-$$
-R_{L}(h)=E_{\boldsymbol{X}\boldsymbol{Y}}\left[L\left(\boldsymbol{Y},h(\boldsymbol{X})\right)\right],
-$$
-where $L(.)$ is a multi-label loss function. The MLC task boils down to given training data, $\mathcal{D}$, drawn independently from $P(\boldsymbol{X},\boldsymbol{Y})$, learn a classifier $h$ that minimizes the risk with respect to a specific loss function, *i.e.*
-$$
-h^{*}=\arg\min_{h}E_{\boldsymbol{X}\boldsymbol{Y}}\left[L\left(\boldsymbol{Y},h(\boldsymbol{X})\right)\right]=\arg\min_{h}E_{\boldsymbol{X}}\left[E_{\boldsymbol{Y}|\boldsymbol{X}}\left[L\left(\boldsymbol{Y},h(\boldsymbol{X})\right)\right]\right],
-$$
-where $h^{*}$ is the so-called risk-minimizing model and can be determined in a pointwise way by the risk minimizer,
-$$
-h^{*}(\boldsymbol{x})=\arg\min_{\boldsymbol{y}}E_{\boldsymbol{Y}|\boldsymbol{X}}\left[L(\boldsymbol{Y},\boldsymbol{y}))\right].
-$$
-Note, here we allow $h(\boldsymbol{x})$ to take on real values, *i.e.* $h(\boldsymbol{x})\in\mathcal{R}^{K}$, for the sake of generality. This is to cover multi-label ranking functions and multi-label classifiers that output real real values before thresholding.
-
 ### Marginal vs. conditional dependence
 
 First note that we denote the conditional distribution of $\boldsymbol{Y}=\boldsymbol{y}$ given $\boldsymbol{X}=\boldsymbol{x}$ as
