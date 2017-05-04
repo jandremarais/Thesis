@@ -1,8 +1,1 @@
 # Benchmark Datasets
-
-+ [@Gibaja2015]
-+ MULAN: http://meka.sourceforge.net/
-+ https://manikvarma.github.io/downloads/XC/XMLRepository.html
-+ yelp dataset: http://www.ics.uci.edu/~vpsaini/
-
-+ [@Luaces] argues that the MULAN repository does not have a wide variety and truly multi-label data sets. Most of the data sets have low cardinality and low label dependence. Thus these data sets may not show the true performance of multi-label algorithms. Therefore they created a multi-label data generator simulate multi-label data on which algorithms can be evaluated.

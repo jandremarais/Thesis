@@ -85,12 +85,17 @@ Very little research has been done on how all these ML indicators affect the per
 
 ## Benchmark Data Sets
 
-The progress of areas in machine/statistical learning is highly dependent on the availability of quality and diverse benchmark data sets. This enables researchers to compare their methods in a wide variety of environments. Recently, a decent amount of ML data sets has been published. However, researchers have mentioned that these data sets lack diversity [cite] and also needs to be used more for empirical studies [@Gibaja2015]. Some of the most popular and recent ML benchmark data sets will be introduced here along with their properties. This will give us some form of a reference to compare out data set of satellite images to.
+The progress of areas in machine/statistical learning is highly dependent on the availability of quality and diverse benchmark data sets. This enables researchers to compare their methods in a wide variety of environments. Recently, a decent amount of ML data sets has been published, but not without critique. [@Luaces] argues that the MULAN repository does not have a wide variety and truly ML data sets. Most of the data sets have low cardinality and low label dependence. Thus these data sets may not show the true performance of multi-label algorithms. Therefore they created a ML data generator to simulate ML data on which algorithms can be evaluated.
+
+However, researchers have mentioned that these data sets lack diversity [cite] and also needs to be used more for empirical studies [@Gibaja2015]. Some of the most popular and recent ML benchmark data sets will be introduced here along with their properties. This will give us some form of a reference to compare our data set of satellite images to.
 
 + [@Read2011a] defines a complexity measures as $n\times p\times K$
 
 + [@Gibaja2015a] long list of datasets
 + [@Sorower]
++ MULAN: http://meka.sourceforge.net/
++ https://manikvarma.github.io/downloads/XC/XMLRepository.html
++ yelp dataset: http://www.ics.uci.edu/~vpsaini/
 
 ## Sampling and Resampling
 
@@ -106,4 +111,8 @@ Maybe include the following headers here:
 ## Learning Objective
 
 ## Evaluation Metrics
+
+And it may come natural to discuss label dependence here since we are talking about the data
+
+## Label Dependence
 
