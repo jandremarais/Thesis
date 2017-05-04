@@ -1,10 +1,16 @@
-# Multi-Label Data
+# The Multi-Label Framework
+
+> The new plan for this chapter is to introduce all the ml concepts necessary to understand before fitting the model. First we need to define the ML learning objective. Then we will look at ML data set properties. Important: class imbalance, label correlation (should I talk about exploiting it here?). Then we will discuss evaluation metrics. This chapter might become very long.
 
 ## Introduction
 
 Multi-label (ML) learning belongs to the supervised learning paradigm and can be viewed as a generalisation of the traditional single-label learning problem. Suppose the data set to be analysed consists of a set of observations each representing a real-world object such as an image or a text document. In the single-label context each object is restricted to belonging to a single, mutually exclusive class, *i.e.* each observation is associated with a single label. One can quite effortlessly come up with tasks that will not fit into this framework: an image annotation problem where each image contains more than one semantic object, a text classification task where each document has multiple topics or an acoustic classification task where the recordings contain the sounds of multiple bird species. Therefore the need for a ML learner that can assign a set of labels to an observation. Let $\mathcal{L}=\{l_{1},l_{2},\dots,l_{K}\}$ denote the complete set of possible labels that can be assigned to an observation. Whereas a single-label learner aims to find which single label $l_{k}$, $k=1,2,\dots,K$, belongs to a given observation, a ML learner is capable of assigning a set of labels $L \subseteq \mathcal{L}$ to the observation. 
 
-A more formal definition of the ML learning task will be given in the following chapter. However, it is important to note that we will define the utlimate task of ML learning as the assigning of multiple labels to an observation. ML learning covers to very similar approaches, namely, ML classification and ML ranking. ML classification algorithms output whether or not labels are relevant to an observation (binary) and ML ranking algorithms outputs a real-valued score assigned to each label indicating its relative importance to an observation. Thus with ML ranking, for each observation we seek a list of labels ordered by their scores representing the confidence in how relevant they are to the specific observation. Many classifiers base their final (categorical) prediction on the thresholding of the real-valued output of the algorithm and thus can also be used for ranking. Similarly, ranking algorithms can also be used for classification if a thresholding function is applied to the real-valued output. 
+According to [@Zhang2014], ML learning can be considered a sub-problem of a wider framework, called multi-target learning, covering all problems where an observation is associated with multiple outputs. When the output variables are binary, it is a ML learning problem. But problems also exist where the output variables are multi-class or numerical and in these settings the problems are respectively known as multi-dimensional learning and multi-output regression. It is also possible that the output variables are combinations of the aforementioned types. 
+
+As should be expected, the ML framework
+
+A more formal definition of the ML learning task will be given in the following chapter. However, it is important to note that we will define the utlimate task of ML learning as the assigning of multiple labels to an observation. ML learning covers to very similar approaches, namely, ML classification and ML ranking. ML classification algorithms output whether or not labels are relevant to an observation (binary) and ML ranking algorithms outputs a real-valued score assigned to each label indicating its relative importance to an observation. Thus with ML ranking, for each observation we seek a list of labels ordered by their scores representing the confidence in how relevant they are to the specific observation. Many classifiers base their final (categorical) prediction on the thresholding of the real-valued output of the algorithm and thus can also be used for ranking. Similarly, ranking algorithms can also be used for classification if a thresholding function is applied to the real-valued output. (see [Z@hang2014] for a more brief description)
 
 In this chapter we are interested in the properties of multi-label data. Due to the multidimensionality of the outputs, the data has some unique properties to consider that are not applicable in the traditional single-label case. First, the notation for multi-label data is introduced, then ... (outline)
 
@@ -43,7 +49,7 @@ where $K$ is the size of the label set $\mathcal{L}$. $Y$ only contains zeros an
 
 ## Multi-Label Indicators
 
-As with all supervised learning problems, no one algorithm performs optimally on all data sets. The performance of a ML classifier depends on the data set and the type of problem. Therefore it is important to measure some ML characteristics of the data set that can influence the performance of a ML classifier. Some of the most popular ML indicators in the literature, follows.
+As with all supervised learning problems, no one ML algorithm performs optimally on all problems. It is common practice in classical single output supervised learning to first consider, for example, the number of features ($p$) and the number of observations ($n$) in a data set before deciding on which model(s) to fit to the data. The same naturally holds for a ML problem but with added complexity. The multiple outputs of the data introduces many more factors to consider before continuing to the modelling phase. Some ML data sets have only a few labels per observation, while others have plenty. In some ML data sets the number of label combinations is small, whereas in others it can be very large. Some labels appear more frequently than others. Moreover, the labels can be correlated or not. These characteristics can have a serious impact on the performance of a ML classifier. This is the reason why several specific indicators have been designed to assess ML data set properties.
 
 The two standard measures for the multi-labeledness of a data set are *label cardinality* and *label density*, introduced by [@Tsoumakas]. The label cardinality of a ML data, $D$, set is the average number of labels per observation:
 
@@ -85,22 +91,25 @@ Very little research has been done on how all these ML indicators affect the per
 
 ## Benchmark Data Sets
 
-The progress of areas in machine/statistical learning is highly dependent on the availability of quality and diverse benchmark data sets. This enables researchers to compare their methods in a wide variety of environments. Recently, a decent amount of ML data sets has been published, but not without critique. [@Luaces] argues that the MULAN repository does not have a wide variety and truly ML data sets. Most of the data sets have low cardinality and low label dependence. Thus these data sets may not show the true performance of multi-label algorithms. Therefore they created a ML data generator to simulate ML data on which algorithms can be evaluated.
+The progress of areas in machine/statistical learning is highly dependent on the availability of quality and diverse benchmark data sets. This enables researchers to compare their methods in a wide variety of environments. Recently, a decent amount of ML data sets has been published, but not without critique. [@Luaces] argues that the MULAN[^mulan] ML data set repository does not have data sets that are truely ML and that most of the data sets are very similar to each other. Most of the data sets have low cardinality and low label dependence. The problem with this is that these data sets may not show the true performance of ML algorithms. In [@Gibaja2015] the authors also comments on the lack of thorough, comparative empirical studies on these benchmark sets.
 
-However, researchers have mentioned that these data sets lack diversity [cite] and also needs to be used more for empirical studies [@Gibaja2015]. Some of the most popular and recent ML benchmark data sets will be introduced here along with their properties. This will give us some form of a reference to compare our data set of satellite images to.
+[^mulan]: A Java library for ML learning - http://mulan.sourceforge.net/datasets-mlc.html.
 
-+ [@Read2011a] defines a complexity measures as $n\times p\times K$
+Some of the most popular and recent ML benchmark data sets will be introduced here along with their properties. This will give us some form of a reference to compare our data set of satellite images against.
 
-+ [@Gibaja2015a] long list of datasets
++ [@Read2011a] defines a complexity measure as $n\times p\times K$
+
++ [@Gibaja2015a] long list of datasets. Other than MULAN: Plant and Human, Slashdot, LangLog, IMDB
 + [@Sorower]
-+ MULAN: http://meka.sourceforge.net/
 + https://manikvarma.github.io/downloads/XC/XMLRepository.html
 + yelp dataset: http://www.ics.uci.edu/~vpsaini/
++ also new yt8m
 
 ## Sampling and Resampling
 
 + Simulating [@TorresTomas2014] (also gives citations to other papers)
 + partitioning mentioned in [@Gibaja2015] - referred to [@Sechidis]
++ [@Luaces] Therefore they created a ML data generator to simulate ML data on which algorithms can be evaluated.
 
 ## Class Imbalance
 
