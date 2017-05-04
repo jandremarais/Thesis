@@ -75,7 +75,7 @@ PMax(D)=\max_{\boldsymbol{y}}\frac{\mathrm{count}(\boldsymbol{y},D)}{n},
 $$
 where $\mathrm{count}(\boldsymbol{y},D)$ is the frequency that label combination $\boldsymbol{y}$ is found in data set $D$. This represents the proportion of observations associated with the most frequently occurring label sets. High values of $PLDiv$ and $PMax$ indicate an irregular and skewed labeling scheme, respectively, *i.e.* a relatively high number of observations are associated with infrequent label sets and a relatively high number of observations are associated with the most common label sets. (*think about this again*) When this is the case, and the labels are modelled separately, the classifiers will suffer from the class imbalance problem, a common problem in supervised classification tasks. More detail about this will be adressed shortly.
 
-Very little research has been done on how all these ML indicators affect the performance of a ML classifier. [@Chekina2011] made a worthy attempt. Their goal was to find a way of determining which ML algorithm to use given a data set with specific properties and with a specific evaluation metric to optimise. They approached this problem by training a so called meta-learner on a meta-data set containing the performance of multiple ML algorithms on benchmark data sets with different properties. This trained meta-learner is then able to predict which ML algorithm is most likely to give the best results in terms of a specific evaluation metric, given the properties of the data set to be analysed. Although we will not use their meta-learner for this thesis, we will consider some of the additional findings in their research. They found that the following properties (among others) of a ML data set was important to their trained meta-model (which was based on classification trees) in predicting which ML algorithm is most appropriate: $K$; $LDiv(D)$; $LCard(D)$; the standard deviation, skewness and kurtosis of the number of labels per observation in $D$; number of unconditionally dependent label pairs (based on what?); average of $\chi^{2}$ -scores of all dependent label pairs; number of classes with less than 2, 5 and 10 observations; ratio of classes with less than 2, 5, 10 and 50 observations; average, minimal and maximal entropy of labels (def of entropy?); average observations per class.
+Very little research has been done on how all these ML indicators affect the performance of a ML classifier. [@Chekina2011] made a worthy attempt. Their goal was to find a way of determining which ML algorithm to use given a data set with specific properties and with a specific evaluation metric to optimise. They approached this problem by training a so called meta-learner on a meta-data set containing the performance of multiple ML algorithms on benchmark data sets with different properties. This trained meta-learner is then able to predict which ML algorithm is most likely to give the best results in terms of a specific evaluation metric, given the properties of the data set to be analysed. Although we will not use their meta-learner for this thesis, we will consider some of the additional findings in their research. They found that the following properties (among others) of a ML data set was important to their trained meta-model (which was based on classification trees) in predicting which ML algorithm is most appropriate: $K$; $LDiv(D)$; $LCard(D)$; the standard deviation, skewness and kurtosis of the number of labels per observation in $D$; number of unconditionally dependent label pairs (based on what?); average of $\chi^{2}$ -scores of all dependent label pairs; number of classes with less than 2, 5 and 10 observations; ratio of classes with less than 2, 5, 10 and 50 observations; average, minimal and maximal entropy of labels (def of entropy?); average observations per class. This strengthens the argument that it is important to take ML indicators into account before the training process.
 
 > Some rules that they found that I might refer to later:
 
@@ -85,8 +85,25 @@ Very little research has been done on how all these ML indicators affect the per
 
 ## Benchmark Data Sets
 
+The progress of areas in machine/statistical learning is highly dependent on the availability of quality and diverse benchmark data sets. This enables researchers to compare their methods in a wide variety of environments. Recently, a decent amount of ML data sets has been published. However, researchers have mentioned that these data sets lack diversity [cite] and also needs to be used more for empirical studies [@Gibaja2015]. Some of the most popular and recent ML benchmark data sets will be introduced here along with their properties. This will give us some form of a reference to compare out data set of satellite images to.
+
 + [@Read2011a] defines a complexity measures as $n\times p\times K$
 
++ [@Gibaja2015a] long list of datasets
++ [@Sorower]
 
+## Sampling and Resampling
 
++ Simulating [@TorresTomas2014] (also gives citations to other papers)
++ partitioning mentioned in [@Gibaja2015] - referred to [@Sechidis]
+
+## Class Imbalance
+
++ [@Charte2015]
+
+Maybe include the following headers here:
+
+## Learning Objective
+
+## Evaluation Metrics
 
