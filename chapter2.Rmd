@@ -43,20 +43,21 @@ where $K$ is the size of the label set $\mathcal{L}$. $Y$ only contains zeros an
 
 ## Multi-Label Indicators
 
-As with all supervised learning problems, no one algorithm performs optimally on all data sets. The performance of a ML classifier depends on the data set and the type of problem. Therefore it is important to measure some characteristics of the data set that can influence the performance of a proposed classifier. Very little research has been done on the effect of multi-labeled data set properties on the performance of a ML classifier. [@Chekina2011] compared the performance of several ML algorithms in order to develop a set of rules on how to choose an optimal algorithm according to a specific data set and target evaluation measure. 
+As with all supervised learning problems, no one algorithm performs optimally on all data sets. The performance of a ML classifier depends on the data set and the type of problem. Therefore it is important to measure some ML characteristics of the data set that can influence the performance of a ML classifier. Some of the most popular ML indicators in the literature, follows.
 
+The two standard measures for the multi-labeledness of a data set are *label cardinality* and *label density*, introduced by [@Tsoumakas]. The label cardinality of a ML data, $D$, set is the average number of labels per observation:
 
-*label cardinality*
+$$
+LCard(D)=\frac{1}{n}\sum_{i=1}^{n}\sum_{k=1}^{K}y_{ik}.
+$$
+This measure can be normalised to be independent of the label set size, which results in the label density indicator:
 
-+ average number of labels per example [Zhang2014]
-+ standard [@Read2011a]
-+ This measure gives a good idea of label frequency, but gives no indication of the regularity or uniformity of the labelling scheme. [@Read2011a]
-+ origin [@Tsoumakas]
+$$
+LDens(D)=\frac{1}{K}LCard(D)=\frac{1}{nK}\sum_{i=1}^{n}\sum_{k=1}^{K}y_{ik}.
+$$
+According to [@Tsoumakas] it is important to distinguish between these two measures, since two data sets with the same label cardinality but with a great difference in the number of labels might not exhibit the same properties and cause different behaviour to the ML classification methods.
 
-*label density*
-
-+ normalises cardinality (number of labels independent)
-+ origin [@Tsoumakas]
+This measure gives a good idea of label frequency, but gives no indication of the regularity or uniformity of the labeling scheme. [@Read2011a]
 
 *label diversity*
 
@@ -74,9 +75,15 @@ As with all supervised learning problems, no one algorithm performs optimally on
 
 *general*
 
-+ Two data sets with the same label cardinality but with a great difference in the number of labels (different label density) might not exhibit the same properties and cause different behaviour to the multi-label classification methods. [@Tsoumakas] (actually refers to density and cardinality)
++ T [@Tsoumakas] (actually refers to density and cardinality)
 + In multi-label this means that a relatively high number of examples are associated with the most common labelsets while a rel- atively high number of examples are associated with infrequent labelsets. Label skew becomes class imbalance when each label is considered separately as a binary prob- lem. [@Gibaja2015]
 + [@Chekina2011] The main goal of this paper is to compare the classification performance of several multi-label algorithms and to develop a set of rules or tools that will help in selecting the optimal algorithm according to a specific dataset and target evaluation measure. We utilize a meta-learning approach allowing fast automatic selection of the most appropriate algorithm for an unseen dataset based on its descriptive characteristics. We also define a list of characteristics specific for multi-label datasets.
++ relevant: Number of labels; Number of distinct classes in the training set; Label cardinality of the training set; Standard deviation/skewness/kurtosis of the training set's label cardinality; Number of unconditionally dependent label pairs; Average of chi square scores of all dependent label pairs; Number of classes with 2/5/10 and less examples; Ratio of classes with 2/5/10/50 and less examples; Average/minimal/maximal entropy of labels; Average examples per class.
++ for micro-AUC target evaluation measure if label cardinality of training data is above 3.028 then the 2BR method (among the single-classifiers) should be used.
++ Another example for an extracted rule is for ranking loss evaluation measure: if minimum of label entropies is zero (i.e. there is at least one certain label in the training set), number of labels is less than 53 and skewness of label cardinality is below or equal to 2.49 then the EPS method (among ensembles) should be used.
+
+Very little research has been done on the effect of multi-labeled data properties on the performance of a ML classifier. [@Chekina2011] compared the performance of several ML algorithms in order to develop a set of rules on how to choose an optimal algorithm according to a specific data set and target evaluation measure. 
+
 
 ## Benchmark Data Sets
 
