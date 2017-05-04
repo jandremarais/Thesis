@@ -55,28 +55,30 @@ This measure can be normalised to be independent of the label set size, which re
 $$
 LDens(D)=\frac{1}{K}LCard(D)=\frac{1}{nK}\sum_{i=1}^{n}\sum_{k=1}^{K}y_{ik}.
 $$
-According to [@Tsoumakas] it is important to distinguish between these two measures, since two data sets with the same label cardinality but with a great difference in the number of labels might not exhibit the same properties and cause different behaviour to the ML classification methods.
+According to [@Tsoumakas] it is important to distinguish between these two measures, since two data sets with the same label cardinality but with a great difference in the number of labels might not exhibit the same properties and cause different behaviour to the ML classification methods. These two measures give a good indication of the label frequency of a data set, but we are also interested in the uniformity and regularity of the labeling scheme. The authors of [@Read2011a] suggested measuring the proportion of distinct label sets and the proportion of label sets with the maximum frequency. Consider the number of distinct label sets, also referred to as the label diversity [@Zhang2014], which can be defined as:
 
-This measure gives a good idea of label frequency, but gives no indication of the regularity or uniformity of the labeling scheme. [@Read2011a]
+> there are multiple ways this is defined in the literature - still need to decide on which one I want to use
 
-*label diversity*
+$$
+LDiv(D)=|\{Y|\exists \boldsymbol{x}:(\boldsymbol{x},Y)\in D\}|,
+$$
+by [@Zhang2014]. ([@Read2011a] uses $\exists !$ instead of $\exists$ and $Y$ as a vector $\boldsymbol{y}$. I want to consider a way of defining it in matrix notation. Maybe with an indicator function. Some papers define it as $DL$ instead of $LDiv$.) The proportion of distinct label sets in $D$ is then
 
-+ number of distinct label sets 
+$$
+PLDiv\{/PUniq/PDL\}(D)=\frac{1}{n}LDiv(D).
+$$
+
+The proportion of label sets with the maximum frequency is defined by [@Read2011a] as:
+
+$$
+PMax(D)=\max_{\boldsymbol{y}}\frac{\mathrm{count}(\boldsymbol{y},D)}{n},
+$$
+where $\mathrm{count}(\boldsymbol{y},D)$ is the frequency that label combination $\boldsymbol{y}$ is found in data set $D$. This represents the proportion of observations associated with the most frequently occurring label sets. High values of $PLDiv$ and $PMax$ indicate an irregular and skewed labeling scheme, respectively, *i.e.* a relatively high number of observations are associated with infrequent label sets and a relatively high number of observations are associated with the most common label sets. (*think about this again*) When this is the case, and the labels are modelled separately, the classifiers will suffer from the class imbalance problem, a common problem in supervised classification tasks. More detail about this will be adressed shortly.
 
 
-*proportion of distinct label sets*
-
-+ normalise diversity (all four found in [@Zhang2014])
-+ introduced by the authors of [@Read2011a]
-
-*proportion of label set with the maximum frequency*
-
-+ This represents the proportion of examples associated with themost frequently occurring label sets and, in combination with PUNIQ, gives an indication of regularity and uniformity of the labelling scheme, where high values indicate a skewed or irregular distribution. [@Read2011a] origin
 
 *general*
 
-+ T [@Tsoumakas] (actually refers to density and cardinality)
-+ In multi-label this means that a relatively high number of examples are associated with the most common labelsets while a rel- atively high number of examples are associated with infrequent labelsets. Label skew becomes class imbalance when each label is considered separately as a binary prob- lem. [@Gibaja2015]
 + [@Chekina2011] The main goal of this paper is to compare the classification performance of several multi-label algorithms and to develop a set of rules or tools that will help in selecting the optimal algorithm according to a specific dataset and target evaluation measure. We utilize a meta-learning approach allowing fast automatic selection of the most appropriate algorithm for an unseen dataset based on its descriptive characteristics. We also define a list of characteristics specific for multi-label datasets.
 + relevant: Number of labels; Number of distinct classes in the training set; Label cardinality of the training set; Standard deviation/skewness/kurtosis of the training set's label cardinality; Number of unconditionally dependent label pairs; Average of chi square scores of all dependent label pairs; Number of classes with 2/5/10 and less examples; Ratio of classes with 2/5/10/50 and less examples; Average/minimal/maximal entropy of labels; Average examples per class.
 + for micro-AUC target evaluation measure if label cardinality of training data is above 3.028 then the 2BR method (among the single-classifiers) should be used.
