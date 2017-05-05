@@ -1,0 +1,28 @@
+## Application
+
+```{r}
+library(tidyverse)
+library(stringr)
+train_labels <- read_csv("data/train.csv")
+label_list <- strsplit(train_labels$tags, " ")
+L <- unique(unlist(label_list))
+
+Y <- ifelse(t(sapply(label_list, function(a) L %in% a)), 1, 0)
+colnames(Y) <- L
+Y <- data.frame(id = train_labels$image_name, Y, stringsAsFactors = FALSE)
+
+library(mldr)
+
+Y_mldr <- mldr_from_dataframe(Y, labelIndices = 2:18)
+summary(Y_mldr)
+```
+
++ small number of labels
++ cardinality quite similar to MULAN but small comparing to XML
++ density larger than most MULAN and probably a lot larger than XML
++ 
+
+```{r}
+plot(Y_mldr)
+```
+
