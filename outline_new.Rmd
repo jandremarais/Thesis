@@ -1,0 +1,244 @@
+---
+output: pdf_document
+---
+
+# Image Classification with Neural Networks
+
+## Introduction
+
+There are three main tasks in computer vision (CV), namely: image classification, object detection and image segmentation. Traditional image classification is the task of assigning one label from a fixed set of categories to an input image. More recently the task has been generalised to assigning multiple labels to an input image, *i.e.* multi-label classification (MLC). First, we will only look at the single label case.
+
+Image classification is the core of computer vision tasks and probably the most explored since it has a large variety of practical applications. It can be shown that the other two CV tasks, detection and segmentation, can be reduced to classification. Classification will be the main theme of this thesis but we will have a look at segmentation and detection later on.
+
+Instead of hard coding rules on how to classify images into an image classification model, it can learn to classify images by seeing many examples of images and its corresponding labels. In this way it learns the visual appearance of each class. This is sometimes referred to as a data-driven approach. A very intuitive approach to image classification (and supervised learning in general) is called the nearest neighbour approach.
+
+## Nearest-Neigbours
+
+Although this approach is rarely used in practice, this description helps with the understanding of the image classification problem. The nearest neighbour classifier will take a test image, compare it to every single one of the training images, and predict its label to be the label of the closest training image. This leaves the question of how to measure the similarity between images.
+
+An image is a grid of many small, square cells of different colors. These cells are known as pixels and one pixel represents one color. A grayscale image, 32 pixels wide and 32 pixels long, can be represented by a $32\times 32$ matrix of integers, where each integer represents the 'brightness' (intensity) of each pixel. These integers are usually in $[0,255]$, such that the greater the integer the brighter the pixel, *i.e.* a pixel with intensity 0 is totally black and a pixel with intensity 255 is totally white. Note that a color image consists of 3 color bands, red, green and blue (RGB), *i.e.* the color of one pixel is determined by 3 integers each representing the intensity of the color red, green and blue, respectively. 
+
+![Greyscale intensities. http://ai.stanford.edu/~syyeung/cvweb/tutorial1.html](figures/imagematrix.png)
+
+The (dis)similarity between two images can now be measured pixel by pixel. It is possible to represent the grayscale image mentioned above in a vector of length $32\times 32$. Suppose a grayscale Image 1 is flattened out to be represented by the vector $\boldsymbol{I}_{1}=\{I_{11},I_{12},\dots,I_{1p}\}$ and similary, Image 2 by $\boldsymbol{I}_{2}$, where $p=32\times 32$. Then the dissimilarity between Image 1 and Image 2 can be calculated by the $L_{1}$-distance:
+
+$$
+d_{1}(\boldsymbol{I}_{1},\boldsymbol{I}_{2})=\sum_{j=1}^{p}|I_{1j}-I_{2j}|.
+$$
+
+![Pixelwise difference](figures/imagedist.jpeg)
+
+Now, suppose we want to predict the label of an test image $a$, then the nearest neighbour approach would assign the label of train image $b^{*}$ to test image $a$ if:
+
+$$
+b^{*} = \arg\min_{b} d_{1}(\boldsymbol{I}_{a},\boldsymbol{I}_{b}),
+$$
+for $b=1,2,/dots,N$, where $N$ is the number of training images. Of course there are other ways of measuring the dissimilarity between images. Another example would be to use the $L_{2}$-distance:
+
+$$
+d_{2}(\boldsymbol{I}_{1},\boldsymbol{I}_{2})=\sqrt{\sum_{j=1}^{p}(I_{1j}-I_{2j})^{2}}.
+$$
+
+The chosen metric depends on the use case.
+
+The nearest neighbour approach can be generalised to use more than 1 nearest neighbour when predicting the label of a test image. This approach is called the $k$-Nearest Neighbours ($k$-NN). The only difference is that, you now search for the $k$ (instead of just 1) images with the smallest dissimilarity with the test image and then combine the labels of these $k$ images, either through averaging or majority voting, to predict the label of the test image. Choosing the right value of $k$ is important and is usually done by cross-validation. See Hastie ref.
+
+The advantage of using $k$-NN is that it is simple and requires no time to train. Unfortunately, when it comes to test time, the algorithm needs to calculcate the distance between the test image and all the other images in the training set, which is computationally very expensive. Also in [Haste ref], they show that $k$-NN suffers severely from the *curse of dimensionality* and that it is mostly only useful to classify lower dimensional objects. Images are very high-dimensional objects.
+
+The dissimilarity measures discussed above are actually proven to be very poor in discriminating between images in an image classification problem. Images that are nearby in terms of the $L_{1}$ and $L_{2}$ distances are much more of a function of the general color distribution of the images, or the type of background rather than their semantic identity. Refer to the $t$-SNE figure.
+
+![Caption](figures/pixels_embed_cifar10.jpg)
+
+
+## Linear Classification
+
+The following simple approach to image classification naturally extends to neural networks and convolutional neural networks and is therefore very important to comprehend. This approach has to major components: a score function and a loss function. The score function maps raw data (*e.g.* an image) to a set of class scores, and a loss function quantifies the agreement between the predicted class scores and the actual ground truth labels associated with the raw data. This approach can then be described as an optimization problem in which the minimisation of the loss function with respect to the parameters of the score function is the main goal.
+
+Some notation is needed to formally define this approach. Suppose we have $N$ training images $\boldsymbol{x}_{i}\in \mathbb{R}^{p}$ each associated with a label $y_{i}\in \{1,2,\dots, K\}$, where $i=1,2,\dots,N$ and $K$ is the number of possible categories an image can belong to and $p$ the number of pixels of each image. The score function is then defined as the function $f$ that maps the raw image pixels to class scores:
+
+$$
+f:\mathbb{R}^{p}\to\mathbb{R}^{K}.
+$$
+
+The simplest possible score function is a linear mapping:
+
+$$
+f(\boldsymbol{x}_{i},W,b)=W\boldsymbol{x}_{i}+\boldsymbol{b}.
+$$
+
+In the above equation, Image $i$ is flattened out to be represented by a $p$-dimensional vector. The paramters of $f$ are the matrix $W:K\times p$ and the vector $\boldsymbol{b}$, often called the weights and biases, respectively. These terms are comparable to the coefficient and constant terms in a statistical linear model and thus should not be confused with bias in the statistical sense.
+
+We assume the pairs $(\boldsymbol{x}_{i},y_{i})$ to be fixed, but we do have control over the $W$ and $\boldsymbol{b}$ terms. Our goal will be to set these in such a way so that the computed class scores for each image in the training set match the associated ground truth label as close as possible. What we have described thus far is very similar to the approach taken by convolutional neural networks, but instead the function, $f$, which maps the raw pixels to class scores, is much more complicated with plenty more parameters to tune.
+
+Notice that this score function determines the score for each class as a weighted sum of the pixel values across all 3 of its color bands. We would imagine that a linear classifier trained to classify, say, ships would have a weight matrix that assigns heavier weights to blue pixels on the sides of an image, which loosely corresponds to water.
+
+If we picture the images as points in a high-dimensional space, $f$ is a hyperplane, $W$ determines the angle of the hyperplane and $\boldsymbol{b}$ translates the hyperplane through the space. Another interpretation of this linear classifier is that each row of the weight matrix is a so-called template for the corresponding class. The linear classifier matches the input image with each of the class templates in $W$ by calculating a dot product. A high class score would translate to a higher similarity between the input image and the class template. This interpretation is closely related to the nearest neighbour approach, but here only the test image's distance (here the negative of the inner product) to each of the $K$ class templates are calculated instead of its distance to each of the $N$ images in the training set.
+
+Later on it becomes too cumbersome to keep track of two sets of parameters, $W$ and $\boldsymbol{b}$, and therefore, for the rest of the thesis we will write the linear classifier as:
+
+$$
+f(\boldsymbol{x}_{i},W)=W\boldsymbol{x}_{i},
+$$
+where $\boldsymbol{b}$ is now contained in the last(/first?) column of $W$ and the last element of $\boldsymbol{x}_{i}$ is now the constant, $1$. This is the so-called bias trick.
+
+Note that thus far we have used raw pixel values in the range of $[0,255]$ as input. However, in practice, it is more common to subject the input images to some preprocessing before inputting them into the score function. The benefits of this will be made clear in the optimisation section. Common preprocessing techniques are the centering and scaling of the pixels so that their values lie in the range of $[-1,1]$. To center the input image, is to calculate a *mean image* from the training images and subtract each of its pixel values to from the corresponding pixel values of each image in the training set. This is identical to zero mean centering for standard statistical learning tasks - each pixel is seen as in input feature. Scaling is done by dividing each pixel by a function of its variance accross the whole training set.
+
+## Loss Function
+
+To evaluate the agreement between the score function and the ground truth labels, we need a loss function. A loss function, also known as the cost function or the objective, is high when the score function does a poor job of mapping the input images to the class scores, and low when it does so accurately. There are multiple ways of defining such a loss function.
+
+### Multiclass Support Vector Machine Loss
+
+A commonly used loss is the Multiclass Support Vector Machine (SVM) loss. In statistical learning this is more commonly known as the Hinge Loss. The SVM loss is designed in such a way that it wants the correct class for each image to have a score higher than the incorrect classes by some fixed margin $\Delta$. More precisely, the multiclass SVM loss for the $i$-th example with label $y_{i}$ can be given by:
+
+$$
+L_{i}=\sum_{j\neq y_{i}}\max (0,s_{j}-s_{y_{i}}+\Delta),
+$$
+where $s_{j}=f(x_{i},W)_{j}$ is the score for the $j$-th class computed for image $i$. Here $L_{i}$ consists of $K-1$ components, each representing an incorrect class. A component will make no contribution to the loss if the calculated class score for the corresponding incorrect class is less than the correct class score by a margin of $\Delta$, *i.e.* $s_{y_{i}}-s_{j}>\Delta$. It will make a positive contribution otherwise. As an example, suppose we have three predicted class scores for an image $s = [4, 5, -3]$ and that the second class is the true label. Let $\Delta = 2$. The loss computed for this image will then consist of 2 components:
+
+$$
+\begin{aligned}
+L_{i}&=\max(0, 4-5+2)+\max(0,-3-5+2)\\
+&=1+0
+\end{aligned}
+$$
+We see that although the predicted class score for class 1 was smaller that the predicted class score for the true label, class 2, it was still within a margin of $\Delta=2$ and there had a positive contribution to the loss. The predicted class score for class 3 was far lower than predicted class score for the true label and therefore did not make any contibution to the loss. In summary, the SVM loss function wants the score of the correct class to be larger than the incorrect class scores by at least $\Delta$, if not, we will accumulate a loss.
+
+Note that the loss is typically evaluated on a set of images and not just one, as we have describe thus far. The average loss of a set with $N$ images can be written as $L=\frac{1}{N}\sum_{i=1}^{N}L_{i}$. Another variation of the SVM loss is to replace the $\max(0,\cdot)$ term with the term, $\max(0,\cdot)^{2}$, which results in the squared hinge loss or the $L_{2}$-SVM loss. This penalises violated margins more heavily and may work better in some cases. [https://arxiv.org/abs/1306.0239]
+
+There is still one problem with the SVM loss described thus far. Suppose we have found a weight matrix $W$ that correctly classifies all input images and by the correct margins, *i.e.* $L_{i}=0$, $\forall i$, then setting the weight matrix to $\lambda W$, for $\lambda>1$ will have the same solution. This means the solution to the optimisation problem is not unique. It would make the optimisation task easier if we could remove this ambiguity. This can be done by adding a penalty term to the loss function, also know as regularisation. The mosty common regularisation penalty, $R(W)$, is the $L_{2}$-norm:
+
+$$
+R(W)=\sum_{k}\sum_{l}W_{k,l}^{2},
+$$
+which is simply the sum of the squared elements of the weight matrix. The full SVM loss can now be defined as:
+
+$$
+L=\frac{1}{N}\sum_{i}L_{i}+\lambda R(W).
+$$
+The two components of the loss can be called the *data loss* and the *regularisation loss*. $\lambda$ determines how much regularisation should be done. If $\lambda$ is large, more regularisation will take place. 
+
+The regularisation penalty ensures a unique (or less solutions?) solution to the optimisation problem by restricting the weight parameters in size. Greater weight parameters will result in bigger loss, if everything else remain constant. Another appealing property is that penalising large weights tends to improve generalisation, because it means that no input dimension can have a very large inlfuence on the scores all by itself.
+
+Typically, only the weight parameters are regularised, since the bias terms do not control the strength of influence of an input dimension. Howerver, in practice the often turns out to have a negligible effect.
+
++ http://cs231n.github.io/classification/
+
+
+
+## Neural Networks
+
+## Deep Learning
+
+# Convolutional Neural Networks
+
+## Introduction
+
+## Core Layers
+
+### Convolutional Layers
+
+### Pooling Layers
+
+### Activation Layers
+
+### Fully Connected Layers
+
+## Optimization (or Training ?)
+
+### Back Propogation
+
+### Stochastic Gradient Descent
+
+### Learning Rates
+
++ cyclical
++ decay
++ momentum
+
+### Freezing Layers
+
++ https://arxiv.org/abs/1706.04983
+
+## Loss Functions
+
+## Summary
+
+# Convolutional Neural Networks in Practice (other title)
+
+## Introduction
+
+Data-driven approach: provide the computer with many examples of each class and the develop learning algorithms that look at these examples and learn the visual appearance of each class.
+
+## Visualizing CNN's
+
+## Transfer Learning
+
++ ImageNet
+
+## Famous Architectures
+
++ AlexNet, Inception, ...
+
+### VGG
+
+### ResNet
+
+### DenseNet
+
+## Regularization
+
+### Normalization Layers (maybe move to core)
+
+### Data Augmentaion
+
+### Pseudo-Labelling and Knowledge-Distillation
+
+### Dropout
+
+## Generalization (?)
+
++ https://arxiv.org/abs/1706.01350
+
+# Multi-Label Convolutional Neural Networks
+
+## General Multi-Label Learning Approaches
+
+## Spatial Regularization Networks
+
++ https://arxiv.org/pdf/1702.05891.pdf
+
+## From Single to Multi Output Paper ()
+
+## RCNN paper ()
+
++ Other object detection
+
+# Things that need a place:
+
++ challenges for image classification: (maybe in CNNs in practive)
+
+    + http://cs231n.github.io/classification/
+
++ Feature learning
++ one-shot learning:
+
+    + https://github.com/sorenbouma/keras-oneshot
+    + https://github.com/fchollet/keras/blob/master/examples/mnist_siamese_graph.py
+    + https://sorenbouma.github.io/blog/oneshot/
+    
++ multi-task learning:
+
+    + https://arxiv.org/abs/1706.05137
+    
++ test time augmentation
++ relational learning: 
+
+    + https://arxiv.org/pdf/1706.01427.pdf
+
++ Fully-Convolutional Networks
++ Spatial Pyramid Pooling: https://github.com/yhenon/keras-spp
++ AutoML:
+
+    + https://research.googleblog.com/2017/05/using-machine-learning-to-explore.html
+
