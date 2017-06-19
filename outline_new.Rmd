@@ -116,13 +116,50 @@ which is simply the sum of the squared elements of the weight matrix. The full S
 $$
 L=\frac{1}{N}\sum_{i}L_{i}+\lambda R(W).
 $$
-The two components of the loss can be called the *data loss* and the *regularisation loss*. $\lambda$ determines how much regularisation should be done. If $\lambda$ is large, more regularisation will take place. 
+The two components of the loss can be called the *data loss* and the *regularisation loss*. $\lambda$ determines how much regularisation should be done. If $\lambda$ is large, more regularisation will take place. The value of $\lambda$ is typically determined through cross-validation.
 
 The regularisation penalty ensures a unique (or less solutions?) solution to the optimisation problem by restricting the weight parameters in size. Greater weight parameters will result in bigger loss, if everything else remain constant. Another appealing property is that penalising large weights tends to improve generalisation, because it means that no input dimension can have a very large inlfuence on the scores all by itself.
 
-Typically, only the weight parameters are regularised, since the bias terms do not control the strength of influence of an input dimension. Howerver, in practice the often turns out to have a negligible effect.
+Typically, only the weight parameters are regularised, since the bias terms do not control the strength of influence of an input dimension. Howerver, in practice the often turns out to have a negligible effect. 
 
-+ http://cs231n.github.io/classification/
+To return to the value of $\Delta$ - it turns out that $\Delta$ and $\lambda$ control the same trade-off and therefore we can safely set $\Delta=1$ and only use cross-validation for determining $\lambda$. This might not seem obvious, but the key to understanding this is to realise that the weights in $W$ have a direct influence on the class scores and therefore also on the differences between them. If all the elements in $W$ are shrinked, all the differences in class scores will shrink and if all the elements are scaled up, the opposite will happen. Therefore, the margin $\Delta$ becomes meaningless in the sense that the weights can shrink or stretch to match $\Delta$. Thus the only real trade-off is how large we allow the weights to be and this we specify through $\lambda$.
+
+### Softmax Classifier
+
+The linear classifier combined with the SVM loss we call the SVM classifier. We will now look at the Softmax Classifier, which is the linear classifier combined with a different loss function. In statistics, the softmax classifier is better known as the multiclass logistic regressor. The biggest difference between the SVM classifier and the softmax classifier is that the latter gives a slightly more intuitive ouput in the form of normalised class probabilities, instead of the uncalibrated and less interpretable output of the SVM classifier. The loss function used for the softmax classifier is the *cross-entropy loss*:
+
+$$
+\begin{aligned}
+L_{i}&=-\log\frac{e^{f_{y_{i}}}}{\sum_{j}e^{f_{j}}}\\
+&=-f_{y_{i}}+\log\sum_{j}e^{f_{j}}.
+\end{aligned}
+$$
+As before, the full loss is the mean of $L_{i}$ over the whole dataset with an additional regularisation penalty.
+
+To see where this loss function comes from, first consider the softmax function:
+
+$$
+h_{j}(\boldsymbol{z})=\frac{e^{z_{j}}}{\sum_{k}e^{z_{k}}}.
+$$
+$h_{j}(\boldsymbol{z})$ squeezes the elements of the real-valued vector, $\boldsymbol{z}$, to fit in the range of $[0,1]$ and that their sum always add to 1. Now, in information theory, the cross-entropy between a 'true' distribution $p$ and an estimated distribution $q$ is defined as:
+
+$$
+H(p,q)=-\sum_{x}p(x)\log q(x).
+$$
+
+Consider the case where the 'true' distribution, $p$, is a vector of zeros except at the $y_{i}$-th position, where the value is 1, and the estimated distribution, $q$, is the estimated class probabilities, $q=\frac{e^{f_{y_{i}}}}{\sum_{j}e^{f_{j}}}$. Clearly, $H(p,q)$ then simplifies to $L_{i}$. Thus the softmax classifier minimises the cross-entropy between the estimate class probabilities and the true distribution.
+
+In the probabilistic interpretation of this classifier, we are minimising the negative log likelihood of the correct class, which can be interpreted as performing *maximum likelihood estimation* (MLE). From this view, the term $R(W)$ can be interpreted as coming from a Gaussian prior over the weight matrix, $W$, where instead of MLE we are performing *maximum a posteriori*.
+
+To be clear, the softmax classifier interprets the scores computed by $f$ to be the unnormalised log probabilities. Therefore, it undergoes the exponentiating and division (to become the normalized probabilities) before being used as input the cross-entropy loss.
+
+![Figure to help with interp. Explain.](figures/svmvssoftmax.png)
+
+Note that although we used the term 'probabilities' to describe the output the softmax classifier, these are not probabilities in the statistical sense. They do sum to 1 and are in the range of $[0,1]$, but they are still technically confidence scores rather than probabilities, *i.e.* their order is interpretable but not their absolute values. The reason for this is that they depend heavily on the regularisation strength determined by $\lambda$. The higher $\lambda$ is, the more uniform the probabilities become.
+
+SVM and Softmax comparable. See http://cs231n.github.io/linear-classify/
+
++ http://cs231n.github.io/
 
 
 
