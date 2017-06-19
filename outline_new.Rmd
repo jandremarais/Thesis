@@ -194,6 +194,26 @@ $$
 
 When the function of interest take a vector of numbers instead of a single number, we call the derivatives partial derivatives. The gradient is simply the vector of partial derivatives in each dimension.
 
+There are two ways of computing the gradient:
+
++ **numerical gradient**: slow, approximate, but simple.
+
++ **analytic gradient**: fast, exact, but more error-prone and requires calculus.
+
+### Computing the Gradient Numerically
+
+Iterate over all dimensions one by one, make a small change, $h$, along that dimension and calculate the partial derivative of the loss function along that dimension by seeing how much the function changed. Ideally, we want $h$ to be as small as possible, since the mathematical formulation requires $h\to 0$. In practice it often works better to compute the numeric gradient using the centered difference formula: $\frac{f(x+h)-f(x-h)}{2h}$.
+
+Note that the update of $W$ should be made in the negative direction of the gradient, since we wish to decrease the loss function.
+
+The gradient tells us the direction in which the function has the steepest rate of increase, but it does not tell us how far along this direction we should step, *i.e.* what is the value of the step size? This value is also known as the *learning rate* and we will soon learn that it is one of the most important hyperparameters of a neural network. Choosing a small step size in the direction of steepest descent will ensure consistent but slow progress. A large step in this direction may lead to a quicker descent but also has the risk of overshooting the optimal point.
+
+The obvious downfall of this approach is that we need to calculate the gradient in each direction/dimension. Neural networks have millions of parameters and therefore optimising them in this manner is clearly not feasible.
+
+### Computing the Gradient Analytically
+
+
+
 + http://cs231n.github.io/
 
 
