@@ -13,8 +13,8 @@ fontsize: 12pt
 papersize: letter
 classoption: oneside, openany
 margin-ratio: goldenblock
-title: "Multi-Label Learning with Feature Selection for Video Classification"
-titel: "Multi-Etiket leer met Veranderlikeseleksie vir Videoklassifikasie"
+title: "Deep Multi-Label Learning"
+titel: "Diep Multi-Etiket Leer"
 author: Jan André Marais
 author-short: J.\ A.\ Marais
 degree-short: MCom (Mathematical Statistics)
@@ -39,25 +39,7 @@ header-includes:
 ```{r child = 'chapter1.Rmd'}
 ```
 
-```{r child = 'chapter2.Rmd'}
-```
-
-```{r child = 'chapter-3-example-1.Rmd'}
-```
-
-```{r child = 'chapter4.Rmd'}
-```
-
-```{r child = 'chapter5.Rmd'}
-```
-
-```{r child = 'chapter6.Rmd'}
-```
-
-```{r child = 'chapter7.Rmd'}
-```
-
-```{r child = 'chapter8.Rmd'}
+```{r child = 'outline_new.Rmd'}
 ```
 
 \appendix
