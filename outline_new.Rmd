@@ -271,6 +271,58 @@ Each circle in the diagram can be referred to as a gate. Notice that every gate 
 
 The $(+)$ gate received inputs $[2,-5]$ and computed output 3. It also computed its local gradient with respect to both of its inputs, which is 1, since it is an addition operation. The rest of the circuit copmuted the final value to be -12. During the backward pass, the $(+)$ gate learns that the gradient for its output was -4. It then takes that gradient and multiplies it to all of the local gradients for its inputs, which results in -4 and -4. This implies that if $x,y$ were to decrease (responding to their negative gradients) then the $(+)$ gate's output would decrease, which in turn makes the $(*)$ gate's output increase. Thus backpropogation can be thought of as gates communicating to each other through the gradient signal whether they want their outputs to increase or decrease, so as to make the final output higher.
 
+### Modularity
+
+We introduced addition gates and multiplication gates, but any kind of differentiable function can act as a gate. We can also group multiple gates into a single gate or decompose a function into multiple gates whenever it is convenient. Consider the following expression to illustrate this:
+
+$$
+f(\boldsymbol{w},\boldsymbol{x})=\frac{1}{1+e^{-(w_{0}x_{0}+w_{1}x_{1}+w_{2})}}.
+$$
+
+This function is actualy a common piece in a neural network, but for now we can view it as mapping from inputs $\boldsymbol{x},\boldsymbol{w}$ to a single number. The function is made up of multiple gates, and aside from the ones already discussed (addition, multiplication and max), they are:
+
+$$
+\begin{aligned}
+f(x)&=\frac{1}{x} &\implies \frac{df}{dx}&=-\frac{1}{x^{2}}\\
+f_{c}(x)&=c+x &\implies \frac{df}{dx}&=1\\
+f(x)&=e^{x} &\implies \frac{df}{dx}&=e^{x}\\
+f_{a}(x)&=ax &\implies \frac{df}{dx}&=a
+\end{aligned}
+$$
+where $c,a$ are constants. The full circuit for this expression is then:
+
+![Sigmoid circuit.](figures/sigmoidcircuit.png)
+
+The long chain of functions (gates) on the dot product of $\boldsymbol{x}$ and $\boldsymbol{w}$ is the decomposition of the *sigmoid function*:
+
+$$
+\sigma(x)=\frac{1}{1+e^{-x}}.
+$$
+The derivative of the sigmoid function simplifies to a very convenient expression:
+
+$$
+\frac{d\sigma(x)}{dx}=\frac{e^{-x}}{(1+e^{-x})^{2}}=\left(\frac{1+e^{-x}-1}{1+e^{-x}}\right)\left(\frac{1}{1+e^{-x}}\right)=(1-\sigma(x))\sigma(x).
+$$
+Therefore in any real practical application it would be very useful to group the operations of the tail chain into a single gate.
+
+### Patterns in Backward Flow
+
+It is interesting to note that in many cases the backward-flowing gradient can be interpreted on an intuitive level. Take the three most commonly used gates in neural networks, (add, mul, max), as an example. All of them have very simple interpretations in terms of how they act during backpropogation. Consider the following example circuit:
+
+![example cicuit for interpretation.](figures/intuitivecircuit.png)
+
+From the diagram above, the following patterns should be clear:
+
++ The add gate always takes the gradient on its output and distributes it equally to all of its inputs, regardless of what their values were during the forward pass. This is because the local gradient for the add operation is always 1 for all its inputs.
+
++ The max gate routes the gradient to exactly one of its inputs, the input that had the highest value during the forward pass. This because the local gradient for a max gate is 1 for the highest value and 0 for all other values.
+
++ The multiply gate switches the gradients of its inputs and then multiply it by its output gradient.
+
+Notice that if one of the inputs to the multiply gate is very small and the other is very big, then the multiply gate will do something slightly unintuitve: it will assign a relatively huge gradient to the small input and a tiny gradient to the large input. This is good to know, since in linear classifiers where the weights are multiplied by the inputs, it means that if the inputs are multiplied by a 1000, then the gradient on the weights will be 1000 times larger and you would have to lower the learning rate by that factor to compensate. This show how important preprocessing is for the optimisation of a classifier.
+
+The above sections were concerned with single variables, but all concepts extend in a straight-forward manner to matrix and vector operations. However, one must pay closer attention to dimensions and transpose operations.
+
 + http://cs231n.github.io/
 
 
