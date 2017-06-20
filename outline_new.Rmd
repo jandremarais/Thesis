@@ -2,7 +2,7 @@
 output: pdf_document
 ---
 
-# Neural Networks
+# Neural Networks \label{ch:nn}
 
 ## Introduction
 

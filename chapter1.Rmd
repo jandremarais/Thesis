@@ -5,7 +5,7 @@
 
 The motivation for this thesis is two-fold:
 
-1. Image classification is a highly relevant topic in computer vision and machine (and statistical) learning. It is a thoroughly researched domain and already by many regarded as a 'solved' problem. This progress is mainly attributed to the yearly large-scale image classification competition, *ImageNet*[^imagenet], and the development of *Convolutional Neural Networks* (CNNs). The last five (get the right number) winners of ImageNet all used a variant of CNNs in their solution. However, the main focus up until recently was on problems of single label classification. Therefore, the field of multi-label image classification is nowhere near the maturity level of its single-label counterpart. Multi-label classification has a wide range of applications, not only in image classification. It has been applied to problems in text categorisation, multimedia, biology, chemical data analysis, social network mining and e-learning among others. This is most likely the reason why it has seen such a rapid increase in interest in the literature (see \autoref{pubsperyear}). However, researchers have not yet reached consensus on how to deal with many of the aspects when learning from multi-labelled data, *e.g.* how to handle dependency between labels. There are a very limited number of publications specifically dealing with multi-label classification of images and using CNNs for this scenario. The field can gain from an up-to-date review of the literature, more statistical perspectives on some of the challenges, additional benchmark datasets and quality empirical evaluations of the theory.  
+1. Image classification is a highly relevant topic in Computer Vision, Machine Learning and Statistical Learning. It is a thoroughly researched domain and already by many regarded as a 'solved' problem. This progress is mainly attributed to the yearly large-scale image classification competition, *ImageNet*[^imagenet], and the development of *Convolutional Neural Networks* (CNNs). The last five winners of ImageNet all used a variant of CNNs in their solution. However, the main focus up until recently was on problems of single label classification. Therefore, the field of multi-label image classification is nowhere near the maturity level of its single-label counterpart. Multi-label classification has a wide range of applications, not only in image classification. It has been applied to problems in text categorisation, multimedia, biology, chemical data analysis, social network mining and e-learning among others. This is most likely the reason why it has seen such a rapid increase of academic publications (see \autoref{pubsperyear}). However, researchers have not yet reached consensus on how to deal with many of the aspects when learning from multi-labelled data, *e.g.* dependency between labels. There are a very limited number of publications specifically dealing with multi-label classification of images, even more so while using CNNs for this task. The field can gain from an up-to-date review of the literature, more statistical perspectives on some of the challenges, additional benchmark datasets and quality empirical evaluations of the theory.  
 
 ```{r pubsperyear, include=FALSE, eval = FALSE}
 library(tidyverse)
@@ -27,10 +27,9 @@ ggsave("pubsperyear.png", plot = p, device = "png", path = "figures", width = 7,
 
 ![Line graphs illustrating the rise in multi-label learning publications per year for two databases. The database searches were done on 24-03-2017. The searches were not identical since they were limited to the search features of the databases. (a) The search on Scopus (cite) was for all documents (conference papers, articles, conference, articles in press, reviews, book chapters and books) in any subject area with either the words *multi-label* or *multilabel* and either the words *learning* or *classification* found in either their titles, abstracts or keywords. (b) The search on Semantic Scholar was based on machine learning principles and thus automatically decides which research documents are relevant to a specific search query. The query used was *multilabel multi-label learning classification*. The search only returns research in the computer science and neuroscience fields of study. More technical details can be found on the respective engine's websites. \label{pubsperyear}](figures/pubsperyear.png)
 
-2. Deforestation is a massive global problem[^deforest]. It contributes to reduced biodiversity, habitat loss, climate change and other devastating effects. It is said that the world loses an area of forest the size of 48 football fields per minute and the area most affected is in the Amazon basin (cite Kaggle). This problem can be fought more effectively by governments and local stakeholders if better data about the location of deforestation and human invasion on forests are continuously available to them - an ideal task for machine learning! Planet[^planet] and SCCON[^sccon] constructed a dataset of labelled satellite images taken of the Amazon basin and released it as part of a competition on Kaggle[^kaggle], challenging competitors to build algorithms that can automatically label these images with atmospheric conditions and various classes of land use/cover[^usecover]. Resulting algorithms will help the global community better understand where, how, and why deforestation happens all over the world - and ultimately how to respond.
+2. Deforestation is a massive global problem. It contributes to reduced biodiversity, habitat loss, climate change and other devastating effects. It is said that the world loses an area of forest the size of 48 football fields per minute and the area most affected is in the Amazon basin (cite Kaggle). This problem can be fought more effectively by governments and local stakeholders if better data about the location of deforestation and human invasion on forests are continuously available to them - an ideal task for machine learning! Planet[^planet] and SCCON[^sccon] constructed a dataset of labelled satellite images taken of the Amazon basin and released it as part of a competition on Kaggle[^kaggle], challenging competitors to build algorithms that can automatically label these images with atmospheric conditions and various classes of land use/cover[^usecover]. Resulting algorithms will help the global community better understand where, how, and why deforestation happens all over the world - and ultimately how to respond.
 
-[^imagenet]: imagenet webiste link
-[^deforest]: I saw in another paper that the rate of decline is decreasing (cite)
+[^imagenet]: http://www.image-net.org/
 [^planet]: Designer and builder of the world's largest constellation of Earth-imaging satellites - www.planet.com
 [^sccon]: Remote sensing experts - www.sccon.com.br/eng
 [^kaggle]: Runs programming contests to crowd source machine learning solutions - www.kaggle.com
@@ -38,54 +37,48 @@ ggsave("pubsperyear.png", plot = p, device = "png", path = "figures", width = 7,
 
 ## Thesis Objectives
 
-This thesis works towards building a multi-label classifier that can label satellite images of the Amazon as accurately as possible. Since this is an image classification problem, it is reasonable to restrict the space of possible classifiers to CNNs. The method thought best to achieve this goal is to:
+This thesis works towards building a multi-label classifier that can label satellite images of the Amazon as accurately as possible. The method thought best to achieve this goal is to:
 
 1. Identify the most important and latest developments in the literature for: multi-label classification, image classification and *remote sensing* (analysis of satellite images).
 2. Provide an extensive review and discussion of these methods and how they compare to each other.
 3. Empirically evaluate and compare them on the satellite image data in order to find the best strategies for our labeling task.
 
-The main focus points for this thesis are:
+Since practically every state-of-the-art solution to an image classification problem is a CNN, it is reasonable to restrict the space of possible classifiers to CNNs. This thesis should provide the reader with a clear understanding of CNNs and how to effectively apply them to a multi-label classification problem, and especially in the domain of remote sensing. The main contribution of this thesis is a review of multi-label CNNs.
 
-+ Label dependence - What is it; can it be used to improve a learner's accuracy and/or complexity; and when?
-+ Resampling - What are effective resampling techniques for multi-label data to deal with the class imbalance problem and to estimate errors and standard deviations?
-+ Dimension reduction - How to reduce the number of dimensions of the input and output space in order to build more effective and efficient algorithms.
-
-> This is still a rough list and should be updated as progress is made with the following chapters.
-
-> Make sure this is how an introduction is allowed to look.
-
-> should I have a section on contributions? what I will contribute to literature.
+> update this section as progress is made with thesis.
 
 ## Data
 
-This section covers an initial introduction to the data. The elements of the data important to know before moving on will be discussed here and the rest will be addressed throughout the thesis, as it becomes relevant to the discussion.
+This section covers an initial introduction to the data available for the problem at hand. The elements of the data important to know before moving on will be discussed here and the rest will be addressed throughout the thesis, as it becomes relevant to the discussion. This is done here to get a better understanding of the problem before exploring the literature.
 
 ### Image Format
 
-The data for this task comes from a set of images (also referred to as chips). Each chip is a small excerpt from a larger image of a specific scene in the Amazon taken by satellites. The chip size in pixels is $256\times 256$, representing roughly 90 hectares of land, and is taken from a larger scene of $6600\times 2200$ pixels. All of the satellite images were taken between January 1, 2016 and February 1, 2017. The format of these images differ from the standard image format. Each image contains four bands of data: red (R), green (G), blue (B) and near infrared (NIR), where the standard format images usually only contain R, G and B. The additional NIR colour channel is common in remote sensing[^remsens] applications and supposedly allows for clear distinction between water and vegetation in satellite images, for example. 
+The data for this task comes from a set of images (also referred to as chips). Each chip is a small excerpt from a larger image of a specific scene in the Amazon taken by satellites. The chip size in pixels is $256\times 256$, representing roughly 90 hectares of land, and is taken from a larger scene of $6600\times 2200$ pixels. All of the satellite images were taken between January 1, 2016 and February 1, 2017. The format of these images differ from the standard image format. Each image contains four color bands: red (R), green (G), blue (B) and near infrared (NIR), where the standard format images usually only contain R, G and B. The additional NIR colour channel is common in remote sensing[^remsens] applications and supposedly allows for clear distinction between water and vegetation in satellite images, for example. 
 
-Another difference between these images and the usual format is that these have pixel intensities in 16-bit digital number format as opposed to the usual 8-bit of standard RGB images. This allows the colours in the images to have a much higher range since 16-bit pixel intensities have 65536 (2^16) levels, compared to 256 levels of 8-bit images. This becomes useful, for example, to distinguish between different levels of darkness in an image. Thus each chip can be represented by a vector of size 262144 ($256\times 256 \times 4$). This might prove to require to much computational power but strategies to reduce the size of such a vector exist, *e.g.* filtering or resizing of the image.
+Another difference between these images and the usual format is that these have pixel intensities in 16-bit digital number format as opposed to the usual 8-bit of standard RGB images. This allows the colours in the images to have a much higher range since 16-bit pixel intensities have 65536 ($2^{16}$) levels, compared to 256 levels of 8-bit images. This becomes useful, for example, to distinguish between very dark or very bright areas in an image. If the pixel values of a chip gets flattened out into a vector, it will be of size 262144 ($256\times 256 \times 4$). However, CNNs take the images in their array form as input.
 
 [^remsens]: The use of satellite- or aircraft-based sensor technologies to detect and classify objects on Earth [https://en.wikipedia.org/wiki/Remote_sensing].
 
 ### Collection and Labelling of the Images
 
-The image collection was created by first specifying a "wish list" of scenes containing the phenomena the creators wanted to be included and also a rough estimate of the number of such scenes that are necessary for a sufficient representation in the final collection. This set of scenes was then searched for manually on Planet Explorer[^planexp]. From these scenes the 4-band chips were created. The chips were labelled manually by crowd sourcing. The utmost care was taken to get a large and well-labelled dataset, but that does not mean the labels all correspond to the ground-truth, *i.e.* the data will contain some inherent error. The creators believe that the data has a reasonable high signal to noise ratio.
+The image collection was created by first specifying a "wish list" of scenes containing the phenomena the creators wanted to be included, in addition to a rough estimate of the number of such scenes that are necessary for a sufficient representation in the final collection. This set of scenes was then searched for manually on Planet Explorer[^planexp]. From these scenes the 4-band chips were created. A schematic of this process can be seen in \autoref{fig:chipcreate}. The chips were labelled manually by crowd sourcing. The utmost care was taken to get a large and well-labelled dataset, but that does not mean the labels all correspond to the ground-truth, *i.e.* the data will contain some inherent error. The creators believe that the data has a reasonable high signal to noise ratio.
+
+![Schematic of the image collection process.\label{fig:chipcreate}](figures/chipdesc.jpg)
 
 [^planexp]: A web based interactive map of Earth consisting of satellite images, similar to Google Earth - www.planet.com/explorer
 
-Note, the training and test splits was determined by the Kaggle competition creators. The training chips are labeled but the test chips are not. Predicted labels for the test chips can be submitted for Kaggle to evaluate in terms of an evaluation metric. This setup prevents competitors from using the test chips for training a classifier. There are 40479 training chips and 40669 test chips.
+Note, the training and test splits were determined by the Kaggle competition creators. The training chips are labeled but at the time of writing this, the test chips are not yet made available to competitors. Predicted labels for the test chips can be submitted to Kaggle to evaluate in terms of the $F_{2}$-score, a metric which will be discussed in Chapter ??. This setup prevents competitors from using the test chips for training a classifier. There are 40479 training chips and 61669* test chips.
 
 ### Class Labels
 
-The class labels for the images can be broken into three groups: atmospheric conditions, common land cover/use phenomena and rare land cover/use phenomena. Each chip will have one atmospheric label and zero or more common and rare labels. Chips that are labeled as cloudy should have no other labels, but there are some labeling errors.
+The class labels for the images can be divided into three groups: atmospheric conditions, common land cover/use phenomena and rare land cover/use phenomena. In total there are 17 posssible labels. Each chip will have one atmospheric label and zero or more common and rare labels. Chips that are labeled as cloudy should have no other labels.
 
 The atmospheric condition labels are: *clear*, *haze*, *partly cloudy* and *cloudy*. They are relevant to a chip when:
 
-+ clear: there are no evidence of clouds.
-+ haze: clouds are visible but they are not so opaque as to obscure the ground.
-+ partly cloudy: scenes show opaque cloud cover over any portion of the image but the land cover/use phenomena are still visible.
-+ cloudy: 90% of the image is obscured with opaque cloud cover.
++ **clear**: there are no evidence of clouds.
++ **haze**: clouds are visible but they are not so opaque as to obscure the ground.
++ **partly cloudy**: scenes show opaque cloud cover over any portion of the image but the land cover/use phenomena are still visible.
++ **cloudy**: 90% of the image is obscured with opaque cloud cover.
 
 ```{r, include=FALSE, eval = FALSE}
 library(tidyverse)
@@ -119,13 +112,13 @@ Examples of chips with atmospheric labels can be found in \autoref{fig:atmos-egs
 
 The common land cover/use labels are: *primary*, *agriculture*, *water*, *habitation*, *road*, *cultivation* and *bare ground*. They are relevant to a chip when:
 
-+ primary: it is primarily consisting of rain forest (virgin forest), *i.e.* dense tree cover.
-+ agriculture: it contains any land cleared of trees that is being used for agriculture or range land.
-+ water: it contains any one of the following: rivers, reservoirs, or oxbow lakes.
-+ habitation: it contains human homes or buildings.
-+ road: it contains any type of road.
-+ cultivation: it shows signs of smaller-scale/informally cleared land for farming.
-+ bare ground: it contains naturally (not the caused by humans) occurring tree-free areas.
++ **primary**: it is primarily consisting of rain forest (virgin forest), *i.e.* dense tree cover.
++ **agriculture**: it contains any land cleared of trees that is being used for agriculture or range land.
++ **water**: it contains any one of the following: rivers, reservoirs, or oxbow lakes.
++ **habitation**: it contains human homes or buildings.
++ **road**: it contains any type of road.
++ **cultivation**: it shows signs of smaller-scale/informally cleared land for farming.
++ **bare ground**: it contains naturally (not the caused by humans) occurring tree-free areas.
 
 ```{r, include=FALSE, eval = FALSE}
 common_cover_labels <- c("primary", "agriculture", "water", "habitation", "road", "cultivation", "bare_ground")
@@ -151,12 +144,12 @@ Examples of chips with common land cover/use labels are found in \autoref{fig:co
 
 The less common land cover/use labels are: *slash and burn*, *selective logging*, *blooming*, *conventional mine*, *artisinal mine* and *blow down*. Chips are tagged with these labels when:
 
-+ slash and burn: there are signs of the farming method that involves the cutting and burning of the forest to create a field. These look like cultivation patches with black or dark brown areas.
-+ selective logging: winding dirt roads are present adjacent to bare brown patches in otherwise primary rain forest. Selective logging is the practice of selectively removing high values tree species from the rainforest.
-+ blooming: there are signs of trees flowering. Blooming is a natural phenomena where particular species of flowering trees bloom, fruit and flower at the same time. These trees are quite big and the phenomena can be seen in the chips. They usually appear as white dots.
-+ conventional mine: it contains signs of large-scale legal mining operations.
-+ artisinal mine: it contains signs of small-scale (sometimes illegal) mining operations.
-+ blow down: there are signs of trees uprooted or broken by wind. High speed winds (~160km/h) in the Amazon are generated when the cold dry air from the Andes settles on top of the warm moist air in the rainforest and then sinks down with incredible force, toppling larger rainforest trees. These open areas are visible from space.
++ **slash and burn**: there are signs of the farming method that involves the cutting and burning of the forest to create a field. These look like cultivation patches with black or dark brown areas.
++ **selective logging**: winding dirt roads are present adjacent to bare brown patches in otherwise primary rain forest. Selective logging is the practice of selectively removing high values tree species from the rainforest.
++ **blooming**: there are signs of trees flowering. Blooming is a natural phenomena where particular species of flowering trees bloom, fruit and flower at the same time. These trees are quite big and the phenomena can be seen in the chips. They usually appear as white dots.
++ **conventional mine**: it contains signs of large-scale legal mining operations.
++ **artisinal mine**: it contains signs of small-scale (sometimes illegal) mining operations.
++ **blow down**: there are signs of trees uprooted or broken by wind. High speed winds (~160km/h) in the Amazon are generated when the cold dry air from the Andes settles on top of the warm moist air in the rainforest and then sinks down with incredible force, toppling larger rainforest trees. These open areas are visible from space.
 
 ```{r, include=FALSE, eval = FALSE}
 rare_cover_labels <- c("slash_burn", "selective_logging", "blooming", "conventional_mine", "artisinal_mine", "blow_down")
@@ -182,9 +175,11 @@ Examples of chips with these less common land cover/use labels are given in \aut
 
 ## Code and Reproducibility
 
-> Got this header from Arnu's thesis - not sure if I will include this. But it may be appropriate to indicate here where to find the code for the thesis, why it is important, etc.
+All of the code for this project, including the source docoments, is made available at https://github.com/jandremarais/Thesis. The data is hosted on Kaggle at https://www.kaggle.com/c/planet-understanding-the-amazon-from-space/data. More instructions on how to implement the code is contained in the file named, `README.md`, in the GitHub repository.
 
 ## Important Concepts and Terminology
+
+Not suprisingly, a convolutional neural network is a type of neural network. Neural networks will be discussed in \autoref{ch:nn}
 
 Important concepts to understand Neural Networks and and ultimately CNNs.
 
