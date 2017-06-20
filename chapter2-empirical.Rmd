@@ -3,7 +3,7 @@
 ```{r}
 library(tidyverse)
 library(stringr)
-train_labels <- read_csv("data/train.csv")
+train_labels <- read_csv("data/train_v2.csv")
 label_list <- strsplit(train_labels$tags, " ")
 L <- unique(unlist(label_list))
 
@@ -16,6 +16,23 @@ library(mldr)
 Y_mldr <- mldr_from_dataframe(Y, labelIndices = 2:18)
 summary(Y_mldr)
 ```
+
+```{r}
+library(tidyverse)
+library(stringr)
+train_labels <- read_csv("data/train_v2.csv")
+label_list <- strsplit(train_labels$tags, " ")
+
+as.data.frame(table(unlist(label_list))) %>% 
+  rename(Label = Var1) %>% 
+  mutate(Label = factor(Label, levels = Label[order(-Freq)])) %>% 
+  ggplot(aes(Label, Freq)) +
+  geom_histogram(stat="identity") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1)) +
+  ylab("Frequency") + ggtitle("Histogram of the occurence of the labels in the training set")
+```
+
 
 + small number of labels
 + cardinality quite similar to MULAN but small comparing to XML

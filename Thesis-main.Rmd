@@ -36,6 +36,11 @@ header-includes:
 - \usetikzlibrary{arrows,shapes,positioning,shadows,trees}
 ---
 
+```{r, echo=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, echo=FALSE)
+```
+
+
 ```{r child = 'chapter1.Rmd'}
 ```
 

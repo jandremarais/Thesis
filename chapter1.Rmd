@@ -171,7 +171,23 @@ ggsave("figures/rare-cover.png", grid.arrange(grobs = grobs_arranged, ncol = 1))
 
 ![Examples of chips with less common land cover/use labels. \label{fig:rare-cover-egs}](figures/rare-cover.png)
 
-Examples of chips with these less common land cover/use labels are given in \autoref{fig:rare-cover-egs}. These labels are more challenging to identify in the chips and since they also appear less frequently, it might be difficult for the classifier to learn these labels.
+Examples of chips with these less common land cover/use labels are given in \autoref{fig:rare-cover-egs}. These labels are more challenging to identify in the chips and since they also appear less frequently, it might be difficult for the classifier to learn these labels. The imbalance in the class distribution is apparent in \autoref{fig:classdist}.
+
+```{r, cache=TRUE, echo=FALSE, fig.cap="Class distribution of the labels in the training set. \\label{fig:classdist}"}
+library(tidyverse)
+library(stringr)
+train_labels <- read_csv("data/train_v2.csv")
+label_list <- strsplit(train_labels$tags, " ")
+
+as.data.frame(table(unlist(label_list))) %>% 
+  rename(Label = Var1) %>% 
+  mutate(Label = factor(Label, levels = Label[order(-Freq)])) %>% 
+  ggplot(aes(Label, Freq)) +
+  geom_histogram(stat="identity") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1)) +
+  ylab("Frequency") #+ ggtitle()
+```
 
 ## Code and Reproducibility
 
@@ -179,15 +195,15 @@ All of the code for this project, including the source docoments, is made availa
 
 ## Important Concepts and Terminology
 
-Not suprisingly, a convolutional neural network is a type of neural network. Neural networks will be discussed in \autoref{ch:nn}
-
-Important concepts to understand Neural Networks and and ultimately CNNs.
+Not suprisingly, a convolutional neural network is a type of neural network. Neural networks will be discussed in \autoref{ch:nn}, but there are some preliminary concepts to introduce here to ensure a better understanding of neural networks and ultimately CNNs. First, a brief introduction to the general problem of image classification is given.
 
 ### Image Classification
 
 There are three main tasks in computer vision (CV), namely: image classification, object detection and image segmentation. Traditional image classification is the task of assigning one label from a fixed set of categories to an input image. More recently the task has been generalised to assigning multiple labels to an input image, *i.e.* multi-label classification (MLC). First, we will only look at the single label case.
 
 Image classification is the core of computer vision tasks and probably the most explored since it has a large variety of practical applications. It can be shown that the other two CV tasks, detection and segmentation, can be reduced to classification. Classification will be the main theme of this thesis but we will have a look at segmentation and detection later on.
+
+> show visual difference between classification, segmentation and detection.
 
 Instead of hard coding rules on how to classify images into an image classification model, it can learn to classify images by seeing many examples of images and its corresponding labels. In this way it learns the visual appearance of each class. This is sometimes referred to as a data-driven approach. A very intuitive approach to image classification (and supervised learning in general) is called the nearest neighbour approach.
 
