@@ -2,56 +2,6 @@
 output: pdf_document
 ---
 
-# Convolutional Neural Networks
-
-## Introduction
-
-## Core Layers
-
-### Convolutional Layers
-
-### Pooling Layers
-
-### Activation Layers
-
-### Fully Connected Layers
-
-### Learning Rates
-
-+ cyclical
-+ decay
-+ momentum
-
-### Freezing Layers
-
-+ https://arxiv.org/abs/1706.04983
-
-## Summary
-
-## Visualizing CNN's
-
-## Transfer Learning
-
-+ ImageNet
-
-## Famous Architectures
-
-+ AlexNet, Inception, ...
-
-### VGG
-
-### ResNet
-
-### DenseNet
-
-### Data Augmentaion
-
-### Pseudo-Labelling and Knowledge-Distillation
-
-## Generalization (?)
-
-+ https://arxiv.org/abs/1706.01350
-
 # Multi-Label Convolutional Neural Networks
 
 ## General Multi-Label Learning Approaches
@@ -73,6 +23,7 @@ output: pdf_document
     + http://cs231n.github.io/classification/
 
 + Feature learning
++ Data Augmentaion
 + one-shot learning:
 
     + https://github.com/sorenbouma/keras-oneshot
@@ -83,7 +34,6 @@ output: pdf_document
 
     + https://arxiv.org/abs/1706.05137
     
-+ test time augmentation
 + relational learning: 
 
     + https://arxiv.org/pdf/1706.01427.pdf

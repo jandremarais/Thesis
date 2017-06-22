@@ -43,6 +43,8 @@ Representational power -> universal approximators.
 
 More on size, overfitting and generalisation, regularisation
 
++ + https://arxiv.org/abs/1706.01350
+
 ## Setup
 
 ### Data Preprocessing
@@ -85,6 +87,45 @@ More on size, overfitting and generalisation, regularisation
 
 ### Structered Prediction
 
+## Learning
 
+Process of learning the parameters and finding good hyperparameters.
+
++ practical tips for learning
+
+### Monitoring
+
++ loss function + learning rate
++ train/val acc
++ ration of weights
++ activation per layer
++ first layer viz
+
+### Parameter Updates
+
++ momentum
++ Nesterov
++ decay
++ adaptive: adagrad, rmsprop, adam  
+
++ something on cyclical?
+
+### Freezing Layers
+
++ https://arxiv.org/abs/1706.04983
+
+## Hyperparameter Optimisation
+
+## Evaluation
+
+### Ensembles
+
++ same model diff initialisations
++ top models through cv
++ different checkpoints
++ running average of parameters
++ the paper on ensembling from cyclical minima
++ maybe tta
++ Pseudo-Labelling and Knowledge-Distillation
 
 
