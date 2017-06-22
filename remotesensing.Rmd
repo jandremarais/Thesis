@@ -1,0 +1,117 @@
+---
+output: pdf_document
+---
+
+# Remote Sensing
+
+## https://arxiv.org/pdf/1706.01171.pdf
+
++ recent years DL have made a breakthrough for satellite image analysis
++ land cover classification
++ hyperspectral image analysis
++ synthetic aperture radar
++ large datasets of satellite images with high quality labels are not easily available
++ most works use pre trained
++ use early and late fusion of rgb images and local binary patterns
++ We design deep models by constructing a two-stream deep architecture where texture coded mapped images are used as a second stream and fuse it with the standard RGB stream
++ only single label
+
+## Do Deep Features Generalize from Everyday Objects to Remote Sensing and Aerial Scenes Domains?
+
++ http://www.cv-foundation.org/openaccess/content_cvpr_workshops_2015/W13/papers/Penatti_Do_Deep_Features_2015_CVPR_paper.pdf
++ the use of deep learning is rapidly growing
++ still no evaluation of pretrained convnets in aerial and remote sensing domains
++ contribution: evaluation of the generalisation power of convnets from everyday objects to aeriaal and remote sensing domain, comparitive evaluation of global descriptors, correlation analysis among different convnets
++ also used fusing
++ convnet features the best for aerial
++ ACC and BIC best for Coffee Scene
++ depends on intrinsic properties of data
++ fusion can improve
++ looks like fine tuned conv layers aswell
++ only output of penultimate layer of pretrained network is used
+
+## Transferring Deep Convolutional Neural Networks for the Scene Classification of High-Resolution Remote Sensing Imagery
+
++ http://www.mdpi.com/2072-4292/7/11/14680/htm
++ can we transfer the successfully pre-trained CNNs to address HRRS scene classification, which is also a typical recognition task with limited amount of training data?
++ test two feature extraction from CNN: fc layer before classification, last conv layer with different scaled inputs
++ also contribute comparison of pretrained convnets (vgg's, alex, caffe, places)
++ lack of investigations on using CNNs for HRRS
++ did not pre train convnet feature extractors
++ center + corners with horizontal flips augmentaion for testing. Did this to input images and averaged outputs for ultimate feature extraction (shows empirically that it helped)
++ for fc feautes, performed better after relu
++ Although the features of FC layers capture global spatial layout information, they are still fairly sensitive to global rotation and scaling, making them less suitable for HRRS scenes that greatly differ in orientation and scales.
++ not sure how they used BOW on multi scale conv features
++ show multi scale does better (wonder if this will be true if skip connections)
++ their methods not better than googlenet + finetune
++ conv features more suitable than fc, both better than low level
+
+## Land Use Classification in Remote Sensing Images by Convolutional Neural Networks
+
++ https://arxiv.org/pdf/1508.00092.pdf
++ pretrain nets (caffe and google) + fine tune
++ compare training from scratch, fine tuning and feautre vector
++ for UC-Merced: fine tuning got best results and then feature vector
++ better than handcrafted features
++ for brazillian coffee: from scratch and fine tune were very similar
+
+## Learning Low Dimensional Convolutional Neural Networks for High-Resolution Remote Sensing Image Retrieval
+
++ https://arxiv.org/pdf/1610.03023.pdf
++ Investigate how  to  extract  deep  feature  representations  based  on  convolutional  neural  networks  (CNN) for high-resolution  remote  sensing  image retrieval  (HRRSIR)
++ compare feature extraction from fc and conv from pre trained, vs training novel cnn on large scale remote sensing and then features are used.
++ Nothing newer than vgg
++ ambiguous results with fc layer with + without relu
++ both better than handcrafted featuers
++ feature aggregation methods used (figure out)
++ the custom pretrained scheme performed better when the datasets were similar
+
+## What do We Learn by Semantic Scene Understanding for Remote Sensing imagery in CNN framework?
+
++ https://arxiv.org/pdf/1705.07077.pdf
++ Compared with object recognition, scene understanding not only needs to identify the targets, it should also understand the distribution of targets in a scene
++ model depth acts differently on on different classes
++ more complex scenes require greater depth
++ multi scale works better for complex scenes
+
+## Unsupervised Geometric Learning of Hyperspectral Images
+
++ https://arxiv.org/pdf/1704.07961.pdf
++ way of segmenting hyperspectral images withoud supervision
+
+## Using convolutional networks and satellite imagery to identify paerns in urban environments at a large scale
+
++ https://arxiv.org/pdf/1704.02965.pdf
++ good survey and resources on other land classification projects
++ pretrained model on image net, fine tune on urban atlas and deepsat
++ mostly urban environments
++ interesting figure on how the area trained on makes a difference in accuracy on other areas
++ shows bigger patch size leads to better accuracy
+
+## To read:
++ Vehicle detection in satellite images by hybrid deep convolutional neural networks,
++ Unsupervised deep feature extraction for remote sensing image classification,
++ Detecting man-made structures and changes in satellite imagery with a content-based information retrieval system built on self-organizing maps
++ Deep learning-based classification of hyperspectral data
++ Spectralspatial  classification  of  hyperspectral data based on deep belief network,
++ Multiclass  feature  learning  for hyperspectral  image  classification:  Sparse  and  hierarchical  solutions
++ High-resolution sar  image  classification  via  deep  convolutional  autoencoders
++ Deep  learning  earth observation  classification  using  imagenet  pretrained  networks
++ Representation learning for contextual object and region detection in remote sensing
++ Feature learning based approach for weed classification using high resolution aerial images from a digital camera mounted on a uav
++ Saliency-guided unsupervised feature learning for scene classification
++ Unsupervised deep feature extraction of hyperspectral image
++ Deep model for classification of hyperspectral image using restricted boltzmann machine
++ Unsupervised feature learning for aerial scene classification
++  High-resolution  remote-sensing  imagery  retrieval  using  sparse features by auto-encoder
++  Visual  descriptors  for  content-based  retrieval  of  remote  sensing  images
++ Classification  and Segmentation  of  Satellite  Orthoimagery  Using  Convolutional  Neural  Networks
++ Convolutional Neural Network Based Automatic  Object Detection on Aerial Images
++ Land Use and Land Cover Classification Using Deep Learning Techniques
++ Benchmarking Deep Learning Frameworks for the Classification of Very High Resolution Satellite Multispectral Data. !!!
++ Learning Multi-Scale Deep Features for High-Resolution Satellite Image Classification.
++ DeepSat - A Learning framework for Satellite Imagery
++ https://www.cs.toronto.edu/%7Evmnih/docs/Mnih_Volodymyr_PhD_Thesis.pdf (hinton student thesis), implementation: https://github.com/mitmul/ssai-cnn
++ Remote Sensing Image Scene Classification: Benchmark and State of the Art 
+
++ deepsat for data: https://github.com/trailbehind/DeepOSM, guide at: https://github.com/developmentseed/skynet-data

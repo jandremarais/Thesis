@@ -53,7 +53,7 @@ This section covers an initial introduction to the data available for the proble
 
 ### Image Format
 
-The data for this task comes from a set of images (also referred to as chips). Each chip is a small excerpt from a larger image of a specific scene in the Amazon taken by satellites. The chip size in pixels is $256\times 256$, representing roughly 90 hectares of land, and is taken from a larger scene of $6600\times 2200$ pixels. All of the satellite images were taken between January 1, 2016 and February 1, 2017. The format of these images differ from the standard image format. Each image contains four color bands: red (R), green (G), blue (B) and near infrared (NIR), where the standard format images usually only contain R, G and B. The additional NIR colour channel is common in remote sensing[^remsens] applications and supposedly allows for clear distinction between water and vegetation in satellite images, for example. 
+The data for this task comes from a set of images (also referred to as chips). Each chip is a small excerpt from a larger image of a specific scene in the Amazon taken by satellites. The chip size in pixels is $256\times 256$, representing roughly 90 hectares of land, and is taken from a larger scene of $6600\times 2200$ pixels. All of the satellite images were taken between January 1, 2016 and February 1, 2017. The format of these images differ from the standard image format. Each image contains four spectral bands: red (R), green (G), blue (B) and near infrared (NIR), where the standard format images usually only contain R, G and B. The additional NIR colour channel is common in remote sensing[^remsens] applications and supposedly allows for clear distinction between water and vegetation in satellite images, for example. 
 
 Another difference between these images and the usual format is that these have pixel intensities in 16-bit digital number format as opposed to the usual 8-bit of standard RGB images. This allows the colours in the images to have a much higher range since 16-bit pixel intensities have 65536 ($2^{16}$) levels, compared to 256 levels of 8-bit images. This becomes useful, for example, to distinguish between very dark or very bright areas in an image. If the pixel values of a chip gets flattened out into a vector, it will be of size 262144 ($256\times 256 \times 4$). However, CNNs take the images in their array form as input.
 
@@ -67,7 +67,7 @@ The image collection was created by first specifying a "wish list" of scenes con
 
 [^planexp]: A web based interactive map of Earth consisting of satellite images, similar to Google Earth - www.planet.com/explorer
 
-Note, the training and test splits were determined by the Kaggle competition creators. The training chips are labeled but at the time of writing this, the test chips are not yet made available to competitors. Predicted labels for the test chips can be submitted to Kaggle to evaluate in terms of the $F_{2}$-score, a metric which will be discussed in Chapter ??. This setup prevents competitors from using the test chips for training a classifier. There are 40479 training chips and 61669* test chips.
+Note, the training and test splits were determined by the Kaggle competition creators. The training chips are labeled but at the time of writing this, the test chips are not yet made available to competitors. Predicted labels for the test chips can be submitted to Kaggle to evaluate in terms of the $F_{2}$-score, a metric which will be discussed in Chapter ??. This setup prevents competitors from using the test chips for training a classifier. There are 40479 training chips and 61191 test chips.
 
 ### Class Labels
 
@@ -195,7 +195,7 @@ All of the code for this project, including the source docoments, is made availa
 
 ## Important Concepts and Terminology
 
-Not suprisingly, a convolutional neural network is a type of neural network. Neural networks will be discussed in \autoref{ch:nn}, but there are some preliminary concepts to introduce here to ensure a better understanding of neural networks and ultimately CNNs. First, a brief introduction to the general problem of image classification is given.
+Not suprisingly, a convolutional neural network is a type of neural network. Neural networks will be discussed in \autoref{chp:nn}, but there are some preliminary concepts to introduce here to ensure a better understanding of neural networks and ultimately CNNs. First, a brief introduction to the general problem of image classification is given.
 
 ### Image Classification
 
@@ -209,7 +209,7 @@ Instead of hard coding rules on how to classify images into an image classificat
 
 Although this approach is rarely used in practice, this description helps with the understanding of the image classification problem. The nearest neighbour classifier will take a test image, compare it to every single one of the training images, and predict its label to be the label of the closest training image. This leaves the question of how to measure the similarity between images.
 
-An image is a grid of many small, square cells of different colors. These cells are known as pixels and one pixel represents one color. A grayscale image, 32 pixels wide and 32 pixels long, can be represented by a $32\times 32$ matrix of integers, where each integer represents the 'brightness' (intensity) of each pixel. These integers are usually in $[0,255]$, such that the greater the integer the brighter the pixel, *i.e.* a pixel with intensity 0 is totally black and a pixel with intensity 255 is totally white. Note that a color image consists of 3 color bands, red, green and blue (RGB), *i.e.* the color of one pixel is determined by 3 integers each representing the intensity of the color red, green and blue, respectively. 
+An image is a grid of many small, square cells of different colors. These cells are known as pixels and one pixel represents one color. A grayscale image, 32 pixels wide and 32 pixels long, can be represented by a $32\times 32$ matrix of integers, where each integer represents the 'brightness' (intensity) of each pixel. These integers are usually in $[0,255]$, such that the greater the integer the brighter the pixel, *i.e.* a pixel with intensity 0 is totally black and a pixel with intensity 255 is totally white. Note that a color image consists of 3 spectral bands, red, green and blue (RGB), *i.e.* the color of one pixel is determined by 3 integers each representing the intensity of the color red, green and blue, respectively. 
 
 ![Greyscale intensities. http://ai.stanford.edu/~syyeung/cvweb/tutorial1.html](figures/imagematrix.png)
 
@@ -262,7 +262,7 @@ In the above equation, Image $i$ is flattened out to be represented by a $p$-dim
 
 We assume the pairs $(\boldsymbol{x}_{i},y_{i})$ to be fixed, but we do have control over the $W$ and $\boldsymbol{b}$ terms. Our goal will be to set these in such a way so that the computed class scores for each image in the training set match the associated ground truth label as close as possible. What we have described thus far is very similar to the approach taken by convolutional neural networks, but instead the function, $f$, which maps the raw pixels to class scores, is much more complicated with plenty more parameters to tune.
 
-Notice that this score function determines the score for each class as a weighted sum of the pixel values across all 3 of its color bands. We would imagine that a linear classifier trained to classify, say, ships would have a weight matrix that assigns heavier weights to blue pixels on the sides of an image, which loosely corresponds to water.
+Notice that this score function determines the score for each class as a weighted sum of the pixel values across all 3 of its spectral bands. We would imagine that a linear classifier trained to classify, say, ships would have a weight matrix that assigns heavier weights to blue pixels on the sides of an image, which loosely corresponds to water.
 
 If we picture the images as points in a high-dimensional space, $f$ is a hyperplane, $W$ determines the angle of the hyperplane and $\boldsymbol{b}$ translates the hyperplane through the space. Another interpretation of this linear classifier is that each row of the weight matrix is a so-called template for the corresponding class. The linear classifier matches the input image with each of the class templates in $W$ by calculating a dot product. A high class score would translate to a higher similarity between the input image and the class template. This interpretation is closely related to the nearest neighbour approach, but here only the test image's distance (here the negative of the inner product) to each of the $K$ class templates are calculated instead of its distance to each of the $N$ images in the training set.
 
