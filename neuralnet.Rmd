@@ -1,0 +1,17 @@
+---
+output: pdf_document
+---
+
+# Neural Networks \label{chp:nn}
+
+## Introduction
+
+In \autoref{chp:intro} we have introduced all of the basic components for building a Neural Network. Recall the linear classifier that mapped the inputs, $\boldsymbol{x}$, to a vector of class scores, $\boldsymbol{s}$, $\boldsymbol{s}=W\boldsymbol{x}$, where $W$ is a matrx of weights. Here $W$ has $K$ rows and $p$ columns corresponding to the number of classes and size of the inputs respectively. As mentioned in \autoref{chp:intro}, a Neural Network has a more complicated mapping from the inputs to the class scores. An example Neural Network would instead have a mapping like, $\boldsymbol{s}=W_{2}\max(0,W_{1}\boldsymbol{x})$. This time, for example, $W_{1}$ could be a matrix transforming the inputs to a 100-dimensional vector, thus of size $100\times p$. The function $\max(0, \cdot)$ introduces a non-linearity that is applied element-wise. It simply thresholds all values below zero to zero. There are several types of non-linearities that can be applied, but this is a common choice. Finally, $W_{2}$, is a matrix of size $K\times 100$, mapping the intermediate vector to the final class scores. The key difference here is the non-linearity. If it is left out, the two matrices could be collapsed into one and therefore the predicted class scores would again be a linear function of the input. $W_{1}$, $W_{2}$ is learned through stochastic gradient descent (SGD), their gradients are derived with the chain rule and computed with backpropogation.
+
+The above mapping is an example of a two-layer network. A three-layer neural network may look something like this:
+
+$$
+\boldsymbol{s}=W_{3}\max(0, W_{2}\max(0, W_{1}\boldsymbol{x})).
+$$
+Now there are two non-linearities and $W_{1}$, $W_{2}$, $W_{3}$ are all parameters to be learned. Their sizes, which determine the size of the intermediate layers (vectors), are seen as hyperparameters and how they can be determined will be discussed shortly. In the next section we will show where the name, Neural Networks, come from and ...
+
