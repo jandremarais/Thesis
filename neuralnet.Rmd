@@ -15,3 +15,76 @@ $$
 $$
 Now there are two non-linearities and $W_{1}$, $W_{2}$, $W_{3}$ are all parameters to be learned. Their sizes, which determine the size of the intermediate layers (vectors), are seen as hyperparameters and how they can be determined will be discussed shortly. In the next section we will show where the name, Neural Networks, come from and ...
 
+## Biological Motivation and Connections
+
+Originally primarily inspired by the goal of modelling biological neural systems, but has since diverged and become a matter of engineering and achieving good results in Machine Learning tasks.
+
+Coarse model of biological neural systems and how they can be modelled.
+
+## Common Activation Functions
+
+### Sigmoid
+
+### Tanh
+
+### ReLu
+
++ Leaky ReLu
+
+### Maxout
+
++ mention where we will discuss ELU and SELU
+
+## Architectures
+
+Layerwise organisation, naming conventions, size
+
+Representational power -> universal approximators.
+
+More on size, overfitting and generalisation, regularisation
+
+## Setup
+
+### Data Preprocessing
+
++ mean subtraction
++ normalisation
++ pca and whitening
++ leakage
+
+### Weight Initialisation
+
++ all zero
++ small random
++ calibrating the variances
++ sparse initialisation
++ initialising biases
+
+### Batch Normalisation
+
++ https://arxiv.org/abs/1502.03167
+
+### Regularisation
+
++ L1
++ L2
++ maxnorm
++ Dropout: http://www.cs.toronto.edu/~rsalakhu/papers/srivastava14a.pdf, http://papers.nips.cc/paper/4882-dropout-training-as-adaptive-regularization.pdf
+
++ noise in forward pass
++ bias regularisation
++ per layerregularisation
+
+## Loss Functions
+
+### Classification
+
+### Attrubute Classification
+
+### Regression
+
+### Structered Prediction
+
+
+
+

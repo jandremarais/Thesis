@@ -28,10 +28,6 @@ output: pdf_document
 
 ## Summary
 
-# Convolutional Neural Networks in Practice (other title)
-
-## Introduction
-
 ## Visualizing CNN's
 
 ## Transfer Learning
@@ -48,15 +44,9 @@ output: pdf_document
 
 ### DenseNet
 
-## Regularization
-
-### Normalization Layers (maybe move to core)
-
 ### Data Augmentaion
 
 ### Pseudo-Labelling and Knowledge-Distillation
-
-### Dropout
 
 ## Generalization (?)
 
