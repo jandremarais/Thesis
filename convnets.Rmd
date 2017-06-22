@@ -1,0 +1,53 @@
+---
+output: pdf_document
+---
+ 
+# Convolutional Neural Networks
+
+## Introduction
+
+## ConvNet Layers
+
+### Convolutional Layer
+
+### Pooling Layer
+
+### Normalisation Layer
+
+### Fully Connected Layer
+
++ also optiion to replace with conv layer
+
+## ConvNet Architectures
+
+### Layer Patterns
+
+### Layer Sizing Patterns
+
+### Famous Architectures
+
++ AlexNet
++ VGG
++ ResNet
++ DenseNet
++ Inception (?)
+
+## Visualizing CNN's
+
+### Activations and First Layer Weights
+
+### Images with Maximum Activation
+
+### t-SNE Embedding
+
+### Occluding
+
++ more resources: http://cs231n.github.io/understanding-cnn/
+
+## Transfer Learning
+
+### Feature Extractor
+
+### Fine-Tuning
+
+### Pretrained Models

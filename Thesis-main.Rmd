@@ -50,6 +50,15 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE, echo=FALSE)
 ```{r child = 'convnets.Rmd'}
 ```
 
+```{r child = 'ml_conv.Rmd'}
+```
+
+```{r child = 'remotesensing.Rmd'}
+```
+
+```{r child = 'results.Rmd'}
+```
+
 ```{r child = 'outline_new.Rmd'}
 ```
 

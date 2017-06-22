@@ -79,7 +79,7 @@ output: pdf_document
 + https://arxiv.org/pdf/1704.07961.pdf
 + way of segmenting hyperspectral images withoud supervision
 
-## Using convolutional networks and satellite imagery to identify paerns in urban environments at a large scale
+## Using convolutional networks and satellite imagery to identify patterns in urban environments at a large scale
 
 + https://arxiv.org/pdf/1704.02965.pdf
 + good survey and resources on other land classification projects

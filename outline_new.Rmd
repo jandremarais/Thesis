@@ -2,20 +2,6 @@
 output: pdf_document
 ---
 
-# Multi-Label Convolutional Neural Networks
-
-## General Multi-Label Learning Approaches
-
-## Spatial Regularization Networks
-
-+ https://arxiv.org/pdf/1702.05891.pdf
-
-## From Single to Multi Output Paper ()
-
-## RNN-CNN paper ()
-
-+ Other object detection
-
 # Things that need a place:
 
 + challenges for image classification: (maybe in CNNs in practive)
