@@ -47,8 +47,13 @@ output: pdf_document
 + http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.130.7318&rep=rep1&type=pdf
 + description on NN and some references
 
-## ML NN for test
+## ML NN for text
 
 + https://arxiv.org/pdf/1312.5419.pdf
+
+## ML MT
+
++ http://www.cripac.ia.ac.cn/irds/People/lwang/M-MCG/Publications/2013/YH2013ICIP.pdf
++ but not much detail
 
 + Other object detection
