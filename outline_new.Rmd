@@ -29,4 +29,6 @@ output: pdf_document
 + AutoML:
 
     + https://research.googleblog.com/2017/05/using-machine-learning-to-explore.html
+    
++ class imbalance: https://www.reddit.com/r/MachineLearning/comments/6iq5i8/d_what_are_your_favorite_ways_for_dealing_with/
 

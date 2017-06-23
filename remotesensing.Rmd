@@ -88,6 +88,25 @@ output: pdf_document
 + interesting figure on how the area trained on makes a difference in accuracy on other areas
 + shows bigger patch size leads to better accuracy
 
+# Using Satellite Imagery for Good: Detecting Communities in Desert and Mapping Vaccination Activities
+
++ https://arxiv.org/pdf/1705.04451.pdf
++ interesting insight under implementation section
++ better to train on own data than pretrain
++ interesting method of adding more data: after n epochs test model on a set, those that were wrong are added to training (unclear on specifics)
++ FCN worked better for them, batchnorm didnt
++ relu did not work
+
+# Solar Power Plant Detection on Multi-Spectral Satellite Imagery using Weakly-Supervised CNN with Feedback Features and m-PCNN Fusion
+
++ https://arxiv.org/pdf/1704.06410.pdf
++ novel architecture
+
+# Hard Mixtures of Experts for Large Scale Weakly Supervised Vision
+
++ https://arxiv.org/pdf/1704.06363.pdf
++ MOE for MLC
+
 ## To read:
 + Vehicle detection in satellite images by hybrid deep convolutional neural networks,
 + Unsupervised deep feature extraction for remote sensing image classification,

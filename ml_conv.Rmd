@@ -8,6 +8,8 @@ output: pdf_document
 
 ## General Multi-Label Learning Approaches
 
++ something on (re)sampling
+
 ## Spatial Regularization Networks
 
 + https://arxiv.org/pdf/1702.05891.pdf
@@ -15,5 +17,38 @@ output: pdf_document
 ## From Single to Multi Output Paper ()
 
 ## RNN-CNN paper ()
+
+## Direct binary Embedding
+
++ https://arxiv.org/pdf/1703.04960.pdf
+
+## Another ML architecture
+
++ https://arxiv.org/pdf/1609.07982.pdf
++ replace last softmax with sigmoid
++ replace last FC with maxout
++ replace last pooling with spatial pyramid pooling
++ other option use FCN with global max pool at end before sigmoid
++ dropout only on first layers after representation (fixed VGG)
++ note they also used dropout at testing and then combined for mean prediction
+
+## Is object localization for free? – Weakly-supervised learning with convolutional neural networks
+
++ http://www.cv-foundation.org/openaccess/content_cvpr_2015/papers/Oquab_Is_Object_Localization_2015_CVPR_paper.pdf
++ section on label correlations for MLC
+
+## Near Perfect Protein Multi-Label Classification with Deep Neural Networks
+
++ https://arxiv.org/pdf/1703.10663.pdf
++ spp layer after convolutions - not sure if it has to do with MLC
+
+## BP-MLL
+
++ http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.130.7318&rep=rep1&type=pdf
++ description on NN and some references
+
+## ML NN for test
+
++ https://arxiv.org/pdf/1312.5419.pdf
 
 + Other object detection
