@@ -12,6 +12,8 @@ First discuss the domain of MLC in general (only the aspects transferable to Dee
 
 ## Evaluation Metrics
 
+[@Tsoumakasc] first to categorise into label-based and example-based.
+
 ## Label Dependence
 
 ## Problem Transformation Approaches
@@ -28,7 +30,19 @@ First discuss the domain of MLC in general (only the aspects transferable to Dee
 
 ### Ensemble of Classifier Chains
 
-### Random k-Labelsets
+### Random $k$-Labelsets
+
+As mentioned before, the LP method has the advantage of taking label correlations into account but typically suffers from a huge class imbalance problem. [@Tsoumakasc] suggested the Random $k$-labelsets (RAKEL) algorithm to overcome the drawbacks of LP while still being able to model label dependencies. RAKEL is simply an ensemble of LP classifiers, but the LP classifiers are trained on different subsets of the labelset. The author defined a $k$-labelset as a set $Y \subseteq L$ with $k=|Y|$, where $L$ is the complete labelset and $|Y|$ the size of the set, $Y$. Let $L^{k}$ denote the set of all distinct $k$-labelsets on $L$. The size of $L^{k}$ can thus be given by $|L^{k}|= {{|L|}\choose{k}}$. 
+
+First, the RAKEL algorithm iteratively constructs $m$ LP classifiers. At each iteration, $j=1,2,\dots,m$, it randomly selects a $k$-labelset, $Y_{j}$, from $L^{k}$ without replacement, and then learns the classifier $h_{j}:X\to P(Y_{j})$ (review notation). For classifying an instance, $x$, each model, $h_{j}$, provides binary decisions, $h_{j}(x, \lambda_{l})$ for each label $\lambda_{l}$ in $k$-labelset $Y_{j}$. The average of these binary decisions are then computed and a final prediction for a label is given if its corresponding average is bigger than some threshold $t$. Note, the average for label $\lambda_{l}$ is not calculated by the sum of $h_{j}(x, \lambda_{l})$ divided by $m$, but by instead dividing by the number of times $\lambda_{l}$ was in $Y_{j}$ for $j=1,\dots, m$. 
+
+The values $m$, $k$ and $t$, are all parameters to be specified by the user. Clearly, $k$ can only lie between $1$ and $|L|$, where if $k=1$, the algorithm is equivalent to the BR approach, and if $k=|Y|$, the algorithm is equivalent to the LP approach. In the original paper, the author showed empirically that by using small labelsets and an adequate number of iterations, RAKEL will manage to model label correlations effectively. An intuitive value for $t$ would be 0.5, however, in the same paper, it is shown that RAKEL performs well over a wide range of values for $t$.
+
+A concern might be the number of classes, $2^{k}$ that each LP classifiers must deal with. In practice, each LP classifier deals with a much smaller subset of label combinations, since it can only model combinations that exist in the training set. Also, RAKEL is preferred to LP when there are a large number of labels. In this case, RAKEL would only need to model a subset of $2^{k}$ possible label combinations compared to LP that needs to model a much larger subset of $2^{|Y|}$ possible label combinations.
+
+In [@Tsoumakasc] it is shown that RAKEL outperforms LP and BR on 3 benchmark datasets with numerous configurations. The author concluded that the randomness of the RAKEL algorithm might not be the best ensemble selection approach since it may lead to the inclusion of models that affect the ensemble's performance in a negative way. Continue with papers that improve on this idea.
+
+
 
 + something on (re)sampling
 
