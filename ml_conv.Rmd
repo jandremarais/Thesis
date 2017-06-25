@@ -6,7 +6,29 @@ output: pdf_document
 
 ## Introduction
 
-## General Multi-Label Learning Approaches
+First discuss the domain of MLC in general (only the aspects transferable to Deep Learning) and then move on to look at approaches of ML with ConvNets
+
+## Multi-Label Classification
+
+## Evaluation Metrics
+
+## Label Dependence
+
+## Problem Transformation Approaches
+
+### Binary Relevance
+
+### Label Powerset
+
+### Classifier Chains
+
+## Algorithm Adaption Approaches
+
+## Ensemble Approaches
+
+### Ensemble of Classifier Chains
+
+### Random k-Labelsets
 
 + something on (re)sampling
 

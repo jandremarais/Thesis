@@ -2,4 +2,37 @@
 output: pdf_document
 ---
 
-# Results
+# Results (/Application)
+
+In this chapter, some of the theoretical reccommendations will be evaluated empirically, with the goal to find the best approaches for this dataset. The full end-to-end workflow will be discussed and intermediate results also reported.
+
+(Preliminary) The network will consist of two parts: a feature extraction part and a classification part. Basically a fine-tuning framework. The feauture extractor will be a popular Convolutional Neural Network (CNN) pretrained on ImageNet, *e.g.* VGG, ResNet, DenseNet, Inception. The classification part is the mapping from the extracted features to the class scores. This can be done in various ways and will be experimented with, for example: a combination of BR output and LP output, classification head for each label or Rakel output. The weights of the whole classification part will be trained on the Amazon dataset and, in some cases, the last layers of the feature extraction part.
+
+## Comparison of Pretrained Networks for Transfer Learning
+
++ VGG16
++ VGG19
++ ResNet50
++ DenseNet
++ Inception
+
+## Experimentation with Classification Heads
+
++ separate vs combined
++ BR vs LP vs CC?
++ Rakel?
++ combo of BR and LP
++ FCN
++ spp: https://github.com/yhenon/keras-spp
+
+## Class Imbalance
+
++ https://www.reddit.com/r/MachineLearning/comments/6iq5i8/d_what_are_your_favorite_ways_for_dealing_with/
+
+## Data Augmentation
+
++ elastice transform: https://pdfs.semanticscholar.org/7b1c/c19dec9289c66e7ab45e80e8c42273509ab6.pdf
+
+## Pseudo-Labelling
+
+## Ensembling

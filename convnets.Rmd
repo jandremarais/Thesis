@@ -12,6 +12,9 @@ output: pdf_document
 
 ### Pooling Layer
 
++ mixed pool: https://pdfs.semanticscholar.org/de66/4f22dd4c7b4c15ac4a52513004aee55765ff.pdf and https://arxiv.org/pdf/1509.08985.pdf, can try implementation from https://github.com/fchollet/keras/issues/2816
++ maxout?
+
 ### Normalisation Layer
 
 ### Fully Connected Layer
@@ -33,6 +36,9 @@ output: pdf_document
 + Inception (?)
 
 ## Visualizing CNN's
+
++ https://github.com/raghakot/keras-vis
++ http://yosinski.com/deepvis
 
 ### Activations and First Layer Weights
 
