@@ -99,7 +99,10 @@ Process of learning the parameters and finding good hyperparameters.
 + train/val acc
 + ration of weights
 + activation per layer
-+ first layer viz
++ first layer viz:
+
+    + http://yosinski.com/deepvis
+
 
 ### Parameter Updates
 

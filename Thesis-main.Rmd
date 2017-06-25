@@ -41,7 +41,7 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE, echo=FALSE)
 ```
 
 
-```{r child = 'chapter1.Rmd'}
+```{r child = 'introduction.Rmd'}
 ```
 
 ```{r child = 'neuralnet.Rmd'}
@@ -59,7 +59,10 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE, echo=FALSE)
 ```{r child = 'results.Rmd'}
 ```
 
-```{r child = 'outline_new.Rmd'}
+```{r child = 'unsorted.Rmd'}
+```
+
+```{r child = 'conclusion.Rmd'}
 ```
 
 \appendix

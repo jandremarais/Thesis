@@ -56,4 +56,12 @@ output: pdf_document
 + http://www.cripac.ia.ac.cn/irds/People/lwang/M-MCG/Publications/2013/YH2013ICIP.pdf
 + but not much detail
 
+## ML Attention:
+
++ https://arxiv.org/pdf/1412.7755.pdf
+
+## Sparsemax ML loss
+
++ https://arxiv.org/pdf/1602.02068.pdf
+
 + Other object detection

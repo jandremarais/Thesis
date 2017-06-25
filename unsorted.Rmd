@@ -10,6 +10,9 @@ output: pdf_document
 
 + Feature learning
 + Data Augmentaion
+
+    + elastice transform: https://pdfs.semanticscholar.org/7b1c/c19dec9289c66e7ab45e80e8c42273509ab6.pdf
+
 + one-shot learning:
 
     + https://github.com/sorenbouma/keras-oneshot
