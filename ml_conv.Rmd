@@ -10,6 +10,12 @@ bibliography: library.bib
 
 ## Introduction
 
+The birth of the ML field (around 1999) came from the need to assign multiple labels to text documents. Contributions in [@Schapire99improvedboosting] and [@Schapire2000a] adapted a boosting algorithm to handle ML data. [@Elisseeff] defined a ranking based SVM to deal with ML problems in the areas of text mining and also bioinformatics. [@Lewis2004] released an important benchmark collection for ML text classification. Another highly cited ML SVM implementation is [@Boutell2004a], with application in scene/image classification. [@Zhang2006] showed how to apply neural networks to a ML problem and [@Zhang2007] adapted the KNN algorithm for ML input. The first overview on the subject was given in [@Tsoumakas] where the author discussed the most relevant ML learning approaches. Then came applications to music, [@Trohidis2008] and [@Turnbull2008]. [@Vens2008] showed how to use decision trees for hierarchical ML classification. Important papers introducing unique ML approaches are [@Tsoumakas2007b], [@Furnkranz2008] and [Read2011a]. A crucial step for ML learning was to make it accesible and useable to more reasearchers. The authors of [@Tsoumakas2011] developed a Java library for ML learning. Later on [@Madjarov2012a] did a empirical study on the most important ML algorithms up to that date, comparing 12 multi-label learning methods using 16 evaluation measures over 11 benchmark datasets. More recent extensive reviews of ML learning are given in [@Zhang2014] and [@Gibaja2014]. 
+
+The rapid growth of the ML learning is probably owed to the vast and expanding range of ML application domains, the biggest being text and multimedia categorisation especially those generated and/or stored on the web. Other application domains common to ML learning are: biology, chemical data analysis, social network mining and E-learning amongst others. A thorough list of applications and their citations can be found in [@Gibaja2014].
+
+The key challenge in ML learning is to exploit dependecies amongst labels, *e.g.* using the information on the relevance of label $l_{i}$ to predict label $l_{j}$, $i,j \in \{1,2,\dots,K\}$, $i\neq j$. This is especially difficult for a ML learner when there are many labels. It is not uncommon for ML datasets to have hundreds of thousands of labels. Proof of this can be found at [this](https://manikvarma.github.io/downloads/XC/XMLRepository.html) ML data repository. Algorithms that can accurately and efficiently model label dependence on these datasets are rare [@Sorower]. This is a focus area of recent ML research, called extreme multi-label learning [@Xu2016]. A more formal definition of label dependence will be given later on. An in-depth discussion on the unique challenges (thorough list by [@Gibaja2014]) that arise from dealing with label dependence and some of the possible strategies to follow will also be covered.
+
 First discuss the domain of MLC in general (only the aspects transferable to Deep Learning) and then move on to look at approaches of ML with ConvNets
 
 Multi-label (ML) learning belongs to the supervised learning paradigm and can be viewed as a generalisation of the traditional single-label learning problem. Suppose the data set to be analysed consists of a set of observations each representing a real-world object such as an image or a text document. In the single-label context each object is restricted to belonging to a single, mutually exclusive class, *i.e.* each observation is associated with a single label. One can quite effortlessly come up with tasks that will not fit into this framework: an image annotation problem where each image contains more than one semantic object, a text classification task where each document has multiple topics or an acoustic classification task where the recordings contain the sounds of multiple bird species. Therefore the need for a ML learner that can assign a set of labels to an observation. Let $\mathcal{L}=\{l_{1},l_{2},\dots,l_{K}\}$ denote the complete set of possible labels that can be assigned to an observation. Whereas a single-label learner aims to find which single label $l_{k}$, $k=1,2,\dots,K$, belongs to a given observation, a ML learner is capable of assigning a set of labels $L \subseteq \mathcal{L}$ to the observation. 
@@ -99,6 +105,12 @@ They were the first to do a theoretical study on the consistency of multi-label 
 Other solutions: exploit correlation of labels from both types conditional and unconditional dependencies, features selection methods that are designed especially to handle multi label datasets, and having new stratification methods that are suitable to the nature of multi label datasets (copied from [@Alazaidah2016])
 
 +  most of these algorithms suffer from high complexity in the learning process [10]. Based on that, the true challenge is to exploit high order labels correlations locally and maintain a linear complexity at the same time [2].(copied from [@Alazaidah2016])
+
+### Threshold Calibration
+
++ calibrate real-valued output against thresholding function output in order to determine labels of unseen instances.
++ constant vs induced from training data + ad hoc specific to certain learning algorithms
++ alternative to choose top k labels
 
 ## Multi-Label Indicators
 
@@ -742,6 +754,33 @@ Existing approaches typically exploit label correlations globally by assuming th
 
 ## Problem Transformation Approaches
 
+There are numerous multi-label learning algorithms. It is difficult to keep up with the all the latest proposed methods. These algorithm can be categorised in a number of ways, *e.g.* the review [@Zhang2014] and the tutorials [@Gibaja2015] and [@CarvalhoAndreCPLFde2009], all have different ways of grouping the algorithms. The categorisation for this thesis is chosen to satisfy the criteria of being common, simple and intuitive. Nevertheless, the characteristics of the algorithms leading to the other grouping variants will still be given in the remarks of the algorithms.
+
+```{r mll-tax, eval=FALSE, include=FALSE}
+library(DiagrammeR)
+library(DiagrammeRsvg)
+library(magrittr)
+library(svglite)
+library(rsvg)
+library(png)
+
+grViz('figures/MLL-tax.gv') %>% export_svg() %>% 
+  charToRaw %>% rsvg %>% png::writePNG('figures/mll-tax.png')
+```
+
+![Categorisation of multi-label learning taxonomy (this is just an example) \label{fig:mll-tax}](figures/mll-tax.png)
+
++ still need to edit \autoref{fig:mll-tax}
+
++ want to keep it simple and representative but also give table with full list of methods
++ many proposals
++ scrutinise 8 representative algorithms for feasibility concerns
++ representativeness criteria: broad spectrum; primitive impact; favourable impact
++ introduce PT vs AA
++ diagram of categorisation
++ very thorough one in [@Gibaja2015]
++ mention ensemble category
+
 Problem transformation methods consist of first transforming the multi-label problem into one or more single-label problem(s) and then fitting any standard supervised learning algorithm(s) to the single-label data. For that reason, problem transformation methods are called algorithm independent, i.e. once the data is transformed, any single-label classifier can be used [@Tsoumakasc].
 
 The two main problem transformation algorithms are the binray relevance and label powerset transformations. Both methods suffer from several limitations but they form the basis of arguably any problem transformation method. The state-of-the-art problem transformations algorithms are most of the times extensions of either the standard binary relevance or label powerset algorithms [@Alazaidah2016]. Therefore the understanding of these two basic methods are crucial in dealing with the more complex, modern problem transformation methods.
@@ -783,6 +822,18 @@ The adding of all the base learner predicitions as meta-feature to the meta-lear
 
 ### Label Powerset
 
++ basic idea
++ notation
++ LP
++ limitations of LP: incompleteness and inefficiency
++ psuedo-code
+
+The other widely known problem transformation approach is the label powerset (LP) algorithm. Each combination of the labels is seen as a distinct class and then a standard multiclass classification learner can be applied. More formally, the transformation $h:L\to P(L)$ is applied [@Tsoumakasc]. Thus label correlations are taken into account but LP has other limitations. The number of possible classes increase exponentially with the increase in $K$ and some of the classes/combinations are under-represented (if represented at all) in the training set. This leads to the difficult problem of learning from unbalanced classes and also restricts the algortihm to only predict combinations of labels present in the training set. Labels (or labelsets) that only occur a limited number of times are called tail labels. These are generally the ones difficult to model and a classifier can easily neglect their importance [@Xu2016].
+
+One way to reduce the number of resulting classes after a label powerset transformation is to create meta-labels (not to be confused with meta in the stacking sense) [@Read]. Meta-labels represent partitions of the label set, but I still do not fully understand the concept. Seems like after the transformation we still end up with a multi-label problem. Investigate further.
+
+Another option is to throw away the combinations that appear infrequently in the training set. This obviously limits the possible output of the mutli-label algorithm even more. Sounds like PPT [@Reada].
+
 ### Classifier Chains
 
 + basic idea
@@ -804,7 +855,35 @@ Paper still need to look at for CC [@Sucar2013].
 
 These are methods tackling the multi-label learning task by adapting, extending and/or customising an existing supervised learning algorithm [@Madjarov2012]. 
 
-The main weakness of algorithm adaption methods is that they are mosty tailored to suit a specific model, whereas problem transformation methods are more general and allows for the use of many well-known and effective single-label models [Systems] (algorithm independent).
+The main weakness of algorithm adaption methods is that they are mosty tailored to suit a specific model, whereas problem transformation methods are more general and allows for the use of many well-known and effective single-label models [@Systems2014] (algorithm independent).
+
+### Multi-Label k-Nearest Neighbour (ML-kNN)
+
++ basic idea
++ procedure
++ psuedo-code
++ remarks: first-order; merits of lazy learning and Bayesian reasoning; mitigate class-imbalance; extensions/variations; computational complexity
+
+### Multi-Label Decision Tree (ML-DT)
+
++ basic idea
++ procedure
++ psuedo-code
++ remarks: first-oders; efficient; improve with pruning and or ensembling; computational complexity
+
+### Ranking Support Vector Machine (Rank-SVM)
+
++ basic idea
++ procedure
++ psuedo-code
++ remarks: second-order; variants; computational complexity
+
+### Collective Multi-Label Classifier (CML)
+
++ basic idea
++ procedure
++ psuedo-code
++ remarks: second-order; conditional random field model; DAG; computational complexity
 
 ## Ensemble Approaches
 
@@ -825,9 +904,34 @@ A concern might be the number of classes, $2^{k}$ that each LP classifiers must 
 
 In [@Tsoumakasc] it is shown that RAKEL outperforms LP and BR on 3 benchmark datasets with numerous configurations. The author concluded that the randomness of the RAKEL algorithm might not be the best ensemble selection approach since it may lead to the inclusion of models that affect the ensemble's performance in a negative way. Continue with papers that improve on this idea.
 
+here are other ways of choosing subsets of the labelset, references in [@System2014].
+
+Note, with all these ensemble extensions, we can still try different ways of ensembling/stacking, especially with RA$k$EL. Not only taking the average but also by assigning weights to each model or by fitting a model to the predictions. Think [@Lo2013] is an example of this with generalised $k$-labelsets ensemble.
+
++ LP takes the label dependence into account, but the conditional one: it is well-tailored for the subset 0/1 loss, but fails for the Hamming loss. 
++ LP may gain from the expansion of the feature or hypothesis space.
++ One can easily tailor LP for solving the Hamming loss minimization problem, by marginalization of the joint probability distribution that is a by-product of this classifier.
 
 
-+ something on (re)sampling
+### Summary
+
++ table: basic idea; order; complexity (test/train); domains; optimised metric
++ interpretation
++ comment on applicability to data sets
++ first-order AA is not BR
+
++ choosing algo is hard
++ more empirical evidence is needed; with with wide range of data sets, algos and measures; compare with statistical tests and consider computation time (training and test)
++ part on statistical tests in [@Gibaja2015]
++ gives reccomendations from empirical study
++ mentions label dependence modelling from dembcsz
++ trees for efficiency, ensembles for predictive performance, transformation methods for flexibility
+
++ what was done in the paper
++ no formal charaterisation on the underlying concept or any principled mechanism on the appropriate usage of label correlations
++ correlations might be asymmetric and or local
++ label correlation understanding is holy grail of ML
++ complement of this paper would be a broad empirical study
 
 ## Spatial Regularization Networks
 

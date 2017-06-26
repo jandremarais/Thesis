@@ -13,3 +13,10 @@ Some of the most popular and recent ML benchmark data sets will be introduced he
 + https://manikvarma.github.io/downloads/XC/XMLRepository.html
 + yelp dataset: http://www.ics.uci.edu/~vpsaini/
 + also new yt8m
+
++ properties of a ML data set: label cardinality, label density, label diversity
++ Simulating [@TorresTomas2014] (also gives citations to other papers)
++ above has no control over label correlation
++ partitioning mentioned in [@Gibaja2015] - referred to [@Sechidis]
++ [@Sorower]
++ details of benchmark datasets in appendix (learn how to link)
