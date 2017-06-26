@@ -1,1 +1,15 @@
 # Benchmark Datasets
+
+The progress of areas in machine/statistical learning is highly dependent on the availability of quality and diverse benchmark data sets. This enables researchers to compare their methods in a wide variety of environments. Recently, a decent amount of ML data sets has been published, but not without critique. [@Luaces] argues that the MULAN[^mulan] ML data set repository does not have data sets that are truely ML and that most of the data sets are very similar to each other. Most of the data sets have low cardinality and low label dependence. The problem with this is that these data sets may not show the true performance of ML algorithms. In [@Gibaja2015] the authors also comments on the lack of thorough, comparative empirical studies on these benchmark sets.
+
+[^mulan]: A Java library for ML learning - http://mulan.sourceforge.net/datasets-mlc.html.
+
+Some of the most popular and recent ML benchmark data sets will be introduced here along with their properties. This will give us some form of a reference to compare our data set of satellite images against.
+
++ [@Read2011a] defines a complexity measure as $n\times p\times K$
+
++ [@Gibaja2015a] long list of datasets. Other than MULAN: Plant and Human, Slashdot, LangLog, IMDB
++ [@Sorower]
++ https://manikvarma.github.io/downloads/XC/XMLRepository.html
++ yelp dataset: http://www.ics.uci.edu/~vpsaini/
++ also new yt8m
