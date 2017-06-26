@@ -519,20 +519,6 @@ The above sections were concerned with single variables, but all concepts extend
 
 ## Outline
 
-The structure of this thesis is built to mimic the workflow of fitting a supervised learning model to data. At each step, the relevant literature will be critically reviewed and discussed. Thereafter the proposed and recommended strategies will be applied to our data to see if the results match the literature and to find the best methods for our application.
+We have now discussed the problem to be solved in the thesis, the basics of the data to be analysed and the basic components necessary for understanding Neural Network. The outline for the rest of the thesis will be as follows: In Chapter \ref{chp:nn}, Neural Networks are described in detail, along with some of the recent developments in the field. Chapter \ref{chp:cnn} looks deeper into a variant of Neural Networks which is especially good in Image Classification problems, known as Convolutional Neural Networks. Again, the basics and the recent developments will be discussed. Chapter \ref{chp:ml_cnn} first introduces the problem of Multi-Label Classification and then explores methods of extending CNNs to fit into this framework. Since we are working with satellite images, Chapter \ref{chp:rs} will look at the recent approaches to image classification of satellite and remote sensing images. Then in Chapter \ref{chp:results} the most promising approaches highlighted in the previous chapters will be evaluated and compared to eachother in order to find the approach with the best performance on our dataset. The results will also be compared to the findings in the literature. The thesis is concluded in Chapter \ref{chp:conc} with a summary of the work done in this project, general discussion of the results and literature and in what directions can be followed for future research.
 
-In any supervised learning problerm, it is essential to become familiar with the data and the task at hand before moving on to the training process. The background information of the data has already been discussed. In Chapter ?? the unique proppertes of multi-label data will be investigated and what steps are recommended to follow for data with certain properties. It is very important to clearly define the objective of the supervised learning task. For this thesis, prediction accuracy is more important than making inferences on the data (models also giving insight into the data is a bonus). The evaluation metric for our task will be introduced and discussed in Chapter ?? along with other ways to evaluate multi-label classifiers.
-
-Other things still to mention:
-
-+ basic ML strategies
-+ ML resampling strategies for class imbalance and error estimates
-+ orders of complexity
-+ label dependence
-+ input space reduction
-+ output space reduction
-+ final predictions and evaluations (maybe MDS of actual vs predicted)
-
-+ might want to include short history/timeline of ML
-+ might want to do a meta analysis of the literature on main topics
 

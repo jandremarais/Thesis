@@ -1,7 +1,3 @@
----
-output: pdf_document
----
-
 # Neural Networks \label{chp:nn}
 
 ## Introduction

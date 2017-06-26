@@ -1,8 +1,5 @@
----
-output: pdf_document
----
-
 # Results (/Application)
+\label{chp:results}
 
 In this chapter, some of the theoretical reccommendations will be evaluated empirically, with the goal to find the best approaches for this dataset. The full end-to-end workflow will be discussed and intermediate results also reported.
 

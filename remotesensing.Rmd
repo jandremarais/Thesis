@@ -1,4 +1,5 @@
 # Remote Sensing
+\label{chp:rs}
 
 Wiki: In current usage, the term "remote sensing" generally refers to the use of satellite- or aircraft-based sensor technologies to detect and classify objects on Earth, including on the surface and in the atmosphere and oceans, based on propagated signals (e.g. electromagnetic radiation).
 

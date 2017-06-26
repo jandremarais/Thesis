@@ -1,4 +1,5 @@
 # Conclusion
+\label{chp:conc}
 
 + summary
 + contributions
