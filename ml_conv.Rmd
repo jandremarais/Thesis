@@ -938,6 +938,36 @@ In short, the SRN learns separate attention maps for each label, which associate
 
 The attention mechanism adaptively focuses on related regions of the image when the deep networks are trained with spatially related labels (segmentation?). Intuitively this seems likely to work for ML image classification problems.
 
+The main net has the same network structure as ResNet-101 [cite]. The SRN takes visual features from the main net as inputs and learns to regularise spatial relations between labels. Such relations are exploited based on the learned attention maps of each label. Label confidences from both the main net and SRN are aggregated to generate final classification scores.
+
+![End-to-end architecture of the proposed SRN.](figures/SRN_architecture.jpg)
+
+Not sure how in detail I should go here. 
+
+Used $224 \times 224$ sized images. The $14\times 14$ feature map from layer named *res4b22_relu* of ResNet-101 is used as inputs to the SRN. The rest of the main net still continues to produce $K$ class scores, which is later combined with the output of the SRN. The SRN is composed of two sub-networks. The first sub-network learns label attention maps with image-level supervisions and the second sub-network captures spatial regularisations of labels based on the learned attention maps.
+
+Multiple image regions are semantically related to different labels. The regions locations are generally not provided, but it is desirable that more attention is paid to the related regions. SRN attempts to predict such related regions using the attention mechanism. The attention maps are then used to learn spatial regularisations for the labels. The attention map for label $l$ related to an image should indicate the image regions related to $l$ by displaying higher attention values to that region. The attention estimator is modeled as 3 convolutional layers with 512 kernels of $1\times 1$, 512 kernels of $3\times 3$ and $K$ kernels of $1\times 1$, where $K=|\mathcal{L}|$. The ReLU activation function is applied after the first two convolutional layers, and the softmax after the third.
+
+Since ground-truth annotations of attention maps are not available, the network is learned with only image-level label annotations. A weighted global average is computed for each label attention maps (similar to global average pooling in ResNet). This results in a 1024 sized vector on which a linear classifier is learned to obtain class scores. They are learned by minimising the cross-entropy loss between these predicted class scores and the ground-truth labels. (seems like the attention maps work from example given in paper).
+
+Also compute a $1\times 1\times 1024$ convolutional layer on the feature inputs to obtain a $14\times 14\times K$ confidence map. $A$ and $S$ are multiplied element-wise and then spatially sum-pooled to obtain the label confidence scores (after Sigmoid activation).
+
+Then combine weighted confidence scores with attention map, by element-wise multiplication and feed as input to another series of convolutional layers. These sizes should be chosen carefully in order not to have too many parameters. Authors suggest 3 convolutional layers with ReLU, followed by one fully-connected layer. See \autoref{fig:srn_fst} for size of convolutions. Empirically showed the weighted attention maps work.
+
+![fst\label{fig:srn_fst}](figures/SRN_fst.png)
+
+The final label scores are the weighted sum of the outputs of the main net and SRN, weighted by learnable paramter $\alpha$. However, $\alpha$ can be set to 0.5 without observable performance drop.
+
+The training is done in three parts. Training is done first by fine-tuning only the main net (second part I presume), which was pretrained on ImageNet. Then learning the attention map and confidence map simultaneously and then the convolution of the combination of the weighted attention map and confidence map. (This description will be much easier with notation).
+
+Used data augmentation. Random crops of $256\times 256$ image from the four corners and center, then rescaled to $224\times 224$. See paper ref for detail.
+
+Used SGD with batch size 96, momentum 0.9 and weight decay of 0.0005. Initial learning rate is set to 0.001 and decreases by factor 0.1 when validation loss reaches a plateau, until 0.00001. Testing is done by resizing image to $224\times 224$.
+
+Evaluates on 3 benchmark datasets, with multiple measures and shows promising results. Compared to pure ResNet and CNN-RNN and is the best on almost all measures.
+
+Attention maps interpretable.
+
 ## Direct binary Embedding
 
 + https://arxiv.org/pdf/1703.04960.pdf
@@ -976,3 +1006,13 @@ The attention mechanism adaptively focuses on related regions of the image when 
 
 + Other object detection
 + winner of yt8m challenge: https://arxiv.org/pdf/1706.06905.pdf [@Lee2017a]
+
+## To read:
+
+### Multi-Label Transfer Learning with Sparse Representation
+
++ https://pdfs.semanticscholar.org/92f5/bd6aa3544c36490e2dac798513055233b02c.pdf
+
+### Multi-Instance Multi-Label Learning for Image Classification with Large Vocabularies
+
++ https://faculty.ist.psu.edu/vhonavar/Papers/bcv2011.pdf
