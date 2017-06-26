@@ -28,7 +28,14 @@
 
 + AlexNet
 + VGG
-+ ResNet (Depp vs wide)
+
+#### Residual Networks
+
+Residual Networks were shown to be able to scale up to thousands of layers and still have improving performance. However, each fraction of performance improvement is at a cost of almost double the depth. Therefore training these deep residual networks has a problem of diminishing feature reuse, which make them very slow to train. [@Zagoruyko2016] showed that wide, shallow networks work significantly better than their deeper variants, in terms of accuracy and training time.
+
+See code at: https://github.com/titu1994/Wide-Residual-Networks or https://github.com/asmith26/wide_resnets_keras
+
+
 + DenseNet
 + Inception (?)
 + Dirac Nets (?)
