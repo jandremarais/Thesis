@@ -7,7 +7,7 @@ output:
     toc_depth: 3
     number_sections: true
     keep_tex: no
-bibliography: library.bib
+bibliography: library_clean.bib
 documentclass: memoir
 lang: afrikaans,UKenglish
 fontsize: 12pt

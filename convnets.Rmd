@@ -28,9 +28,10 @@
 
 + AlexNet
 + VGG
-+ ResNet
++ ResNet (Depp vs wide)
 + DenseNet
 + Inception (?)
++ Dirac Nets (?)
 
 ## Visualizing CNN's
 
@@ -54,3 +55,9 @@
 ### Fine-Tuning
 
 ### Pretrained Models
+
++ probably also something on attention mechanisms for understanding SRNs:
+
+    + Show, attend and tell: Neural image caption generation with visual attention
+    + Stacked attention networks for image question answering.
+    + Learning transferrable knowledge for semantic segmentation with deep convolutional neural network
