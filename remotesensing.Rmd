@@ -1,14 +1,8 @@
----
-output: pdf_document
----
-
 # Remote Sensing
 
-+ Wiki: In current usage, the term "remote sensing" generally refers to the use of satellite- or aircraft-based sensor technologies to detect and classify objects on Earth, including on the surface and in the atmosphere and oceans, based on propagated signals (e.g. electromagnetic radiation).
+Wiki: In current usage, the term "remote sensing" generally refers to the use of satellite- or aircraft-based sensor technologies to detect and classify objects on Earth, including on the surface and in the atmosphere and oceans, based on propagated signals (e.g. electromagnetic radiation).
 
 The idea is not to review the domain in detail, but rather to discuss the state-of-the-art Deep Learning approaches to Remote Sensing or related problems. 
-
-## Multi-Label Classification Based on Low Rank Representation for Image Annotation
 
 + [@Tan2017]
 + remote sensing images are easily accumulated but the labeling process is most of the infeasible.
@@ -146,8 +140,8 @@ The idea is not to review the domain in detail, but rather to discuss the state-
 + DeepSat - A Learning framework for Satellite Imagery
 + https://www.cs.toronto.edu/%7Evmnih/docs/Mnih_Volodymyr_PhD_Thesis.pdf (hinton student thesis), implementation: https://github.com/mitmul/ssai-cnn
 + Remote Sensing Image Scene Classification: Benchmark and State of the Art 
-+ [@Karalas2015]
-+ [@Karalas]
++ [Karalas2015]
++ [Karalas]
 + Semantic annotation of high-resolution remote sensing images via Gaussian process multi-instance multilabel learning
 
 + deepsat for data: https://github.com/trailbehind/DeepOSM, guide at: https://github.com/developmentseed/skynet-data

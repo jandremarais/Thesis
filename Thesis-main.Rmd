@@ -6,6 +6,7 @@ output:
     toc: true
     toc_depth: 3
     number_sections: true
+    keep_tex: no
 bibliography: library.bib
 documentclass: memoir
 lang: afrikaans,UKenglish
@@ -53,8 +54,8 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE, echo=FALSE)
 ```{r child = 'ml_conv.Rmd'}
 ```
 
-```{r child = 'remotesensing.Rmd'}
-```
+<!-- ```{r child = 'remotesensing.Rmd'} -->
+<!-- ``` -->
 
 ```{r child = 'results.Rmd'}
 ```

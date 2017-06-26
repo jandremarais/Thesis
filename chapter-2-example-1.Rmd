@@ -133,62 +133,8 @@ grViz('figures/MLL-tax.gv') %>% export_svg() %>%
 
 ### Problem Transformation Methods
 
-Problem transformation methods consist of first transforming the multi-label problem into one or more single-label problem(s) and then fitting any standard supervised learning algorithm(s) to the single-label data. For that reason, problem transformation methods are called algorithm independent, i.e. once the data is transformed, any single-label classifier can be used [@Tsoumakasc].
-
-The two main problem transformation algorithms are the binray relevance and label powerset transformations. Both methods suffer from several limitations but they form the basis of arguably any problem transformation method. The state-of-the-art problem transformations algorithms are most of the times extensions of either the standard binary relevance or label powerset algorithms [@Alazaidah2016]. Therefore the understanding of these two basic methods are crucial in dealing with the more complex, modern problem transformation methods.
-
-#### Binary Relevance
-
-+ basic idea
-+ notation
-+ cross-training
-+ T-criterion for avoiding empty prediction
-+ psuedo-code
-+ remarks: first-order; parallel; straightforward; building block of state-of-the-art; ignores potential label correlations; may suffer from class-imbalance; computational complexity
-
-The most common transformation method is binary relevance (BR). BR transforms the mutli-label into $K$ single-label problems by modelling the presence of the labels separately. Typically $K$ single-label binary data sets, $D_{k}=(X,\boldsymbol{Y}_{k})$ for $k=1,...,K$, would be constructed from the multi-label data set, $D=(X,Y)$. To each $D_{k}$ any single-label classifier can be applied. In the end, predictions $\hat{\boldsymbol{Y}}_{1},...,\hat{\boldsymbol{Y}}_{K}$ are obtained separately which can then be combined to allocate all the predicted relevant variables to each instance. Note, that it may occur that all of the single-label learners produces zeroes, which would imply that the instance belongs to an empty set. To avoid this [@Zhang2014] suggests following the T-criterion rule. The rule states, briefly, that in such a case the labels associated with the greatest output should be assigned to the instance. Clearly, this will only work if the base learners used gives continuous outputs and it will only make sense if all the base learners are of the same type. I suppose these rules are ad-hoc and I can think of alternatives.
-
-> With this approach the standard single label feature selection procedures can be applied. The relevant subset of features can be identified for each label. This is convenient since it is not unlikely that the optimal subset of features will differ from label to label.
-
-The biggest drawback for this approach is that it models each label separately and ignores the possible correlations between labels. Thus BR assumes that there are no correlations between the labels. However, these correlations can be very helpful in predicting the labels present. This is a first-order strategy. Also it can be time consuming since data sets with hundreds of labels is not rare. This would mean more than a hundred models should be fit and tuned separately. But this complexity scales linearly with increasing $K$, which is actually not so bad when comparing to other multi-label algorithms. Grouping the labels in a hierachical tree fashion may become useful when $K$ is very large [@Cherman2011] (see also Incorporating label dependency into the binary relevance framework for multi-label classification by the same authors).
-
-Another argument against BR from [@Readb]: The argument is that, due to this information loss, BR's predicted label sets are likely to contain either too many or too few labels, or labels that would never co-occur in practice.
-
-Advantage of BR by [@Readb]:
-Its assumption of label independence makes it suited to contexts where new examples may not necessarily be relevant to any known labels or where label relationships may change over the test data; even the label set $L$ may be altered dynamically - making BR ideal for active learning and data stream scenarios.
-
-Nevertheless, BR remains a competitive ML algorithm in terms of efficiency and efficacy, especially when minimising a macro-average loss function is the goal [@Luaces]. The most important advantage of BR is that it is able to optimise several loss functions [@Luaces] also see small proof. They also show empirically that BR tends to outperform ECC when there are many labels, high label dependency and high cardinality, i.e. when the multi-label data becomes more complicated.
-
-Compared to label powerset (LP) which will be discussed later, BR is able to predict arbitrary combinations of labels [@Tsoumakasb] not restricted only to those in the training set.
-
-[@Cherman2011] also proposes a variation of BR called BR+. Its aim is to keep the simplicity of BR but also to consider the possible label correlations. It does so by also creating $K$ binary data sets but this time each of these data sets treat all the label columns not to be predicted by the current single-label classifier as features to the classifier. Thus each sinlge-label classifier will have $p + K - 1$ inputs. So now when predicting label $l$, all of the original features in $X$ and the remaining variables $\boldsymbol{Y}_{k}$, $k\neq l$, are used as inputs for classifier $l$. (second order strategy?)
-
-The problem arises when predicting unseen instances for which the labels are unknown. Thus the input needed for each binary classifier is not available. One workaround is to obtain an initial prediction of the labels using an ordinary BR approach and then using these predictions as inputs to the BR+ algorithm. The BR+ algortihm will most likely produce different predictions to the initial predicitons or BR which can then also be used in a next round of BR+. These steps can be continued until convergence but this seems like the classifier chains approach. (to be investigated).
-
-[@Tsoumakasb] mentions the 2BR strategy that seems very similar/identical to BR+. They describe the 2BR method as follows: first train a binary classifier on each of the $K$ binary data sets and then use their predictions (and or probabilities) as so called meta-features for a second round of BR. They mention that it might be better to train the base and meta learners on separate parts of the training data to avoid biased predictions. They suggest using a cross-validation approach for both learners to also avoid size constraints of the training data. They describe this approach as a stacked generalisation, also mentioned in [@Tsoumakasa], [@Godbole], [@Pachet2009] calls it classifier fusion.
-
-The adding of all the base learner predicitions as meta-feature to the meta-learners is not necessarily desirable. Some label pairs might have no correlation and adding predictions for those labels as inputs to the meta-learner will add noise to the model and waste computation time. [@Tsoumakasb] suggests a solution called corerlation-based pruning. They calculate the pairwise correlations between labels, $\phi$, and only add base learner prediction of label $i$ as a meta-feature to meta-learner $j$ if $\phi_{ij}$ is greater than some threshold. In this way only label-pairs that are highly correlated will be used in the final prediction of each other.
-
-+ BR performs well for Hamming loss, but fails for subset 0/1 loss.
-+  It is not clear, in general, whether the meta-classifier b should be trained on the BR predictions h(x) alone or use the original features x as additional inputs. Another question concerns the type of information provided by the BR predictions. One can use binary predictions, but also values of scoring functions or probabilities, if such outputs are delivered by the classifier @[@Dembcz2012].
 
 
-#### Classifier Chains
-
-+ basic idea
-+ notation
-+ importance of ordering
-+ ECC brief explanation
-+ psuedo-code
-+ remarks: high-order; considers label correlations in a random manner; not parallel; computational complexity
-
-Another extension of BR, similar to 2BR and BR+, is the classifier chains (CC) approach introduced by [@Readb]. It also consists of transforming the mutli-label data set $D$ to $K$ single-label data sets but the transformations are done sequentially in the sense that the label previously treated as a response will be added as a feature for predicting the next label. This will give data sets similar to $D_{1}=(X,\boldsymbol{Y}_{1}),D_{2}=(X,\boldsymbol{Y}_{1},\boldsymbol{Y}_{2}),...D_{K}=(X,\boldsymbol{Y}_{1},\boldsymbol{Y}_{2},...,\boldsymbol{Y}_{K})$, where the last column of each is the response that needs to be predicted. To each of these single-label data sets a classifier can be trained and then their predictions are combined in the same fashion as BR. CC keeps the simplicity of BR but has that additional capacity to model label dependencies by passing label information between classifiers. This should raise the question of what order of labels should the chain consist of and should it stop after one cycle?
-
-In a response to this, the ensembles of classifier chains (ECC) was suggested by [@Readb]. Here the term ensemble refers to an ensemble of multi-label classifiers instead of an ensemble of binary classifiers already mentioned before. ECC trains $m$ classifier chains, each with a random chain ordering and a random subset of instances. These parameters of ECC contributes to the uniqueness of each classifier chain which helps with variance reduction when their predictions are combined. These predictions are summed by label so that each label receives a number of votes. A threshold is used to select the most popular labels which form the final predicted multi-label set [@Readb] (copied from). More details still to cover in article.
-
-CC and ECC has an advantage over the ensemble methods of BR, that it is not necessary for an initial step of training to obtain predictions of labels that can later be used as features, it does this simultaneously.
-
-Paper still need to look at for CC [@Sucar2013].
 
 #### Calibrated Label Ranking
 
@@ -232,9 +178,7 @@ Note, with all these ensemble extensions, we can still try different ways of ens
 
 ### Algorithm Adaption Methods
 
-These are methods tackling the multi-label learning task by adapting, extending and/or customising an existing supervised learning algorithm [@Madjarov2012a]. 
 
-The main weakness of algorithm adaption methods is that they are mosty tailored to suit a specific model, whereas problem transformation methods are more general and allows for the use of many well-known and effective single-label models [@Rokach] (algorithm independent).
 
 #### Multi-Label k-Nearest Neighbour (ML-kNN)
 
