@@ -150,13 +150,6 @@ The evaluation of the performance of ML algorithms is another distinct problem t
 
 The evaluation measures of predictive performance of multi-label learnerss can be divided into two groups: example-based and label-based measures. Example-based measures compares the actual versus the predicted labels for each observation and then computes the average across all the observations in the dataset. Where label-based measures computes the predictive performance on each label separately and then averages across all labels [@Madjarov2012]. For both groups the measures can further be partitioned into metrics from a classification persepective and measures from a ranking perspective, *i.e.* metrics for $h$ and metrics for $f$ respectively. The most commonly used metrics in each of the groups will be introduced here.
 
-### Brief Taxonomy
-
-+ more complicated than single label metrics
-+ introduce example based vs label based
-+ for classification and ranking
-+ diagram / table + where they are used
-
 ```{r eval-tax, includ = FALSE, eval=FALSE}
 grViz('figures/eval-tax.gv') %>% export_svg() %>% 
   charToRaw %>% rsvg %>% png::writePNG('figures/eval-tax.png')
@@ -167,9 +160,6 @@ grViz('figures/eval-tax.gv') %>% export_svg() %>%
 + \autoref{fig:eval-tax} is just an example. The image quality is lacking.
 
 ### Example-based Metrics
-
-+ subset accuracy; hamming loss; accuracy; precision; recall; one-error; coverage; ranking loss; average precision
-+ definition + brief interpretaion where it is unclear
 
 For the following definitions, let $y_{i}$ be the set of true labels for observation $\boldsymbol{x}_{i}$ and $z_{i}$ the set of predicted labels for the same observation, obtained from the predicted indicator vector of $\hat{h}(\boldsymbol{x}_{i})$. The Hamming loss is then defined as
 $$
@@ -217,9 +207,6 @@ Average Precision:
 
 ### Label-based Metrics
 
-+ micro vs macro ito tp, tn, fp, fn
-+ auc example
-
 The idea with label-based measures is to compute a single-lable metric for each label based on the number of true positives ($TP$), true negatives ($TN$), false positives ($FP$) and false negatives ($FN$) made by the classifier on a dataset and then obtaining an average of the values [@Gibaja2014]. Note, $TN_{k}$, $TP_{k}$, $FN_{k}$ and $FP_{k}$ denote the quantities for label $l_k$, $k=1,2,\dots,K$. Thus $TP_{k}+TN_{k}+FP_{k}+FN_{k}=n$. Let $B$ be any binary classification metric, i.e. $B\in \{\text{accuracy},\text{precision},\text{recall},F_{1}\}$. $B$ can be written in terms of $TN_{k}$, $TP_{k}$, $FN_{k}$ and $FP_{k}$, for example 
 $$
 \text{accuracy}(TN_{k}, TP_{k}, FN_{k}, FP_{k})=\frac{TP_{k}+TN_{k}}{TP_{k}+TN_{k}+FP_{k}+FN_{k}}.
@@ -239,8 +226,6 @@ Again, all of the above mentioned metrics are from a classification perspective.
 Most multi-label classifiers learn from the training observations by explicity or implicitly optimising one specific metric [@Zhang2014]. That is why in [@Dembcz2012] the authors reccomended specifying which of the metrics a new proposed algorithm aims to optimise in order to show if it is succesful. But at the same time it is important to test the algorithm on numerous metrics for fair comparisons against other algorithms [@Zhang2014], [@Madjarov2012]. It might be that a algorithm does very well in terms of the Hamming loss, but performs poorly according to the subset accuracy, or vice versa, as shown in [@Dembcz2012]. In [@Tsoumakasc] they claim that the Hamming loss reported together with the micro-average $F$-measure gives a good indication of the performance of a multi-label classifier.
 
 These multi-label metrics are usually non-convex and discontinuous [@Zhang2014]. Therefore multi-label classifiers resort to considering surrogate metrics which are easier to optimise. 
-
-> probably should add an example or maybe later
 
 Other than predictive performance, are there other aspects on which multi-label classifiers can be evaluated, such as efficiency and consistency. Multi-label algorithms should be efficient in the sense that it takes the least amount of computational power for a given level of predictive performance [@Madjarov2012]. These classifiers can take a considerable amount of time to train when complicated ensembles are being implemented on datasets with huge labelsets. In cases where live updating and predictions are needed, this may be a problem [reference]. The other desirable attribute of multi-label classifiers are that they are consistent. This means that the expected loss of the classifier converges to the Bayes loss when the number of observations in the training set tends to infinity. Actually only a very few number of multi-label classifiers satisfy this property [Zhou2011], [@Koyejo2015].
 
@@ -454,8 +439,6 @@ The cases for F-measure loss and the Jaccard distance is a bit more complicated 
 
 #### The joint distribution view
 
-> not sure if I want to mention the joint distribution view. Maybe only distinguish between single label and joint label prediction approach.
-
 We just saw that minimzing the subset 0/1 loss requires the estimation of the entire conditional joint distribution, $P(\boldsymbol{Y}|\boldsymbol{X})$. Generally, if the joint distribution is known, a risk-minimizing prediction can be derived for any loss function in an explicit way:
 
 $$
@@ -466,26 +449,13 @@ In some applications modelling the joint distribution may result in using simple
 
 **Theoretical insights into MLC**
 
-+ when new MLC algorithm is introduced, it should be specified which loss functions it intends to minimize. Otherwise it may give misleading results (like that it is optimal for many loss functions).
-+ a classifier supposed to be good in solving one problem may perform poorly on a different problem and vice versa
-+ restricts attention to hamming loss and subset 0/1 loss.
-+ hamming is representative of single label scenario and subset 0/1 for the mutli-label loss.
-+ assumes unconstrained hypothesis space.
 + proposition (with proof in paper): The hamming loss and subset 0/1 loss have the same risk-minimizer, *i.e.* $\boldsymbol{h}_{H}^{*}(\boldsymbol{x})=\boldsymbol{h}_{s}^{*}(\boldsymbol{x})$, if one of the following conditions holds: (1) Labels $Y_{1},\dots,Y_{K}$ are conditionally independent, *i.e.* $P(\boldsymbol{Y}|\boldsymbol{x})=\prod_{k=1}^{K}P(Y_{k}|\boldsymbol{x})$. (2) The probability of the mode of the joint probability is greater than or equal to 0.5, *i.e.* $P(\boldsymbol{h}_{S}^{*}(\boldsymbol{x})|\boldsymbol{x})\geq 0.5$.
 + corollary (with proof in paper): In the separable case (*i.e.* the joint conditional distribution is deterministic, $P(\boldsymbol{Y}|\boldsymbol{x})=I(\boldsymbol{Y}=\boldsymbol{y})$), the risk minimizers of the hamming loss and subset 0/1 loss coincide.
-+ Then 3 propositions on upper bounds of these losses. Ponder its relevance.
 
 **MLC algorithms for exploiting label dependence**
 
-+ proposed algorithms improve predictive performance by supposedly modelling label dependence.
-+ type of dependence and loss to be optimized is omitted
-+ leads to poor designs and misleading results.
-+ focus on PT methods
-+ discussion on BR:
-+ simplest. does not take marginal or conditional dependence into account.
 + in general not able to yield risk-mininizing predictions for multi-label losses but is well suited for loss functions whose risk-minimizer can solely be expressed in terms of marginal (conditional) distributions.
 + may be sufficient, but exploiting marginal dependencies may still be beneficial especially for small-sized problems.
-+ moves discussion to single label predictions
 + several methods that exploit similarities between structural parts of the label models.
 + general scheme: 
 
@@ -503,30 +473,12 @@ where $\boldsymbol{h}(\boldsymbol{x})$ is the binary relevance learner and $\bol
 
 where the output space is first transformed and then the BR classifiers are trained and then transformed back to original.
 + Stacking follows first scheme. Form of regularization or feature expansion. Not clear which inputs should all be use for second level.
-+ multivariate regression
-+ kernel dependency estimation
 + compressive sensing
-+ next section on methods that seek to estimate the joint distribution $P(\boldsymbol{Y}|\boldsymbol{x})$.
-+ LP. Largest drawback the number of label combinations
-+ the literature usually claims LP is generally the rigth approach. FALSE. LP takes conditional dependence into account but usually fails for losses like Hamming.
-+ can improve with RAKEL, but it is still not well understood from a theoretical point of view.
-+ PCC. computationally more manageable. ECC to reduce importance of label chain order.
 
 **Experimental evidence**
 
-+ real and synthetic data
-+ BR, SBR, CC, LP
-+ hamming loss and subset 0/1
-+ MULAN
-+ logistic regression for base classifier.
 + marginal independence: stacking does improve on BR, CC similar to SBR, LP also bad. Error increases with number of labels. hamming and subset 0/1 coincide.
 + conditional independence: again loss functions coincide. SBR improves over BR, even higher when structural parts are more similar.Supports theoretical claim that the higher the structural similarties the more prominent effect of stacking. Study rest of results.
-+ conditional dependence:
-+ xor problem
-
-**Conclusions**
-
-+ study
 
 Nou opsomming van [@Reade] - sodra klaar, probeer in hoofstuk inkorporeer.
 
@@ -694,12 +646,6 @@ $$
 
 
 
-It has been shown repeatedly in the literature that in order to achieve acceptable empirical results, the multi-label algorithm used must in some way or another exploit the dependence/correlation amongst the labels. Unfortunately very little theoretical evidence exists for this suggestion. To delve deeper into this topic an understanding of the evaluation metrics of multi-label classifiers is a fundamental step.
-
-> not sure if this should go here and to what extent. This is only an introduction and the rest will be continued after algorithms are introduced.
-
-It has been mentioned here and many times in literature that the exploitation of label structures is essential to an effective multi-label algorithm. The problem is that the correlation/dependence/relationship between labels is not yet well defined in the literature [@Zhang2014]. In [@Dembcz2012] the authors comment that researchers often use the term label dependence in an intuitive sense and not as a formally defined concept. Naturally this makes it a hard problem to solve, if it is not well defined. Some valiatnt attempts were made in [@Dembczynski], [@Dembcz2012] (and others). The following is an overview of them.
-
 In [@Zhang2014] the existing strategies for multi-label classification are divided into categories based on the order of label correlations being considered by the algorithms. So-called first-order approaches are those that do not take label correlations into account. Second-order approaches consider the pairwise relationships between labels and high-order approaches allows for all interactions between labels and/or combinations of labels. First-order strategies simply ignore label correlations, but they are usally simpler. The latter two strategies are far more complex but also limited in some cases. Second-order strategies will not generalise well when higher-order dependencies exist amongst the labels and the the high-order strategies may 'overfit' if only subgroups of the labels are correlated [@Zhang2014].
 
 From the Bayesian point of view, the problem of multi-label learning can be reduced to modeling the conditional joint distribution of $P(\boldsymbol{y}|\boldsymbol{x})$. This can be done in various ways. First-order approaches solve the problem by decomposing it into a number of independent task through modelling $P(y_{k}|\boldsymbol{x})$, $k=1,\dots,K$. Second-order approaches solve the problem by considering interactions between a pair of labels through modelling $P((y_{k},y_{k'})|\boldsymbol{x})$, $k\neq k'$. High-order approaches solve the problem by adressing correlations between a subset of labels through modelling $P((y_{k_{1}},y_{k_{2}},\dots,y_{k_{K'}})|\boldsymbol{x})$, $K'\leq K$. Our goal is to find a simple and efficient way to improve the performance of multi-label learning by exploiting the label dependencies [@Zhang2014]. Propose LEAD approach.
@@ -714,9 +660,8 @@ From the Bayesian point of view, the problem of multi-label learning can be redu
 
 ### Theoretical Results
 
-+ evaluate perfomance on many metrics for fairness
 + minimisation of surrogate loss functions and consistency
-+ consistency [Zhou2011]:
++ Consistency [Zhou2011]:
 
 They were the first to do a theoretical study on the consistency of multi-label learning algorithms, focusing on the ranking loss and the hamming loss. A learning algorithm is said to be consistent if its expected risk converges to the Bayes risk as the size of the training data increases. They found that any convex surrogate loss is inconsistent with the ranking loss and therefore proposed a partial ranking loss (which is consistent with some surrogate loss functions) as an alternative. They also show how some recent multi-label algorithms are inconsistent in terms of the hamming loss and provides a discussion on the consistency of approaches which transforms the multi-label problem into a set of binary classification tasks.
 
@@ -726,13 +671,11 @@ They were the first to do a theoretical study on the consistency of multi-label 
 
 Other solutions: exploit correlation of labels from both types conditional and unconditional dependencies, features selection methods that are designed especially to handle multi label datasets, and having new stratification methods that are suitable to the nature of multi label datasets (copied from [@Alazaidah2016])
 
-+  most of these algorithms suffer from high complexity in the learning process [10]. Based on that, the true challenge is to exploit high order labels correlations locally and maintain a linear complexity at the same time [2].(copied from [@Alazaidah2016])
-
-### Symmetry
++ Symmetry:
 
 + [@Huang] claims that most of the time the label dependencies are asymmetric and suggest the MAHR algorithm. Also most of the existing methods exploit label correlations globally, which is not necessarily a good assumption if these correlations only exist for some instances [@Huang]. They suggest a ML-LOC algorithm (which seems to do very well).
 
-### Locality
++ Locality
 
 + is local the same as conditional? and global unconditional?
 
@@ -809,7 +752,7 @@ The problem arises when predicting unseen instances for which the labels are unk
 The adding of all the base learner predicitions as meta-feature to the meta-learners is not necessarily desirable. Some label pairs might have no correlation and adding predictions for those labels as inputs to the meta-learner will add noise to the model and waste computation time. [@Tsoumakasb] suggests a solution called corerlation-based pruning. They calculate the pairwise correlations between labels, $\phi$, and only add base learner prediction of label $i$ as a meta-feature to meta-learner $j$ if $\phi_{ij}$ is greater than some threshold. In this way only label-pairs that are highly correlated will be used in the final prediction of each other.
 
 + BR performs well for Hamming loss, but fails for subset 0/1 loss.
-+  It is not clear, in general, whether the meta-classifier b should be trained on the BR predictions h(x) alone or use the original features x as additional inputs. Another question concerns the type of information provided by the BR predictions. One can use binary predictions, but also values of scoring functions or probabilities, if such outputs are delivered by the classifier @[@Dembcz2012].
++  It is not clear, in general, whether the meta-classifier b should be trained on the BR predictions h(x) alone or use the original features x as additional inputs. Another question concerns the type of information provided by the BR predictions. One can use binary predictions, but also values of scoring functions or probabilities, if such outputs are delivered by the classifier [@Dembcz2012].
 
 ### Label Powerset
 
@@ -818,6 +761,8 @@ The other widely known problem transformation approach is the label powerset (LP
 One way to reduce the number of resulting classes after a label powerset transformation is to create meta-labels (not to be confused with meta in the stacking sense) [@Read]. Meta-labels represent partitions of the label set, but I still do not fully understand the concept. Seems like after the transformation we still end up with a multi-label problem. Investigate further.
 
 Another option is to throw away the combinations that appear infrequently in the training set. This obviously limits the possible output of the mutli-label algorithm even more. Sounds like PPT [@Reada].
+
+LP takes conditional dependence into account but usually fails for losses like Hamming [@Dembcz2012]. Can improve with RAKEL, but it is still not well understood from a theoretical point of view.
 
 ### Classifier Chains
 
@@ -895,16 +840,11 @@ Note, with all these ensemble extensions, we can still try different ways of ens
 
 ### Summary
 
-+ table: basic idea; order; complexity (test/train); domains; optimised metric
-+ interpretation
-+ comment on applicability to data sets
-+ first-order AA is not BR
-
 + more empirical evidence is needed; with with wide range of data sets, algos and measures; compare with statistical tests and consider computation time (training and test)
 + part on statistical tests in [@Gibaja2015]
 + trees for efficiency, ensembles for predictive performance, transformation methods for flexibility
 
-+ label correlation understanding is holy grail of ML
++ label correlation understanding is holy grail of ML [@Sorower]
 + complement of this paper would be a broad empirical study
 
 ## Convolutional Neural Networks for Multi-Label Classification
