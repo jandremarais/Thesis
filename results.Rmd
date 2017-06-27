@@ -27,6 +27,7 @@ In this chapter, some of the theoretical reccommendations will be evaluated empi
 + Simulating [@TorresTomas2014] (also gives citations to other papers)
 + partitioning mentioned in [@Gibaja2015] - referred to [@Sechidis]
 + [@Luaces] Therefore they created a ML data generator to simulate ML data on which algorithms can be evaluated.
++ very important for stratification: https://arxiv.org/pdf/1704.08756.pdf and more ML metrics
 
 
 ## Class Imbalance
@@ -34,6 +35,7 @@ In this chapter, some of the theoretical reccommendations will be evaluated empi
 + https://www.reddit.com/r/MachineLearning/comments/6iq5i8/d_what_are_your_favorite_ways_for_dealing_with/
 + [@Charte2015]
 + towards class imbalance aware multi label learning
++ way of stratifying batches: https://arxiv.org/pdf/1705.00607.pdf
 
 ## Data Augmentation
 
