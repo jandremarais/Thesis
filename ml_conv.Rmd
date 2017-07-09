@@ -847,6 +847,29 @@ Note, with all these ensemble extensions, we can still try different ways of ens
 + label correlation understanding is holy grail of ML [@Sorower]
 + complement of this paper would be a broad empirical study
 
+## Threshold Calibration
+
+The CNN outputs a set of class score which minimises the average of the binary cross-entropy over each labels. Therefore a mapping is needed to transform the class scores to binary outputs, indicating label presence. This is an important facet of MLC, often overlooked, but can make a huge difference in performance for certain metrics. This is similar to the problem in single label classification where the classification threshold can be adjusted to optmise either precision or recall instead of accuracy, which is especially important for imbalanced data.
+
+In MLC threshold calibration is also a common technique to go from the class score to binary outputs. If the class scores mimics class probabilities, a threshold of 0.5 is a common and intuitive choice, *i.e.* all labels with scores higher than 0.5 are labeled with a 1 and the rest as zero. However, this may not be the optimial threshold for certain metrics. For example, a lower threshold (lower than 0.5) will most likely result in a better recall score. Determining this optimal threshold for certain metrics can become quite complicated.
+
+A relatively simple method is to test multiple thresholds and evaluate the selection's performance on a left out validation set. Naturally this method also extends to a cross-validation approach. This becomes more complicated when label dependent thresholds are used, *i.e.* a different threshold for each label. Jointly determining these multiple thresholds through the validation approach is hard since there are many possible combinations to be tested in which case users normally resort to optimising each label threshold separately. This becomes less accurate for example based metrics.
+
+[http://www.cs.waikato.ac.nz/~eibe/pubs/chains.pdf] suggests an alternative approach to determining thresholds, which is to choose a single threshold such that the label cardinality of the test set is as close as possible to that of the training set. Obviously this is only possible when a complete test set is available at test time. There is no need for heavy validation testing with this approach. This supposedly works well for optimising accuracy and the F-measure, given the assumption that the class distribution of the test set is similar to that of the training set. Of course other multi-label data characteristics can be used instead of cardinality, depending on the problem. 
+
+Another approach is to view the threshold selection as a learning problem [http://machinelearning.wustl.edu/mlpapers/paper_files/nips02-AA45.pdf]. For example using a linear model taking the class scores as input and outputs a threshold minimising the number of misclassifications. Thus the threshold depends on the class scores and is not fixed over all points.
+
+This is similar to [http://digibuo.uniovi.es/dspace/bitstream/10651/6203/1/multilabel-pr.pdf] where the authors referred to this method as probabilistic thresholds (PT). They found this approach takes very little computation but can cause drastic improvements to metrics such as the F_{1}-score or accuracy. This approach, however, does not improve metrics such as hamming loss. In the paper they compared it to *one threshold* and *meta threshold* from [http://s3.amazonaws.com/academia.edu.documents/39820887/Obtaining_Bipartitions_from_Score_Vector20151109-30004-mdv7br.pdf?AWSAccessKeyId=AKIAIWOWYYGZ2Y53UL3A&Expires=1499607607&Signature=JkJHB%2BqK2QyYGE9xzDUKnuCAsaM%3D&response-content-disposition=inline%3B%20filename%3DObtaining_Bipartitions_from_Score_Vector.pdf] to show that PT is on average the best for accuracy and F_{1}-score. Used 10-fold cv.
+
++ see also [https://cs.nju.edu.cn/_upload/tpl/01/0b/267/template267/zhouzh.files/publication/tkde06a.pdf]
+
+The threshold calibration strategies described thus far are mostly general purpose approaches that could be applied as a post-processsing step to any MLC algorithm that outputs class scores.
+
+An alternative to threshold calibration is to decide on the number, say $m$, of labels to be present for each instance. Then the labels with the $m$ highest class scores will be assigned a 1 and the rest zero. Most of the strategies described above for selecting the best threshold can also be applied to selecting the best $m$. (also described in the bipartition paper.) Nice paper about it here [http://www2009.eprints.org/22/1/p211.pdf], think it is the same as the Meta threshold mentioned above.
+
++ see adhoc methods such as calibrate label ranking: [https://pdfs.semanticscholar.org/5918/04251e15cfb571bc90c2fab2344f462e1617.pdf] and 
+
+
 ## Convolutional Neural Networks for Multi-Label Classification
 
 We have seen that Deep Convoltional Neural Networks have achieved great success on single-label image classificaiton problems. This is because of their strong capability in learning discriminative features when trained on large datasets, which are also transferable to other image classification problems. However, these feature representations might not be optimal for images with multiple labels. For example, one of the labels might only relate to a very small region of the image. This label would most likely be underepresented by the features learned on single label datasets, since for single label images, the label is typically related to a large part, and usually in the centre, of the image.
@@ -861,6 +884,7 @@ Minimising various other loss functions has also been investigated (see Deep con
 + other option use FCN with global max pool at end before sigmoid
 + dropout only on first layers after representation (fixed VGG)
 + note they also used dropout at testing and then combined for mean prediction
++ see [https://cs.nju.edu.cn/_upload/tpl/01/0b/267/template267/zhouzh.files/publication/tkde06a.pdf] for ML-loss function
 
 ## Proposal Based Approaches
 
@@ -916,6 +940,8 @@ Used SGD with batch size 96, momentum 0.9 and weight decay of 0.0005. Initial le
 
 Evaluates on 3 benchmark datasets, with multiple measures and shows promising results. Compared to pure ResNet and CNN-RNN and is the best on almost all measures.
 
+Here is another paper on exploiting spatial relations: https://arxiv.org/pdf/1612.01082.pdf. However, I think they are using Recurrent Nets.
+
 Attention maps interpretable.
 
 ## Direct binary Embedding
@@ -955,7 +981,7 @@ Attention maps interpretable.
 + https://arxiv.org/pdf/1602.02068.pdf
 
 + Other object detection
-+ winner of yt8m challenge: https://arxiv.org/pdf/1706.06905.pdf [@Lee2017a]
++ winner of yt8m challenge: https://arxiv.org/pdf/1706.06905.pdf [@Lee2017a]. Used context gating!
 + see the chaining method of: https://arxiv.org/pdf/1706.05150.pdf and useful other tricks like bagging, boosting, stacking and knowledge distillation
 
 ## To read:

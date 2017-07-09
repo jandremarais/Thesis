@@ -105,6 +105,7 @@ Process of learning the parameters and finding good hyperparameters.
 + adaptive: adagrad, rmsprop, adam  
 
 + something on cyclical?
++ yellowfin: https://arxiv.org/abs/1706.03471
 
 ### Freezing Layers
 
