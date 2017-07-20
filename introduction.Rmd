@@ -41,7 +41,7 @@ In summary, the relevance in terms of practial and meaningful applications of th
 
 This thesis works towards building a multi-label classifier that can label satellite images of the Amazon as accurately as possible. The method thought best to achieve this goal is to:
 
-1. Identify the most important and latest developments in the literature for: multi-label classification, image classification and *remote sensing* (analysis of satellite images).
+1. Identify the most important and latest developments in the literature for: multi-label classification and image classification for remote sensing.
 2. Provide an extensive review and discussion of these methods and how they compare to each other.
 3. Empirically evaluate and compare them on the satellite image data in order to find the best strategies for our labeling task.
 
@@ -49,7 +49,26 @@ Since practically every state-of-the-art solution to an image classification pro
 
 > update this section as progress is made with thesis.
 
-## Data
+> maybe be more specific
+
+## The Problem
+
+Although the review and evaluation of the literature is the main goal of this thesis, the task of the competition on Kaggle is a secondary objective and what we will use to give our research and discussion direction. Since it is real world example, it will give us a good idea of the needs in practice and thus we can build our research around that. The methods learned to optimise our objective will most likely be transferable to other similar problems.
+
+The task of the competition on Kaggle can be summed up as follows. The competitor is given a training set of satellite images of the Amazon, labelled with various land use and cover labels. The goal is to train a model to learn the relationships between images and labels in order to predict the correct labels for the unlabelled set of satellite images as accurately as possible. This is a typical *supervised learning* task in Statistical Learning and since the output is categorical, this is a *classification* problem. A mathematical definition will be given soon. But first we will investigate the data for this task.
+
+To define the problem more precisely, we follow the conventions of [@Hastie2009]. Let $\boldsymbol{X}\in \mathbb{R}^{p}$ denote a real valued random input vector and $G\in \mathcal{G}$ a categorical variable taking on classes in $\mathcal{G}$. They have a joint distribution $P(\boldsymbol{X},G)$. We seek a function $f(\boldsymbol{X})$ for predicting output $G$ given input $\boldsymbol{X}$. To evaluate the error of the prediction made by $f$ we use a loss function $L(G,f(\boldsymbol{X}))$. Obviously, we want this error made by $f$ to be as small as possible, thus our aim is to minimise the criterion called the expected prediction error:
+
+$$
+\mathrm{EPE}=\mathbb{E}\left[L\left(G,f(X)\right)\right]
+$$
+
+> not sure how I want to define this and in how much detail?
+> give formal definition and explain how it relates to practical problem.
+> Introduce f-measure?
+> maybe first only cover single label classification
+
+## The Data
 
 This section covers an initial introduction to the data available for the problem at hand. The elements of the data important to know before moving on will be discussed here and the rest will be addressed throughout the thesis, as it becomes relevant to the discussion. This is done here to get a better understanding of the problem before exploring the literature.
 

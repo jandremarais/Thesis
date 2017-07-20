@@ -46,3 +46,5 @@ In this chapter, some of the theoretical reccommendations will be evaluated empi
 + Hinton paper for knowledge distillation and other paper on pseudo labelling
 
 ## Ensembling
+
++ see https://arxiv.org/pdf/1707.04272.pdf for correlation based diversity analysis.

@@ -900,6 +900,8 @@ However, these methods ignore semantic relations between labels. Next we will lo
 
 However, these methods do not capture spatial relations between labels. This is a challenging problem because most of the times these spatial locations are not known beforehand, *i.e* the images are not annotated with these spatial locations. Spatial Regularisation Networks [@Zhua] attempt to capture both semantic and spatial relations between labels without any prior knowledge on the spatial locations of each label. This is discussed in the next section.
 
++ https://arxiv.org/pdf/1707.05495.pdf is an improvement of this that does not depend on the ordering of the LSTM.
+
 ## Spatial Regularization Networks
 
 + This paper provides a unified deep neural network for exploiting both semantic and spatial relationships between labels with only image-level supervisions
@@ -944,9 +946,7 @@ Here is another paper on exploiting spatial relations: https://arxiv.org/pdf/161
 
 Attention maps interpretable.
 
-## Direct binary Embedding
-
-+ https://arxiv.org/pdf/1703.04960.pdf
++ see https://arxiv.org/pdf/1705.02315.pdf for more attention maps, interesting pooling and other loss optmisations.
 
 ## Is object localization for free? – Weakly-supervised learning with convolutional neural networks
 
@@ -975,6 +975,7 @@ Attention maps interpretable.
 ## ML Attention:
 
 + https://arxiv.org/pdf/1412.7755.pdf
++ more ons weakly supervised attention https://arxiv.org/pdf/1707.05821.pdf
 
 ## Sparsemax ML loss
 
@@ -983,6 +984,28 @@ Attention maps interpretable.
 + Other object detection
 + winner of yt8m challenge: https://arxiv.org/pdf/1706.06905.pdf [@Lee2017a]. Used context gating!
 + see the chaining method of: https://arxiv.org/pdf/1706.05150.pdf and useful other tricks like bagging, boosting, stacking and knowledge distillation
+
+## Label Embedding Approaches
+
++ Learning Deep Latent Spaces for Multi-Label Classification: https://arxiv.org/pdf/1707.00418.pdf
++ Direct Binary embedding: https://arxiv.org/pdf/1703.04960.pdf
++ cost sensitive: https://arxiv.org/pdf/1603.09048.pdf
+
++ see https://arxiv.org/pdf/1707.01408.pdf for label concept learning layer, other MOE options and ensembling and similarly https://arxiv.org/pdf/1707.03296.pdf with the addition of classifier chains
++ see https://arxiv.org/pdf/1706.07960.pdf for label processing layer, psuedo huber loss, 
+
++ see https://arxiv.org/pdf/1702.04684.pdf for nearest labelset approach
+
+## Stratification
+
++ https://arxiv.org/pdf/1704.08756.pdf
+
+## F-measure maximisation
+
++ https://arxiv.org/pdf/1604.07759.pdf
++ see https://arxiv.org/pdf/1701.05616.pdf for other loss optimisation 
+
++ see https://arxiv.org/pdf/1409.4698.pdf for MOE for MLC
 
 ## To read:
 
