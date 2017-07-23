@@ -29,6 +29,28 @@ The key challenge in ML learning is to exploit dependecies amongst labels, *e.g.
 
 As should be expected, the ML framework has a few concepts novel to the single-label case which should be reviewed before looking at the algorithms for ML learning. In this chapter, the core notation for the thesis will be introduced and a clear definition of the task of ML learning will be given. Then, a deep look is taken into the unique properties of ML data and how these might affect the performance of classifiers. The concepts of label correlation and class imbalance will also be introduced, however, how to deal with these will be discussed in the next chapter (for now). Finally, we will get to the evaluation metrics of ML algorithms. This is an important topic in ML learning, often neglected in the literature [cite]. After completing this chapter, the reader will have a good basis to be able to move on to the discussion of ML learning algorithms.
 
+Multi-label classification has a wide range of applications, not only in image classification. It has been applied to problems in text categorisation, multimedia, biology, chemical data analysis, social network mining and e-learning among others. This is most likely the reason why it has seen such a rapid increase of academic publications (see \autoref{pubsperyear}).
+
+```{r pubsperyear, include=FALSE, eval = FALSE}
+library(tidyverse)
+library(ggthemes)
+pubsperyear_data <- read_csv("data/Scopus-2251-Analyze-Year.csv")
+p <- pubsperyear_data %>% gather(database, No, -YEAR) %>% 
+  #mutate(ind2017 = YEAR >= 2017) %>% 
+  filter(YEAR < 2017) %>% 
+  ggplot(aes(YEAR, No)) +
+  geom_line() +
+  theme_minimal() +
+  labs(x = "Year", y = "# Documents") +
+  facet_wrap(~database, labeller = function(variable, value) {
+    dnames <- list(Scopus = "(a) Scopus", SemSchol = "(b) Semantic Scholar")
+    return(dnames[value])}) 
+
+ggsave("pubsperyear.png", plot = p, device = "png", path = "figures", width = 7, height = 4)
+```
+
+![Line graphs illustrating the rise in multi-label learning publications per year for two databases. The database searches were done on 24-03-2017. The searches were not identical since they were limited to the search features of the databases. (a) The search on Scopus (cite) was for all documents (conference papers, articles, conference, articles in press, reviews, book chapters and books) in any subject area with either the words *multi-label* or *multilabel* and either the words *learning* or *classification* found in either their titles, abstracts or keywords. (b) The search on Semantic Scholar was based on machine learning principles and thus automatically decides which research documents are relevant to a specific search query. The query used was *multilabel multi-label learning classification*. The search only returns research in the computer science and neuroscience fields of study. More technical details can be found on the respective engine's websites. \label{pubsperyear}](figures/pubsperyear.png)
+
 ## The Task of Multi-Label Learning
 
 A more formal definition of the ML learning task will be given in the following chapter. However, it is important to note that we will define the utlimate task of ML learning as the assigning of multiple labels to an observation. ML learning covers to very similar approaches, namely, ML classification and ML ranking. ML classification algorithms output whether or not labels are relevant to an observation (binary) and ML ranking algorithms outputs a real-valued score assigned to each label indicating its relative importance to an observation. Thus with ML ranking, for each observation we seek a list of labels ordered by their scores representing the confidence in how relevant they are to the specific observation. Many classifiers base their final (categorical) prediction on the thresholding of the real-valued output of the algorithm and thus can also be used for ranking. Similarly, ranking algorithms can also be used for classification if a thresholding function is applied to the real-valued output. (see [@Zhang2014] for a more brief description)

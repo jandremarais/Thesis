@@ -1,0 +1,15 @@
+# Introduction
+\label{chp:intro}
+
+## Motivation
+
+*Image Classification* is the task of assigning one (or more) label(s) to an input image. It is one of the core problems in Computer Vision. This seemingly simple task has a large variety of practical applications. For example, detecting deforestation in the Amazon from satellite images [^Amazon] or detecting cancer from images of skin lesions taken by a mobile phone [@Esteva2017]. Image classification is a thoroughly researched subject and already regarded by many as a 'solved' problem. This progress is mainly attributed to the yearly large-scale image classification competition, called *ImageNet*[^imagenet], providing researchers millions of labelled images to train their image classification models.
+
+[^Amazon]: https://www.kaggle.com/c/planet-understanding-the-amazon-from-space
+
+The other driver of the recent success of image classification algorithms is the development of *Deep Learning*, a subfield of Machine Learning. Deep Learning or *Deep Neural Networks* (DNNs) is a class of models inspired by the structure and function of the brain called artificial neural networks. The type of DNN proven best suited for image classification problems are *Convolutional Neural Networks* (CNNs). CNNs is the uncontested state-of-the-art model for practically all image classification problems, mainly because of its ability of 'learning' highly discriminative feature representations of its input images. AlexNet [@Krizhevsky2012] was the first CNN to win ImageNet (in 2012) and thereafter, each of the following annual ImageNet competitions were won by a CNN.
+
+The main focus in the fields of image classification and deep learning, until recently, was ons problems where each image is only annotated with a single label. *Multi-Label Classification* (MLC) of images generalises this task to allow images to be annotated with more than one label. The majority of real-world images contain more than one object, making multi-label image classification a more general and practical problem, and naturally, also more challenging. Only recently more attention was given to multi-label image classification (for example, [@Wei2014]) and therefore the field is nowhere near the maturity level of its single-label counterpart.
+
+Extending CNNs and other DNNs to handle images with multiple labels is not a trivial task. Recently, a handful of suggestions were made on how to tackle this task. However, these suggestions were mostly given in isolation of one another and no comprehensive review and comparison of these methods exist in the literature. Most of the methods aslo come from a deep learning background and could gain from insights and methods already discovered in the field of MLC.
+

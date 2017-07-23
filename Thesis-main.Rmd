@@ -14,8 +14,8 @@ fontsize: 12pt
 papersize: letter
 classoption: oneside, openany
 margin-ratio: goldenblock
-title: "Deep Multi-Label Learning"
-titel: "Diep Multi-Etiket Leer"
+title: "Deep Neural Networks for Multi-Label Image Classification"
+titel: "Diep Neurale Netwerke vir Multi-Etikel Beeldklassifikasie"
 author: Jan André Marais
 author-short: J.\ A.\ Marais
 degree-short: MCom (Mathematical Statistics)
@@ -42,7 +42,7 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE, echo=FALSE)
 ```
 
 
-```{r child = 'introduction.Rmd'}
+```{r child = 'intro_new.Rmd'}
 ```
 
 ```{r child = 'neuralnet.Rmd'}
