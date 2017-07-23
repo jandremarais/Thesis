@@ -45,25 +45,22 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE, echo=FALSE)
 ```{r child = 'intro_new.Rmd'}
 ```
 
-```{r child = 'neuralnet.Rmd'}
+```{r child = 'dnn.Rmd'}
 ```
 
-```{r child = 'convnets.Rmd'}
+```{r child = 'mlc.Rmd'}
 ```
 
-```{r child = 'ml_conv.Rmd'}
-```
-
-```{r child = 'remotesensing.Rmd'}
+```{r child = 'dnn_mlc.Rmd'}
 ```
 
 ```{r child = 'results.Rmd'}
 ```
 
-```{r child = 'unsorted.Rmd'}
+```{r child = 'conclusion.Rmd'}
 ```
 
-```{r child = 'conclusion.Rmd'}
+```{r child = 'unsorted.Rmd'}
 ```
 
 \appendix
