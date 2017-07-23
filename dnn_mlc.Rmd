@@ -1,5 +1,5 @@
 # Multi-Label Deep Neural Networks
-\label{chp:ml_cnn}
+\label{chp:dnn_mlc}
 
 ## Introduction 
 
