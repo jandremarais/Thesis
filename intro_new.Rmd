@@ -7,11 +7,11 @@
 
 [^Amazon]: https://www.kaggle.com/c/planet-understanding-the-amazon-from-space
 
-The other driver of the recent success of image classification algorithms is the development of *Deep Learning*, a subfield of Machine Learning. Deep Learning or *Deep Neural Networks* (DNNs) is a class of models inspired by the structure and function of the brain called artificial neural networks. The type of DNN proven best suited for image classification problems are *Convolutional Neural Networks* (CNNs). CNNs is the uncontested state-of-the-art model for practically all image classification problems, mainly because of its ability of 'learning' highly discriminative feature representations of its input images. AlexNet [@Krizhevsky2012] was the first CNN to win ImageNet (in 2012) and thereafter, each of the following annual ImageNet competitions were won by a CNN.
+The other driver of the recent success of image classification algorithms is the development of *Deep Learning*, a subfield of Machine Learning. Deep Learning or *Deep Neural Networks* (DNNs) is a class of models inspired by the structure and function of the brain called artificial neural networks. The type of DNN proven best suited for image classification problems are *Convolutional Neural Networks* (CNNs). CNNs is the uncontested state-of-the-art model for practically all image classification problems, mainly because of its ability of 'learning' highly discriminative feature representations of its input images. AlexNet [@Krizhevsky2012] was the first CNN to win ImageNet (in 2012) and thereafter, each of the following annual ImageNet competitions was won by a CNN.
 
 The main focus in the fields of image classification and deep learning, until recently, was on problems where each image is only annotated with a single label. *Multi-Label Classification* (MLC) of images generalises this task to allow images to be annotated with more than one label. The majority of real-world images contain more than one object, making multi-label image classification a more general and practical problem, and naturally, also more challenging. Only recently more attention was given to multi-label image classification (for example, [@Wei2014]) and therefore the field is nowhere near the maturity level of its single-label counterpart.
 
-Extending CNNs and other DNNs to handle images with multiple labels is not a trivial task. Recently, a handful of proposals were made on how to tackle this task. However, these suggestions were mostly given in isolation of one another and no comprehensive review and comparison of these methods exist in the literature. Most of the methods aslo come from a deep learning background and could gain from insights and methods already discovered in the field of MLC. In summary, the relevance of multi-label image classification, in terms of its range of useful practical applications, and the power of deep learning methods for image classification tasks, is the main motivation behind this thesis. Exactly what this thesis aims to achieve will be discussed next.
+Extending CNNs and other DNNs to handle images with multiple labels is not a trivial task. Recently, a handful of proposals were made on how to tackle this task. However, these suggestions were mostly given in isolation of one another and no comprehensive review and comparison of these methods exist in the literature. Most of the methods aslo come from a deep learning background and could gain from insights and methods already discovered in the field of MLC. In summary, the relevance of multi-label image classification, in terms of its range of useful practical applications, and the power of deep learning methods for image classification tasks, is the main motivation behind this thesis. The fact that this area is also relatively under explored is another motivation. Exactly what this thesis aims to achieve will be discussed next.
 
 ## Objectives
 
@@ -24,9 +24,11 @@ This thesis study will explore ways of extending the conventional single-label D
 + Provide a framework in which these methods can be compared.
 + Evaluate on benchmark datasets?
 
+> these are still preliminary
+
 The insights gained from the primary objective of this study may lead to the possibility of:
 
-+ suggesting improvements on the exsiting proposal to multi-label deep neural networks,
++ suggesting improvements on the exsiting proposals to multi-label deep neural networks,
 + propose a novel method for multi-label deep neural networks and/or
 + being able to recommend some approaches above others.
 
@@ -38,21 +40,27 @@ All of the code for this project, including the source docoments, is made availa
 
 > not sure about this section
 
-## Important Concepts and Terminology
+## Background and Important Concepts
 
-Not suprisingly, a convolutional neural network is a type of neural network. Neural networks will be discussed in \autoref{chp:dnn}, but there are some preliminary concepts to introduce here to ensure a better understanding of neural networks and ultimately CNNs. First, a brief introduction to the general problem of image classification is given.
+It should be clear by now that the three main concepts in this thesis is that of image classification, deep neural networks and multi-label classification. Each of these areas will be introduced individually before putting it all together. DNNs will be discussed in Chapter \ref{chp:dnn} and MLC in Chapter \ref{chp:mlc}. Since we are interested in applying both of these classes of models in the image classification domain, a background and comprehension of the image classification problem is necessary.
+
+First, a brief introduction to the general problem of image classification is given. It will be explained with the help of a trivial example. This discussion will also introduce the main components of DNNs which are important to understand before moving on to Chapter \ref{chp:dnn}.
 
 ### Image Classification
 
 There are three main tasks in computer vision (CV), namely: image classification, object detection and image segmentation. Traditional image classification is the task of assigning one label from a fixed set of categories to an input image. More recently the task has been generalised to assigning multiple labels to an input image, *i.e.* multi-label classification (MLC). First, we will only look at the single label case.
 
-Image classification is the core of computer vision tasks and probably the most explored since it has a large variety of practical applications. It can be shown that the other two CV tasks, detection and segmentation, can be reduced to classification. Classification will be the main theme of this thesis but we will have a look at segmentation and detection later on.
+Image classification is the core of computer vision tasks and probably the most explored since it has a large variety of practical applications. It can be shown that the other two CV tasks, detection and segmentation, can be reduced to classification. Classification will be the main task of this thesis.
 
 > show visual difference between classification, segmentation and detection.
 
 Instead of hard coding rules on how to classify images into an image classification model, it can learn to classify images by seeing many examples of images and its corresponding labels. In this way it learns the visual appearance of each class. This is sometimes referred to as a data-driven approach. A very intuitive approach to image classification (and supervised learning in general) is called the nearest neighbour approach.
 
 Although this approach is rarely used in practice, this description helps with the understanding of the image classification problem. The nearest neighbour classifier will take a test image, compare it to every single one of the training images, and predict its label to be the label of the closest training image. This leaves the question of how to measure the similarity between images.
+
++ challenges for image classification: (still add this somewhere around here)
+
+    + http://cs231n.github.io/classification/
 
 An image is a grid of many small, square cells of different colors. These cells are known as pixels and one pixel represents one color. A grayscale image, 32 pixels wide and 32 pixels long, can be represented by a $32\times 32$ matrix of integers, where each integer represents the 'brightness' (intensity) of each pixel. These integers are usually in $[0,255]$, such that the greater the integer the brighter the pixel, *i.e.* a pixel with intensity 0 is totally black and a pixel with intensity 255 is totally white. Note that a color image consists of 3 spectral bands, red, green and blue (RGB), *i.e.* the color of one pixel is determined by 3 integers each representing the intensity of the color red, green and blue, respectively. 
 
@@ -364,7 +372,7 @@ The above sections were concerned with single variables, but all concepts extend
 
 ## Outline
 
-The motivations and objectives of the thesis has been discussed and the problem of image classification has been introduced. The rest of the thesis will follow the following outline. Chapter \ref{chp:dnn} introduces deep neural networks for image classifcation. Chapter \ref{chp:mlc} reviews the field of multi-label classification. Chapter \ref{chp:dnn_mlc} reviews approaches to deep learning for multi-label image classification. Chapter \ref{chp:results} evaluates proposals on benchmark datasets. The results will also be compared to the findings in the literature. The thesis is concluded in Chapter \ref{chp:conc} with a summary of the work done in this project, general discussion of the results and literature and what directions can be followed for future research.
+The motivations and objectives of the thesis has been discussed and the problem of image classification has been introduced. The rest of the thesis will follow the following outline. Chapter \ref{chp:dnn} introduces deep neural networks for image classifcation. Chapter \ref{chp:mlc} reviews the field of multi-label classification. The objective of this chapter is to find approaches that could help extend DNNs for MLC. Chapter \ref{chp:dnn_mlc} reviews approaches to deep learning for multi-label image classification. Chapter \ref{chp:results} evaluates proposals on benchmark datasets. The results will also be compared to the findings in the literature. The thesis is concluded in Chapter \ref{chp:conc} with a summary of the work done in this project, general discussion of the results and literature and what directions can be followed for future research.
 
 > this is super rough. give more detail
 

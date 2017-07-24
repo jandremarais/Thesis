@@ -1,1 +1,6 @@
-# Software
+# Software and Code
+
++ Deep Learning Library: Keras
++ Hardware: AWS p2-instance
++ R and Python
++ github

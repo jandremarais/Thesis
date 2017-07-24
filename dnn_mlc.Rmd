@@ -5,9 +5,15 @@
 
 We have seen that Deep Convoltional Neural Networks have achieved great success on single-label image classificaiton problems. This is because of their strong capability in learning discriminative features when trained on large datasets, which are also transferable to other image classification problems. However, these feature representations might not be optimal for images with multiple labels. For example, one of the labels might only relate to a very small region of the image. This label would most likely be underepresented by the features learned on single label datasets, since for single label images, the label is typically related to a large part, and usually in the centre, of the image.
 
-The most common method is to take popular existing networks, *e.g.* VGG and ResNet, and replace the activation function of their final classification layer to a sigmoid activation and train the network by minimising the sum of the binary cross-entropies of each label. This is mostly related to the BR approach, since direct relationships between labels are not taken into account. A pure BR approach would be to train a separate network for each label. If there are enough images per label, this approach should in theory be sufficient to classify the images. But in practice this is rarely true and the individual classifiers could be improved by having information on the other labels.
+The most common and simple method is to take popular existing networks, *e.g.* VGG and ResNet, and replace the activation function of their final classification layer to a sigmoid activation and train the network by minimising the sum of the binary cross-entropies per label. As we have seen in Chapter \ref{chp:dnn}, the sigmoid activation ensures that the output lies between 0 and 1, but unlike the softmax activation, the sum of these outputs do not add to 1. Therefore the sigmoid layer is more suitable for cases with potentially multiple labels. 
 
-Minimising various other loss functions has also been investigated (see Deep convolutional ranking for multilabel image annotation). Found that weighted approximate ranking loss worked best for CNNs.
+The simple approach described above is mostly related to the BR approach, since direct relationships between labels are not taken into account. However, the weights of the network are learnt by taking all of the labels jointly into account. A pure BR approach would be to train a separate network for each label. If there are enough images per label, this approach should in theory be sufficient to classify the images. For instance, it should be possible to detect a *car* in an image indepently of the presence of a *road*. However, in practice, image classifiers are imperfect and could be improved by having information on the other labels.
+
+Extensions of conventional DNNs to suit multi-label image problems are either architectural adaptions or the optimisation of different loss functions more suited for MLC. We will first look at the latter.
+
+## Optimising Multi-Label Loss functions
+
+Minimising various other loss functions has also been investigated (see Deep convolutional ranking for multi-label image annotation). Found that weighted approximate ranking loss worked best for CNNs.
 
 + https://arxiv.org/pdf/1609.07982.pdf
 + replace last FC with maxout
@@ -16,6 +22,20 @@ Minimising various other loss functions has also been investigated (see Deep con
 + dropout only on first layers after representation (fixed VGG)
 + note they also used dropout at testing and then combined for mean prediction
 + see [https://cs.nju.edu.cn/_upload/tpl/01/0b/267/template267/zhouzh.files/publication/tkde06a.pdf] for ML-loss function
+
+### Sparsemax ML loss
+
++ see https://arxiv.org/pdf/1602.02068.pdf
+
+### F-measure maximisation
+
++ https://arxiv.org/pdf/1604.07759.pdf
+
+### Other
+
++ see https://arxiv.org/pdf/1701.05616.pdf
++ https://arxiv.org/pdf/1705.02315.pdf
++ see https://arxiv.org/pdf/1706.07960.pdf for pseudo huber loss
 
 ## Proposal Based Approaches
 
@@ -108,13 +128,32 @@ Attention maps interpretable.
 + https://arxiv.org/pdf/1412.7755.pdf
 + more ons weakly supervised attention https://arxiv.org/pdf/1707.05821.pdf
 
-## Sparsemax ML loss
+## Context Gating
 
-+ https://arxiv.org/pdf/1602.02068.pdf
++ winner of yt8m challenge: https://arxiv.org/pdf/1706.06905.pdf [@Lee2017a]
 
-+ Other object detection
-+ winner of yt8m challenge: https://arxiv.org/pdf/1706.06905.pdf [@Lee2017a]. Used context gating!
-+ see the chaining method of: https://arxiv.org/pdf/1706.05150.pdf and useful other tricks like bagging, boosting, stacking and knowledge distillation
+## Chaining
+
++ https://arxiv.org/pdf/1706.05150.pdf 
++ https://arxiv.org/pdf/1707.03296.pdf 
+
+## Mixture of Experts
+
++ see https://arxiv.org/pdf/1409.4698.pdf for MOE for MLC
++ https://arxiv.org/pdf/1707.01408.pdf
++ https://arxiv.org/pdf/1707.03296.pdf
+
+## Label Concept Learning
+
++ https://arxiv.org/pdf/1707.01408.pdf
+
+## Label Processing Layer
+
++ https://arxiv.org/pdf/1706.07960.pdf
+
+## Nearest Labelset
+
++ see https://arxiv.org/pdf/1702.04684.pdf for nearest labelset approach
 
 ## Label Embedding Approaches
 
@@ -122,21 +161,9 @@ Attention maps interpretable.
 + Direct Binary embedding: https://arxiv.org/pdf/1703.04960.pdf
 + cost sensitive: https://arxiv.org/pdf/1603.09048.pdf
 
-+ see https://arxiv.org/pdf/1707.01408.pdf for label concept learning layer, other MOE options and ensembling and similarly https://arxiv.org/pdf/1707.03296.pdf with the addition of classifier chains
-+ see https://arxiv.org/pdf/1706.07960.pdf for label processing layer, psuedo huber loss, 
-
-+ see https://arxiv.org/pdf/1702.04684.pdf for nearest labelset approach
-
 ## Stratification
 
 + https://arxiv.org/pdf/1704.08756.pdf
-
-## F-measure maximisation
-
-+ https://arxiv.org/pdf/1604.07759.pdf
-+ see https://arxiv.org/pdf/1701.05616.pdf for other loss optimisation 
-
-+ see https://arxiv.org/pdf/1409.4698.pdf for MOE for MLC
 
 ## To read:
 
