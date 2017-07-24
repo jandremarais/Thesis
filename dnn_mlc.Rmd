@@ -160,6 +160,7 @@ Attention maps interpretable.
 + Learning Deep Latent Spaces for Multi-Label Classification: https://arxiv.org/pdf/1707.00418.pdf
 + Direct Binary embedding: https://arxiv.org/pdf/1703.04960.pdf
 + cost sensitive: https://arxiv.org/pdf/1603.09048.pdf
++ https://arxiv.org/pdf/1604.04573.pdf also has small section on label embedding
 
 ## Stratification
 

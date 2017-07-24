@@ -1,50 +1,41 @@
 # Results (/Application)
 \label{chp:results}
 
-In this chapter, some of the theoretical reccommendations will be evaluated empirically, with the goal to find the best approaches for this dataset. The full end-to-end workflow will be discussed and intermediate results also reported.
+## Introduction
 
-(Preliminary) The network will consist of two parts: a feature extraction part and a classification part. Basically a fine-tuning framework. The feauture extractor will be a popular Convolutional Neural Network (CNN) pretrained on ImageNet, *e.g.* VGG, ResNet, DenseNet, Inception. The classification part is the mapping from the extracted features to the class scores. This can be done in various ways and will be experimented with, for example: a combination of BR output and LP output, classification head for each label or Rakel output. The weights of the whole classification part will be trained on the Amazon dataset and, in some cases, the last layers of the feature extraction part.
+Main aim is to compare methods on more datasets and in terms of more evaluation metrics. The datasets to be evaluated on are described in Appendix \ref{app:data}. These are the most popular and most recent multi-labelled image datasets.
 
-## Comparison of Pretrained Networks for Transfer Learning
++ mention the importance of evaluating on multiple ml datasets with different properties.
++ mention the importance of comparing in terms of many evaluation metrics. Which am I going to use here? Probably one of each, example-based, label-based (micro and macro).
 
-+ VGG16
-+ VGG19
-+ ResNet50
-+ DenseNet
-+ Inception
+Where possible, the basic framework will be to extract features from input images with pretrained (on ImageNet) CNN. The proposals in the literature will be built on top of these features (see transfer learning in Chapter \ref{chp:dnn}). This will not give the best results because these features are trained for single label images. However, they are sufficient for comparison purposes and are much less time consuming. (Maybe I can indentify the most promosing method and see what effect fine-tuning convolutional layers will have on it. This will also allow other bells and whistles such as data augmentation.) The architecture chosen to do the feature extraction is VGG16 because of its simplicity and proven effectiveness in transfer learning. 
 
-## Experimentation with Classification Heads
++ maybe also shrink images for faster computations.
++ add time taken for learning as a metric.
++ 5- or 10-fold cross-validation for more accurate errors and standard deviations.
++ baseline: sigmoid classification layer optimising binary cross-entropy
 
-+ separate vs combined
-+ BR vs LP vs CC?
-+ Rakel?
-+ combo of BR and LP
-+ FCN
-+ spp: https://github.com/yhenon/keras-spp
+## Optimising Multi-Label Loss Functions
 
-## Sampling and Resampling
++ see the effect of optimising ML loss functions on different metrics.
 
-+ Simulating [@TorresTomas2014] (also gives citations to other papers)
-+ partitioning mentioned in [@Gibaja2015] - referred to [@Sechidis]
-+ [@Luaces] Therefore they created a ML data generator to simulate ML data on which algorithms can be evaluated.
-+ very important for stratification: https://arxiv.org/pdf/1704.08756.pdf and more ML metrics
+## Label Embedding Approaches
 
++ evaluate the effect of label embedding approaches
++ does it help with class imbalance?
 
-## Class Imbalance
+## Novel Architectures
 
-+ https://www.reddit.com/r/MachineLearning/comments/6iq5i8/d_what_are_your_favorite_ways_for_dealing_with/
-+ [@Charte2015]
-+ towards class imbalance aware multi label learning
-+ way of stratifying batches: https://arxiv.org/pdf/1705.00607.pdf
++ evaluate the following classification heads:
++ spatial regulrisation network
++ cnn-rnn and improved version
++ Hypothesis CNN Pooling
++ Context gating
++ Chaining
++ Label Processing layers
 
-## Data Augmentation
+## Discussion
 
-+ elastice transform: https://pdfs.semanticscholar.org/7b1c/c19dec9289c66e7ab45e80e8c42273509ab6.pdf
-
-## Pseudo-Labelling
-
-+ Hinton paper for knowledge distillation and other paper on pseudo labelling
-
-## Ensembling
-
-+ see https://arxiv.org/pdf/1707.04272.pdf for correlation based diversity analysis.
++ is there a 'best' method?
++ are there any patterns?
++ do they perform as reported by original papers?

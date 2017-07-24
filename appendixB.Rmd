@@ -4,3 +4,4 @@
 + Hardware: AWS p2-instance
 + R and Python
 + github
++ compiling thesis with Rmarkdown with version control with Github

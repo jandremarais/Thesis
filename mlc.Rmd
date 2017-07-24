@@ -835,3 +835,10 @@ The threshold calibration strategies described thus far are mostly general purpo
 An alternative to threshold calibration is to decide on the number, say $m$, of labels to be present for each instance. Then the labels with the $m$ highest class scores will be assigned a 1 and the rest zero. Most of the strategies described above for selecting the best threshold can also be applied to selecting the best $m$. (also described in the bipartition paper.) Nice paper about it here [http://www2009.eprints.org/22/1/p211.pdf], think it is the same as the Meta threshold mentioned above.
 
 + see adhoc methods such as calibrated label ranking: [https://pdfs.semanticscholar.org/5918/04251e15cfb571bc90c2fab2344f462e1617.pdf] and 
+
+## Class Imbalance
+
++ https://www.reddit.com/r/MachineLearning/comments/6iq5i8/d_what_are_your_favorite_ways_for_dealing_with/
++ [@Charte2015]
++ towards class imbalance aware multi label learning
++ way of stratifying batches: https://arxiv.org/pdf/1705.00607.pdf

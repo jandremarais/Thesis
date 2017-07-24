@@ -4,10 +4,6 @@ output: pdf_document
 
 # Things that need a place:
 
-+ challenges for image classification: (maybe in CNNs in practive)
-
-    + http://cs231n.github.io/classification/
-
 + Feature learning
 
 + one-shot learning:
