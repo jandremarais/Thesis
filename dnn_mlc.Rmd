@@ -28,6 +28,12 @@ Interaction between objects.
 
 Label space has been expanded and more training data is needed. But also more costly to annotate multi-label images.
 
+## Short History
+
++ focus mostly on image classification, but can also mention other DNN which is possible to transfer to image classification.
+
+Backpropogation for Multi-Label Learning (BP-MLL) [@Zhang2006] is claimed by the authors to be the first multi-label neural network. It was applied in text classification and function genomics, but could be applied to image classification aswell. As its name implies, BP-MLL is derived from the backpropogation algorithm through replacing its error function with a new function defined to capture the characteristics of multi-label learning, that is, the labels belonging to an instance should be ranked higher than those not belonging to that instance. It views each output node as binary classification task, and relies on the architecture and loss function to exploit the dependency across labels. It was later expanded by [@Nam2013] with state-of-the-art learning techniques such as dropout. Also se [@Hu2015] for structured inference NN which uses concept layers modeled with label graphs.
+
 Extensions of conventional DNNs to suit multi-label image problems are either architectural adaptions or the optimisation of different loss functions more suited for MLC. We will first look at the latter.
 
 ## Non-Deep Learning Approaches
@@ -46,6 +52,25 @@ These learnt features are not always optimal.
 Where does VLAD and Fisher vectors fit in?
 
 ## Optimising Multi-Label Loss functions
+
+The first proposed approach to extend neural networks to MLC (in general), named Backpropogation for Multi-Label Learning (BP-MLL), was a modification of the loss function to be optimised. Consider the global error of the network on the training set as
+
+$$
+E=\sum_{i=1}^{n}E_{i},
+$$
+where $E_{i}$ is the error of the network on $\boldsymbol{x}_{i}$, which could be defined as:
+
+$$
+E_{i}=\sum_{j=1}^{Q}(c_{j}^{i}-d_{j}^{i})^{2},
+$$
+where $c_{j}^{i}=c_{j}(\boldsymbol{x}_{i})$ is the actual output of the network on $\boldsymbol{x}_{i}$ on the $j$-th class, $d_{j}^{i}$ is the desired output of $\boldsymbol{x}_{i}$ on the $j$-th class which takes the value of either +1 ($j\in Y_{i}$) or -1 ($j\notin Y_{i}$). If the weights of the network is learned through backpropogating the errors from this loss function, some important characteristics of multi-label learning are not considered. Here $E_{i}$ only concentrates on indivdual label discrimination and it does not consider the correlations between the different labels. Therefore the authors of [@Zhang2006] suggested rewriting the global error function as follows:
+
+$$
+E=\sum_{i=1}^{n}E_{i}=\sum_{i=1}^{n}\frac{1}{|Y_{i}||\bar{Y}_{i}|}\sum_{(k,l)\in Y_{i}\times\bar{Y}_{i}}\exp(-(c_{k}^{i}-c_{l}^{i})).
+$$
+Here $\bar{Y}_{i}$ is the complementary set of $Y_{i}$ in $\mathcal{Y}$ and $|\cdot|$ measures the cardinality/size of a set. $c_{k}^{i}-c_{l}^{i}$ measures the difference between the outputs of the network on one label belonging to $\boldsymbol{x}_{i}$ ($k\in Y_{i}$) and one label not belonging to it ($l\in \bar{Y}_{i}$). Therefore, the bigger the difference, the better performance. The negation of this difference is fed to the exponential function in order to severly penalise the $i$-th error term if the output on the label belonging to $\boldsymbol{x}_{i}$, $c_{k}^{i}$, is much smaller than the output on the label not belonging to $\boldsymbol{x}_{i}$, $c_{l}^{i}$. The summation is over all pairs of labels where the one belongs to $\boldsymbol{x}_{i}$ and the other does not. This is then normalised by the denominator, $|Y_{i}||\bar{Y}_{i}|$, which is the total number of such possible pairs.
+
+The minimisation of this global error will lead the network to ouput larger values for labels belonging to the training instance and smaller values for those not belonging to it.  It is shown in their paper that this error function is closely related to the rankining loss criterion. The specifics of the minimisation of this error function with gradient descent and backpropogation is not in the scope of this thesis and can be found in the original paper [@Xhang2006]. In the paper, BP-MLL, show superiority to the well-established multi-label learning algorithms of that time. Although the algorithms were tested on the applications of text classification and functional genomics, it could also be applied to image classification, since the loss function is not affected by the application domain.
 
 One of the first approaches to extending CNNs to a multi-label image classification problems was by minimising loss functions more suited for MLC, more specifically, the multi-label ranking loss [@Gong2013]. Found that weighted approximate ranking loss worked best for CNNs. Showed more than 10% increase to conventional BoW methods on NUS-WIDE dataset. Still need to read the rest of the article but apparently an effective model requires lots of training samples (they did not use transfer leanring).
 
@@ -142,7 +167,7 @@ Because of the use of a LSTM, a predefined label order is required during traini
 
 [@Chen2017] present a novel deep learning framework of visually attended RNN, which consists of visual attention and confidence-ranked LSTM. This network is able to identify regions of interest associated with each label (even the smaller objects get attended). The order of the labels can automatically learned without any prior knowledge or assumption (with the confidence scores of the attenion maps?). This also alleviates the inconsistent procedures between training and testing.
 
-Actually, does not look like a huge empirical improvement over the original CNN-RNN (compare on the common 3 ML image datasets). Again the compare with methods that utilise older CNN architectures.
+Actually, does not look like a huge empirical improvement over the original CNN-RNN (compared on the common 3 ML image datasets). Again they compare with methods that utilise older CNN architectures.
 
 However, these methods do not capture spatial relations between labels. This is a challenging problem because most of the times these spatial locations are not known beforehand, *i.e* the images are not annotated with these spatial locations. Spatial Regularisation Networks [@Zhua] attempt to capture both semantic and spatial relations between labels without any prior knowledge on the spatial locations of each label. This is discussed in the next section.
 
@@ -201,15 +226,6 @@ Attention maps interpretable.
 
 + https://arxiv.org/pdf/1703.10663.pdf
 + spp layer after convolutions - not sure if it has to do with MLC
-
-## BP-MLL
-
-+ http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.130.7318&rep=rep1&type=pdf
-+ description on NN and some references
-
-## ML NN for text
-
-+ https://arxiv.org/pdf/1312.5419.pdf
 
 ## ML MT
 
