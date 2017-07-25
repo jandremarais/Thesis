@@ -70,19 +70,53 @@ E=\sum_{i=1}^{n}E_{i}=\sum_{i=1}^{n}\frac{1}{|Y_{i}||\bar{Y}_{i}|}\sum_{(k,l)\in
 $$
 Here $\bar{Y}_{i}$ is the complementary set of $Y_{i}$ in $\mathcal{Y}$ and $|\cdot|$ measures the cardinality/size of a set. $c_{k}^{i}-c_{l}^{i}$ measures the difference between the outputs of the network on one label belonging to $\boldsymbol{x}_{i}$ ($k\in Y_{i}$) and one label not belonging to it ($l\in \bar{Y}_{i}$). Therefore, the bigger the difference, the better performance. The negation of this difference is fed to the exponential function in order to severly penalise the $i$-th error term if the output on the label belonging to $\boldsymbol{x}_{i}$, $c_{k}^{i}$, is much smaller than the output on the label not belonging to $\boldsymbol{x}_{i}$, $c_{l}^{i}$. The summation is over all pairs of labels where the one belongs to $\boldsymbol{x}_{i}$ and the other does not. This is then normalised by the denominator, $|Y_{i}||\bar{Y}_{i}|$, which is the total number of such possible pairs.
 
-The minimisation of this global error will lead the network to ouput larger values for labels belonging to the training instance and smaller values for those not belonging to it.  It is shown in their paper that this error function is closely related to the rankining loss criterion. The specifics of the minimisation of this error function with gradient descent and backpropogation is not in the scope of this thesis and can be found in the original paper [@Xhang2006]. In the paper, BP-MLL, show superiority to the well-established multi-label learning algorithms of that time. Although the algorithms were tested on the applications of text classification and functional genomics, it could also be applied to image classification, since the loss function is not affected by the application domain.
+The minimisation of this global error will lead the network to ouput larger values for labels belonging to the training instance and smaller values for those not belonging to it.  It is shown in their paper that this error function is closely related to the rankining loss criterion. The specifics of the minimisation of this error function with gradient descent and backpropogation is beyond the scope of this thesis and can be found in the original paper [@Xhang2006]. In the paper, BP-MLL show superiority to the well-established multi-label learning algorithms of that time. Although the algorithms were tested on the applications of text classification and functional genomics, it could also be applied to image classification, since the loss function is not affected by the application domain.
 
 One of the first approaches to extending CNNs to a multi-label image classification problems was by minimising loss functions more suited for MLC, more specifically, the multi-label ranking loss [@Gong2013]. Found that weighted approximate ranking loss worked best for CNNs. Showed more than 10% increase to conventional BoW methods on NUS-WIDE dataset. Still need to read the rest of the article but apparently an effective model requires lots of training samples (they did not use transfer leanring).
 
 They show that a significant performance gain could be obtained by combining convolutional architectures with approximate top-$k$ ranking objectives.
 
-Focus on loss functions tailored for multi-label prediction tasks. Compared: (see paper for description of each)
+Focus on loss functions tailored for multi-label prediction tasks. The first loss function they considered was the softmax loss adopted to the MLC context. Consider the convolutional network, $f(\cdot)$, where the convolutional layers and dense connected layers filter the images. The output of $f(\cdot)$ is a scoring function of the data point $\boldsymbol{x}$, that produces a vector of activations. The posterior probability of an image, $\boldsymbol{x}_{i}$, and class $j$ (out of $K$ possible classes) can be expressed as
 
-+ multi-label softmax regression loss
-+ simple modification of a pairwise-ranking loss
-+ multilabel variant of the WARP loss
+$$
+p_{ij}=\frac{\exp(f_{j}(\boldsymbol{x}_{i}))}{\sum_{k=1}^{K}\exp(f_{k}(\boldsymbol{x}_{i}))},
+$$
+where $f_{j}(\boldsymbol{x}_{i})$ is the activation value for image $\boldsymbol{x}_{i}$ and class $j$. The KL-divergence between the predictions and the ground-truth probabilities can then be minimised. The ground-truth probabilities can be obtained by normalising $\boldsymbol{y}$ as $\boldsymbol{y}/||\boldsymbol{y}||_{1}$, where $\boldsymbol{y}$ is a binary vector of size $K$ indicating class presence/absence (1/0). (not sure about this ground truth transformation - seems like it is unncessary). Let the ground-truth probability for image $i$ and class $j$ be defined as $\bar{p}_{ij}$. The cost function then to be minimised is
+
+$$
+J=-\frac{1}{m}\sum_{i=1}^{n}\sum_{j=1}^{K}\bar{p}_{ij}\log(p_{ij})=-\frac{1}{m}\sum_{i=1}^{n}\sum_{j=1}^{c+}\frac{1}{c+}\log(p_{ij}),
+$$
+where $c+$ dentes the number of positive labels for each image. Technically, then $c+$ is dependent on $i$, but the authors chose this notation for ease of exposition.
+
+The second loss was a simple modification of a pairwise-ranking loss, which takes multiple labels into account. The aim was to rank positive labels to always have higher scores than negative labels. This led to the problem of minimising
+
+$$
+J=\sum_{i=1}^{n}\sum_{j=1}^{c+}\sum_{k=1}^{c-}\max(0,1-f_{j}(\boldsymbol{x}_{i})+f_{k}(\boldsymbol{x}_{i})),
+$$
+where $c-$ is the number of negative labels. (can improve on this indexing). During the backpropogation they computed the sub-gradient of this loss function. One limitation of this loss is that it optimise the area under the ROC curve (AUC) but does not directly optimise the top-$k$ annotation accuracy.
+
+The third loss function they experimented with is a multi-label variant of the weighted approximate ranking (WARP) loss, which uses a sampling trick to optimise top-$k$ annotation accuracy. It specifically optimises the top-$k$ accuracy for annotation by using a stochastic sampling approach. It minimises
+
+$$
+J=\sum_{i=1}^{n}\sum_{j=1}^{c+}\sum_{k=1}^{c-}L(r_{j})\max(0,1-f_{j}(\boldsymbol{x}_{i})+f_{k}(\boldsymbol{x}_{i})),
+$$
+where $L(\cdot)$ is a weighting function for different ranks and $r_{j}$ is the rank for the $j$-th class for image $i$. The weighting function used is defined as:
+
+$$
+L(r)=\sum_{j=1}^{r}\alpha_{j},
+$$
+with $\alpha_{1}\ge \alpha_{2}\ge\dots\ge 0$. They defined $\alpha_{j}$ as $1/j$. It is clear that $L(\cdot)$ will assign a small weight to the loss if a positive label is ranked top in the label list. Howeverm if a positive label is not ranked top, $L(\cdot)$ will assign a much larger weight to the lossm which pushes the positive label to the top.
+
+To find the rank $r_{j}$, they followed the following sampling method. For a positive label, continue sampling negative labels until a violation is found and let $s$ be the number of trials sampled for negative labels. The rank was estimated by the following formulation
+
+$$
+r=\lfloor \frac{K-1}{s}\rfloor.
+$$
+Still need to figure this out.
 
 They only compared on NUS-WIDE with no standard errors and only on per class precision and recall and overall precision and recall. Might be valuable to compare on more datasets and with more metrics. Also, these were tested with older CNN architectures, so it may be unfair to compare novel approaches utilising state-of-the-art CNN architectures to these approaches.
+
+They found that WARP loss gave the best results.
 
 + https://arxiv.org/pdf/1609.07982.pdf
 + replace last FC with maxout
