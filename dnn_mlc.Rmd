@@ -3,17 +3,59 @@
 
 ## Introduction 
 
-We have seen that Deep Convoltional Neural Networks have achieved great success on single-label image classificaiton problems. This is because of their strong capability in learning discriminative features when trained on large datasets, which are also transferable to other image classification problems. However, these feature representations might not be optimal for images with multiple labels. For example, one of the labels might only relate to a very small region of the image. This label would most likely be underepresented by the features learned on single label datasets, since for single label images, the label is typically related to a large part, and usually in the centre, of the image.
+We have seen that Deep Convoltional Neural Networks have achieved great success on single-label image classificaiton problems. This is because of their strong capability in learning discriminative features when trained on large datasets, which are also transferable to other image classification problems. Naturally, one might wonder whether these learnt features are useful in the MLC domain. 
+
+This may shed some light on the multi-label image classification problem. 
+
+Main questions:
+
++ is the single-label features transferable to multi-label images?
++ can we learn from label correlations?
 
 The most common and simple method is to take popular existing networks, *e.g.* VGG and ResNet, and replace the activation function of their final classification layer to a sigmoid activation and train the network by minimising the sum of the binary cross-entropies per label. As we have seen in Chapter \ref{chp:dnn}, the sigmoid activation ensures that the output lies between 0 and 1, but unlike the softmax activation, the sum of these outputs do not add to 1. Therefore the sigmoid layer is more suitable for cases with potentially multiple labels. 
 
 The simple approach described above is mostly related to the BR approach, since direct relationships between labels are not taken into account. However, the weights of the network are learnt by taking all of the labels jointly into account. A pure BR approach would be to train a separate network for each label. If there are enough images per label, this approach should in theory be sufficient to classify the images. For instance, it should be possible to detect a *car* in an image indepently of the presence of a *road*. However, in practice, image classifiers are imperfect and could be improved by having information on the other labels.
 
+## Differences Between Single Label and Multiple Labels Images
+
+However, these feature representations might not be optimal for images with multiple labels. For example, one of the labels might only relate to a very small region of the image. This label would most likely be underepresented by the features learned on single label datasets, since for single label images, the label is typically related to a large part, and usually in the centre, of the image.
+
+In single label image datasets, it is quite fair to assume that the foreground objects are roughly aligned. This assumption more risky for images with multiple labels. A typical multi-label image has objects of different categories scattered around the image at different scales and orientations. Maybe show example images?
+
+Interaction between objects.
+
+Label space has been expanded and more training data is needed. But also more costly to annotate multi-label images.
+
 Extensions of conventional DNNs to suit multi-label image problems are either architectural adaptions or the optimisation of different loss functions more suited for MLC. We will first look at the latter.
+
+## Non-Deep Learning Approaches
+
+Traditional bag-of-words model can be decomposed into multiple modules:
+
++ feature representation: generate global representations for images
+  + feature extraction: Extracted from dense grids and sparse interest points - SIFT, Histogram of Oriented Gradients and Local Binary Patterns
+  + feature coding: Qunatise extracted features - Vector Qunatisation, Sparse Coding and Gaussian Mixture Models.
+  + feature pooling: Feature aggregation methods - Spatial Pyramid Matching
++ classification: SVM or Random Forest
++ context modelling: the use of context information such as spatial location of object and background scene from global view can considerably improve the performance
+
+These learnt features are not always optimal.
+
+Where does VLAD and Fisher vectors fit in?
 
 ## Optimising Multi-Label Loss functions
 
-Minimising various other loss functions has also been investigated (see Deep convolutional ranking for multi-label image annotation). Found that weighted approximate ranking loss worked best for CNNs.
+One of the first approaches to extending CNNs to a multi-label image classification problems was by minimising loss functions more suited for MLC, more specifically, the multi-label ranking loss [@Gong2013]. Found that weighted approximate ranking loss worked best for CNNs. Showed more than 10% increase to conventional BoW methods on NUS-WIDE dataset. Still need to read the rest of the article but apparently an effective model requires lots of training samples (they did not use transfer leanring).
+
+They show that a significant performance gain could be obtained by combining convolutional architectures with approximate top-$k$ ranking objectives.
+
+Focus on loss functions tailored for multi-label prediction tasks. Compared: (see paper for description of each)
+
++ multi-label softmax regression loss
++ simple modification of a pairwise-ranking loss
++ multilabel variant of the WARP loss
+
+They only compared on NUS-WIDE with no standard errors and only on per class precision and recall and overall precision and recall. Might be valuable to compare on more datasets and with more metrics.
 
 + https://arxiv.org/pdf/1609.07982.pdf
 + replace last FC with maxout
@@ -39,7 +81,21 @@ Minimising various other loss functions has also been investigated (see Deep con
 
 ## Proposal Based Approaches
 
+[@Razavian2014] and [@Sermanet2013] was the first to propose a CNN feature extraction approach. It consisted of feeding all the images of a multi-label image dataset to a CNN trained on ImageNet to get CNN activations as the off-the-shelf features for classification, where they used a SVM. Since ImageNet is a single label image classification problem, these features were not optimal for a multi-label problem (because of alignment and occlusion issues). An improvement to this idea is to annotate the images with bounding boxes indicating the presence of objects, such as in [@Oquab2014] and [@Girshick2013], but these bounding box annotations are very costly.
+
+The HCP method described below requires no bounding box information for tranining and is robust to the possible noisy and/or redundant hypotheses. Much fewer hypotheses are alos required, giving a significant speed up in training.
+
 If multiple labels are associated with a single image, it is fair to assume that the different labels are related to different visual regions of the image. Proposal based CNN methods attempt to cope with this problem. (Start with single to multi CNN paper). Proposal based methods are also very popular or object detection problems.
+
++ Hypotheses-CNN-Pooling (HCP)
++ takes an arbitrary number of object segment hypotheses as the inputs (use state-of-the-art objectiveness detection techniques, like BING)
++ and then a shared CNN is connected with each hypothesis.
++ The CNN output from each hypothesis is aggregated by max pooling
++ Pro: no ground truth is required which makes labelling cheaper
++ Pro: robust to noisy and/or redundant hypothesis (thanks to max pooling)
++ Pro: can take an arbritrary number of hypothesis as input
++ Pro: CNN can be pretrained on single image datasets.
+
 
 However, these methods ignore semantic relations between labels. Next we will look at ways to capture these semantic relations in image classification.
 
