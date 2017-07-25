@@ -124,13 +124,27 @@ Can visualise attentional regions.
 
 Test on MS COCO, NUS-WIDE and PASCAL VOC 2007. No standard errors and report per class precision, recall, F1 and overall. Also MAP@10. Shows good performance but strangely does not use the best HCP on VOC2007 dataset to compare with. CNN-RNN and HCP2000 is actually quite equal. Should be tested on more datasets and maybe a combination should be considered. For example region proposals from HCP and label dependencies with RNN.
 
-+ sequential prediction problem.
+Have not read the full CNN-RNN paper. An extra detail is that the RNN require sequential input. Therefore the unordered labelset should be ordered. The original paper uses the frequent first order. [@Jin2016] uses the rarest first order, which apparently helps with the classification of the less frequently occurring classes. Read the rest of the paper. This order problem is mostly probaly solved by [@Chen2017]. 
 
-+ also PGMs, Structured inference (SRN for reference)
+There are some extensions to this RNN-CNN idea. The first we will look at is given by [@Liu2016]. Note, the CNN-RNN pattern is also commonly used in image captioning. The original CNN-RNN just discussed, utilises the weakly semantic CNN hidden layer or its transform as the image embedding that provides the interface between the CNN and RNN. This overstretches the RNN to complete two tasks: predicting the visual concepts of the image and modelling their correlations. This makes end-to-end training of the network slow and ineffective due to the difficulty of backpropogating gradients through the RNN to train the CNN. [@Liu2016] proposes a simple modification to improve the training of the RNN-CNN network. They propose a semantically regularised embedding layer as the interface between the CNN and RNN.
 
-However, these methods do not capture spatial relations between labels. This is a challenging problem because most of the times these spatial locations are not known beforehand, *i.e* the images are not annotated with these spatial locations. Spatial Regularisation Networks [@Zhua] attempt to capture both semantic and spatial relations between labels without any prior knowledge on the spatial locations of each label. This is discussed in the next section.
+The original RNN-CNN uses the final feature layer of the CNN as an interface to the RNN. This has a number of adverse effects on learning an end-to-end recurrent image annotation model. First, since the CNN output feature is not explicitly sematincally meaningful, both the label prediction and label correlation modelling tasks are expected of the RNN model. This is difficult for the RNN especially when the number of labels is vast and their correlation rich. Also, altogether the CNN-RNN is a very deep network with only supervision at the final RNN layer. This makes convergence in training very slow. 
+
+[@Liu2016] proposes to replace the image embedding layer and introduces semantic regularisation to the CNN-RNN model in order to produce significantly more accurate results and faster training times. Basically they follow a multi-task learning framework where the CNN-RNN network is also supervised after the CNN model by an auxiliary loss function.
+
+Another benefit is that these models output the labels directly instead of the probability scores. This avoids the challenging thresholding calibration.
 
 Now we should look at [@Chen2017] which is an improvement of this that does not depend on the ordering of the LSTM.
+
+A fundamental and challenging issue for MLC is to identify and recover the co-occurrence of multiple labels, so that satisfactory prediction accuracy can be expected. Despite its effectiveness (in single-label image classification), how to extend CNNs for solving multi-label classification problems is still a research direction to explore.
+
+Because of the use of a LSTM, a predefined label order is required during training. The labels are usually ordered by label frequency which is not necessarily a good proxy for label correlations. There is another concern with the above CNN-RNN which is that labels of objects which are in smaller scales in images would often be more difficult to be recovered. Can use the attention map as a solution. Still does not solve the label order problem. The other problem is that there is an inconsistency between the training and testing procedures of the CNN-RNN. In training, the labels are selected from the image ground-truth list, whereas in testing, the labels are selected from the full labelset. In other words, if a label is incorrectly predicted during a time step during prediction, such an error would propogate during the recurrent process.
+
+[@Chen2017] present a novel deep learning framework of visually attended RNN, which consists of visual attention and confidence-ranked LSTM. This network is able to identify regions of interest associated with each label (even the smaller objects get attended). The order of the labels can automatically learned without any prior knowledge or assumption (with the confidence scores of the attenion maps?). This also alleviates the inconsistent procedures between training and testing.
+
+Actually, does not look like a huge empirical improvement over the original CNN-RNN (compare on the common 3 ML image datasets). Again the compare with methods that utilise older CNN architectures.
+
+However, these methods do not capture spatial relations between labels. This is a challenging problem because most of the times these spatial locations are not known beforehand, *i.e* the images are not annotated with these spatial locations. Spatial Regularisation Networks [@Zhua] attempt to capture both semantic and spatial relations between labels without any prior knowledge on the spatial locations of each label. This is discussed in the next section.
 
 ## Spatial Regularization Networks
 
