@@ -12,6 +12,8 @@ Main questions:
 + is the single-label features transferable to multi-label images?
 + can we learn from label correlations?
 
+A common approach that extends CNNs to MLC is to transform it into multiple single-label classification problems, which can be trained with the ranking loss pr the cross-entropy loss. However, when treating labels independently, these methods fail to model the dependency between multiple labels. [@Xue2011] has shown that multi-label classification problems ehibit strong label co-occurrence dependencies.
+
 The most common and simple method is to take popular existing networks, *e.g.* VGG and ResNet, and replace the activation function of their final classification layer to a sigmoid activation and train the network by minimising the sum of the binary cross-entropies per label. As we have seen in Chapter \ref{chp:dnn}, the sigmoid activation ensures that the output lies between 0 and 1, but unlike the softmax activation, the sum of these outputs do not add to 1. Therefore the sigmoid layer is more suitable for cases with potentially multiple labels. 
 
 The simple approach described above is mostly related to the BR approach, since direct relationships between labels are not taken into account. However, the weights of the network are learnt by taking all of the labels jointly into account. A pure BR approach would be to train a separate network for each label. If there are enough images per label, this approach should in theory be sufficient to classify the images. For instance, it should be possible to detect a *car* in an image indepently of the presence of a *road*. However, in practice, image classifiers are imperfect and could be improved by having information on the other labels.
@@ -55,7 +57,7 @@ Focus on loss functions tailored for multi-label prediction tasks. Compared: (se
 + simple modification of a pairwise-ranking loss
 + multilabel variant of the WARP loss
 
-They only compared on NUS-WIDE with no standard errors and only on per class precision and recall and overall precision and recall. Might be valuable to compare on more datasets and with more metrics.
+They only compared on NUS-WIDE with no standard errors and only on per class precision and recall and overall precision and recall. Might be valuable to compare on more datasets and with more metrics. Also, these were tested with older CNN architectures, so it may be unfair to compare novel approaches utilising state-of-the-art CNN architectures to these approaches.
 
 + https://arxiv.org/pdf/1609.07982.pdf
 + replace last FC with maxout
@@ -99,7 +101,28 @@ If multiple labels are associated with a single image, it is fair to assume that
 
 However, these methods ignore semantic relations between labels. Next we will look at ways to capture these semantic relations in image classification.
 
-## RNN-CNN paper
+## RNN-CNN
+
++ [@Wang2016]
++ note end to end frameworks are proven to be very effective.
+
+Traditional approaches to multi-label image classification learn independent classifiers for each category and employ ranking or thresholding on the classification results. These techniques work well, but fail to explicitly exploit the label dependencies in an image.
+
+So far it seems that this is the first paper on CNN for MLC that attempts to exploit label correlations. Previous attempts to model label dependency are mostly based on graphical models. This approach is prohibitive with large labelsets. This paper explicitly model label dependencies with recurrent neural networks (RNNs) to capture higher-order label relationships while keeping the computational complexity tractable.
+
+To avoid problems like overfitting, previous methods normally restrict CNN classifiers to share the same image features for each class. When using the same image features to predict multiple labels, objects that are small in the images are easily ignored or hard to recognise independently. The RNNs framework is designed to adapt the image features based on the previous prediction results, by encoding the attention models implicitly in the CNN-RNN structure. The idea behind it is to implicitly adapt the attentional area in images so the CNNs can focus its attention on different regions of the images when predicting different labels. Small objects are hard to recognise by itself, but can be easily inferred given enough contexts.
+
+> the following part may need to go under label embedding sections
+
+In addition, many image labels have overlapping meanings. Exploiting the semantic redundancies reduce the computational cost and also imporves the generalisation ability because the labels with duplicate semantics can get more training data. The label semantic redundancy can be exploited by joint image/label embedding, which can be learned via canonical correlation analysis, metric learning or learning to rank methods. The joint image/lable embedding maps each label or image to an embedding vector in a joint low-dimensional Euclidean space such that the embeddings of semantically similar labels are close to each other, and the embedding of each image should be close to that of its associated labels in the same space. This is effective for exploiting label semantic redundancy because it essentially share classification parameters for semantically similar labels. But the label co-occurrence decpendency is largely ignored.
+
+RNN-CNN is a unified framework for multi-label image classification which effectively learns both the semantic redundancy and the co-occurence dependency in an end-to-end way. The framework is as follows. The multi-label RNN model learns a joint low-dimensional image-label-embedding to model the semantic relevance between iamges and labels. The image embedding vectors are generated by a deep CNN while each label has its own label embedding vector. The high-order label co-occurence dpendency in this low-dimensional space is modeled with the long short term memory recurrent neurons, which maintains the information of label context in their internal memory states. The RNN framework computes the probability of a multi-label prediction sequentially as an ordered prediction path, where the a priori probability of a label each time step can be computed based on the image embedding and the output of the recurrent neurons. During prediction, the multi-label prediction with the highest probability can be approximately found with the beam search algorithm. This whole framework can be trained in an end-to-end fashion.
+
+Other methods modelling label dependencies also only mostly model pairwise combinations.
+
+Can visualise attentional regions.
+
+Test on MS COCO, NUS-WIDE and PASCAL VOC 2007. No standard errors and report per class precision, recall, F1 and overall. Also MAP@10. Shows good performance but strangely does not use the best HCP on VOC2007 dataset to compare with. CNN-RNN and HCP2000 is actually quite equal. Should be tested on more datasets and maybe a combination should be considered. For example region proposals from HCP and label dependencies with RNN.
 
 + sequential prediction problem.
 
@@ -107,7 +130,7 @@ However, these methods ignore semantic relations between labels. Next we will lo
 
 However, these methods do not capture spatial relations between labels. This is a challenging problem because most of the times these spatial locations are not known beforehand, *i.e* the images are not annotated with these spatial locations. Spatial Regularisation Networks [@Zhua] attempt to capture both semantic and spatial relations between labels without any prior knowledge on the spatial locations of each label. This is discussed in the next section.
 
-+ https://arxiv.org/pdf/1707.05495.pdf is an improvement of this that does not depend on the ordering of the LSTM.
+Now we should look at [@Chen2017] which is an improvement of this that does not depend on the ordering of the LSTM.
 
 ## Spatial Regularization Networks
 
@@ -213,10 +236,13 @@ Attention maps interpretable.
 
 ## Label Embedding Approaches
 
++ suggestion from CNN-RNN paper: [@Gong2012], [@Weston2011]
+
+Multi-label classification can also be achieved by learning a joint image/label embedding. Multiview Canonical Correlation Analysis [] is a three-way canonical analysis that maps the image, label, and the semantics into the same latent space. WASABI [] and DEVISE [] learn the joint embedding using the learning to rank framework with WARP loss. Metric learning [] learns a discriminative metric to measure the image/label similarity. Matrix completion [] and bloom filter [] can also be employed as label encodings. These methods effectively exploit the label semantic redundancy, but they fall short on modeling the label co-occurrence dependency.
+
 + Learning Deep Latent Spaces for Multi-Label Classification: https://arxiv.org/pdf/1707.00418.pdf
 + Direct Binary embedding: https://arxiv.org/pdf/1703.04960.pdf
 + cost sensitive: https://arxiv.org/pdf/1603.09048.pdf
-+ https://arxiv.org/pdf/1604.04573.pdf also has small section on label embedding
 
 ## Stratification
 
@@ -227,7 +253,3 @@ Attention maps interpretable.
 ### Multi-Label Transfer Learning with Sparse Representation
 
 + https://pdfs.semanticscholar.org/92f5/bd6aa3544c36490e2dac798513055233b02c.pdf
-
-### Multi-Instance Multi-Label Learning for Image Classification with Large Vocabularies
-
-+ https://faculty.ist.psu.edu/vhonavar/Papers/bcv2011.pdf
