@@ -72,6 +72,12 @@ Here $\bar{Y}_{i}$ is the complementary set of $Y_{i}$ in $\mathcal{Y}$ and $|\c
 
 The minimisation of this global error will lead the network to ouput larger values for labels belonging to the training instance and smaller values for those not belonging to it.  It is shown in their paper that this error function is closely related to the rankining loss criterion. The specifics of the minimisation of this error function with gradient descent and backpropogation is beyond the scope of this thesis and can be found in the original paper [@Xhang2006]. In the paper, BP-MLL show superiority to the well-established multi-label learning algorithms of that time. Although the algorithms were tested on the applications of text classification and functional genomics, it could also be applied to image classification, since the loss function is not affected by the application domain.
 
+Is it acceptable to claim that this loss function forces the NN to learn label dependencies?
+
++ See [@Nam2013] for clearer explanation of rank loss minimisation. They also show how thresholding needs to be done with this network.
+
+Plenty of years later, the authors of [@Nam2013] showed that BP-MLL's ranking loss could efficiently and effectively be replaced with the commonly used cross entropy error function and demonstrate that several advances in neural network training that have been developed in the realm of deep learning can be effectively employed in this setting. With these new developments in architectures, it is better to optimise the cross-entropy rather than the BP-MLL loss. Apparently the BP-MLL loss function is not consistent with the rank loss and cross entropy is. Cross-entropy is also computationally more efficient. Their experiments are more trustworthy because of comparsions over more datasets with more measures.
+
 One of the first approaches to extending CNNs to a multi-label image classification problems was by minimising loss functions more suited for MLC, more specifically, the multi-label ranking loss [@Gong2013]. Found that weighted approximate ranking loss worked best for CNNs. Showed more than 10% increase to conventional BoW methods on NUS-WIDE dataset. Still need to read the rest of the article but apparently an effective model requires lots of training samples (they did not use transfer leanring).
 
 They show that a significant performance gain could be obtained by combining convolutional architectures with approximate top-$k$ ranking objectives.
@@ -114,9 +120,7 @@ r=\lfloor \frac{K-1}{s}\rfloor.
 $$
 Still need to figure this out.
 
-They only compared on NUS-WIDE with no standard errors and only on per class precision and recall and overall precision and recall. Might be valuable to compare on more datasets and with more metrics. Also, these were tested with older CNN architectures, so it may be unfair to compare novel approaches utilising state-of-the-art CNN architectures to these approaches.
-
-They found that WARP loss gave the best results.
+They only compared on NUS-WIDE with no standard errors and only on per class precision and recall and overall precision and recall. Might be valuable to compare on more datasets and with more metrics. Also, these were tested with older CNN architectures, so it may be unfair to compare novel approaches utilising state-of-the-art CNN architectures to these approaches. They found that WARP loss gave the best results.
 
 + https://arxiv.org/pdf/1609.07982.pdf
 + replace last FC with maxout
