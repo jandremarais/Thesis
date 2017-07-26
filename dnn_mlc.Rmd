@@ -318,7 +318,9 @@ Attention maps interpretable.
 
 ## Context Gating
 
-The winner [@Miech2017] of the YouTube 8m video classification challenge [^yt8m], also hosted on Kaggle, proposed a network unit to better capture non-linear interdependencies between features as well as among output variables. The context gating layer transforms the input represetation $X$ into a new representation, $Y$, in the following way:
+In multi-label classification settings, an example may be annotated many labels. Some labels tend to appear in the same example at the same time, some tend not to. Such information can be used to improve the performance of multi-label classification models [@Wang2017a].
+
+The winner [@Miech2017] of the YouTube 8M video classification challenge [^yt8m], also hosted on Kaggle, proposed a network unit to better capture non-linear interdependencies between features as well as among output variables. The context gating layer transforms the input represetation $X$ into a new representation, $Y$, in the following way:
 
 $$
 Y=\sigma(WX+b)\circ X,
@@ -331,11 +333,18 @@ There are two reasons why this transformation be effective. First, it introduces
 
 The aim of the context gating of the feature vector is to capture the dependencies among the features. For example, the context gating can learn to suppress features likely to be on background and emphasise the foreground objects. For instance, if features corresponding to 'Trees', 'Skier' and 'Snow' have high co-occurring activations in a skiing video, context gating could learn to suppress the background features such as 'Trees' and 'Snow', which are less important for the classification.
 
-The aim of the context gating unit after the classification layer is to downweight unlikely combinations such as 'Car' and 'Makeup'. It does this by reweighting the output probabilities.
+The aim of the context gating unit after the classification layer is to downweight unlikely combinations such as 'Car' and 'Makeup'. It does this by reweighting the output probabilities. Note, the improvements observed was only in terms of global average precision. It will be interesting to see how it performs with other metrics and on other datsets.
 
 ## Chaining
 
-+ https://arxiv.org/pdf/1706.05150.pdf 
+The second place solution to the YouTube-8M competition can be found in [@Wang2017a]. The main contribution made in terms of MLC their method of capturing interactions between labels, named Chaining. They also propose methods for capturing multi-scale information and attention pooling. Their chaining unit is inspired by classifier chains discussed in Chapter \ref{chp:mlc}. As noted in the section on classifier chains, the direction of dependence for the labels is unknown and an ensemble of CC are usually used to alleviate this problem. [@Read2014a] proposes a network structure that mimics CC, but this results in very deep networks, at least as deep as the number of labels.
+
+In a chaining model, several representations are joined by a chain of classifiers (they used MoEs). The predictions are projected to features of lower dimension and used in the following stages (probably only necessaray if there are many labels). The output of each chaining unit is supervised by auxiliary cross-entropy losses to speed up convergence. The final loss is a weighted average of the auxiliary losses and the final prediction loss. They found that allocating 10-20% to the auxiliary losses gave the best results. The number of chaining units can be experimented with. Again, this method is only tested on the yt8m dataset and only in terms of the GAP.
+
+To me it seems that this process is more related to stacked BR classifiers (BR+,2BR) instead of CCs.
+
+Their method to exploit multiple scales is to build the chaining unit on different feature representations of multiple scales (after different convolution-pooling combinations).
+
 + https://arxiv.org/pdf/1707.03296.pdf 
 
 ## Label Concept Learning
