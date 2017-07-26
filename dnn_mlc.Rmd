@@ -179,9 +179,17 @@ Details omitted here.
 
 The results do not seem that convincing. 
 
+[@Wang2017] experimented with the Hinge, Euclidean and Cross-Entropy losses. They found that the ouput is very sparse and that the network struggled with finding positive images. To alleviate this problem they suggested using a positive/negative balancing factor, $\beta_{P},\beta_{N}$, with the cross-entropy loss which results in the weighted cross-entropy loss:
+
+$$
+L(f(\boldsymbol{x}),\boldsymbol{y})=-\beta_{P}\sum_{y_{c}=1}\ln(f(\boldsymbol{x}_{c}))-\beta_{N}\sum_{y_{c}=0}\ln(1-f(\boldsymbol{x}_{c})),
+$$
+where $\beta_{P}=\frac{|P|+|N|}{|P|}$ and $\beta_{N}=\frac{|P|+|N|}{|N|}$. $|P|$ and $|N|$ are the number of positive and negative labels per batch of images, respectively. The weighted version worked better for them, especially for classes with fewer examples.
+
 ### F-measure maximisation
 
-+ https://arxiv.org/pdf/1604.07759.pdf
++ https://arxiv.org/pdf/1604.07759.pdf actually this is not a DNN loss so probably won't include it here.
++ https://arxiv.org/pdf/1608.04802.pdf shows how to optimise for the $F_{\beta}$-measure. But they don't mention MLC so not sure if it is applicable.
 
 ### Other
 
@@ -297,6 +305,8 @@ Evaluates on 3 benchmark datasets, with multiple measures and shows promising re
 Here is another paper on exploiting spatial relations: https://arxiv.org/pdf/1612.01082.pdf. However, I think they are using Recurrent Nets.
 
 Attention maps interpretable.
+
+[@Wang2017] designed a DCNN for multi-label classification of diseases from chest x-rays. They used a transition layer between the pretrained CNN activations and the classification layer. They also experimented with the Hinge Loss, Euclidean loss and Cross-entropy loss. See the section on loss functions above. The other things they tried were using an alternative pooling layer, named Log-Sum-Exp (LSE) pooling. Can be seen as weighted combination of max and average pooling. There is an optimal weight that achieve the best results, but I suspect it might be quite variable and difficult to determine. Also see their approach to heat map localisation.
 
 + see https://arxiv.org/pdf/1705.02315.pdf for more attention maps, interesting pooling and other loss optmisations.
 
