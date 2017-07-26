@@ -122,6 +122,23 @@ Still need to figure this out.
 
 They only compared on NUS-WIDE with no standard errors and only on per class precision and recall and overall precision and recall. Might be valuable to compare on more datasets and with more metrics. Also, these were tested with older CNN architectures, so it may be unfair to compare novel approaches utilising state-of-the-art CNN architectures to these approaches. They found that WARP loss gave the best results.
 
+[@Zhu2017] used multi-label CNN for pedestrian attribute detection. The adaption they made to the CNN was also by redefining the loss function. The defined the loss function as
+
+$$
+F=\sum_{k=1}^{K}\lambda_{k}G_{k},
+$$
+where $G_{k}$ is the loss of the $k$-th attribute(/label). $K$ is the total number of labels and $\lambda_{k}\ge 0$ is a parameter controlling the contribution of each label. In their experiments they set $\lambda_{k}=1/K$ and defined $G_{k}$ as
+
+$$
+G_{k}=-\frac{1}{N}\sum_{n=1}^{N}\sum_{m=1}^{M^{k}}1\{y_{n}^{k}=m\}\cdot\log\frac{\exp((w_{m}^{k})^{T}x_{n}^{k})}{\sum_{m=1}^{M}\exp((w_{m}^{k})^{T}x_{n}^{k})}.
+$$
+$N$ is the number of training samples and $M^{k}$ represents the class number of $k$-th attribute. To avoid bias due to imbalanced data, they further extend $G_{k}$ as follows:
+
+$$
+G_{k}=-\frac{1}{N}\sum_{n=1}^{N}\sum_{m=1}^{M^{k}}1\{y_{n}^{k}=m\}\cdot \beta_{m}^{k}\log\frac{\exp((w_{m}^{k})^{T}x_{n}^{k})}{\sum_{m=1}^{M}\exp((w_{m}^{k})^{T}x_{n}^{k})},
+$$
+where $\beta_{m}^{k}=\frac{1/N_{m}^{k}}{\sum_{l=1}^{k}1/N_{l}^{k}}$. $N_{m}^{k}$ is the number of samples holding $m$-th class label of $k$-th attribute and it meets $\sum_{m=1}^{M}N_{m}^{k}=N^{k}$. Make sure first that this loss is much different to the others proposed and what the difference is between attribute and label. This might not be applicable to a pure MLC problem.
+
 + https://arxiv.org/pdf/1609.07982.pdf
 + replace last FC with maxout
 + replace last pooling with spatial pyramid pooling
@@ -312,12 +329,8 @@ Multi-label classification can also be achieved by learning a joint image/label 
 + Direct Binary embedding: https://arxiv.org/pdf/1703.04960.pdf
 + cost sensitive: https://arxiv.org/pdf/1603.09048.pdf
 
-## Stratification
+## Unsorted
 
-+ https://arxiv.org/pdf/1704.08756.pdf
-
-## To read:
-
-### Multi-Label Transfer Learning with Sparse Representation
-
-+ https://pdfs.semanticscholar.org/92f5/bd6aa3544c36490e2dac798513055233b02c.pdf
++ [@Hu2016] for structured inference neural networks with label relations
++ https://arxiv.org/pdf/1704.08756.pdf for stratification
++ https://pdfs.semanticscholar.org/92f5/bd6aa3544c36490e2dac798513055233b02c.pdf for Multi-Label Transfer Learning with Sparse Representation
