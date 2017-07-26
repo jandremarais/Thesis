@@ -14,7 +14,7 @@ Main questions:
 
 A common approach that extends CNNs to MLC is to transform it into multiple single-label classification problems, which can be trained with the ranking loss pr the cross-entropy loss. However, when treating labels independently, these methods fail to model the dependency between multiple labels. [@Xue2011] has shown that multi-label classification problems ehibit strong label co-occurrence dependencies.
 
-The most common and simple method is to take popular existing networks, *e.g.* VGG and ResNet, and replace the activation function of their final classification layer to a sigmoid activation and train the network by minimising the sum of the binary cross-entropies per label. As we have seen in Chapter \ref{chp:dnn}, the sigmoid activation ensures that the output lies between 0 and 1, but unlike the softmax activation, the sum of these outputs do not add to 1. Therefore the sigmoid layer is more suitable for cases with potentially multiple labels. 
+The most common and simple method is to take popular existing networks, *e.g.* VGG and ResNet, and replace the activation function of their final classification layer to a sigmoid activation and train the network by minimising the sum of the binary cross-entropies per label, as in [@Grzeszick2016]. As we have seen in Chapter \ref{chp:dnn}, the sigmoid activation ensures that the output lies between 0 and 1, but unlike the softmax activation, the sum of these outputs do not add to 1. Therefore the sigmoid layer is more suitable for cases with potentially multiple labels. 
 
 The simple approach described above is mostly related to the BR approach, since direct relationships between labels are not taken into account. However, the weights of the network are learnt by taking all of the labels jointly into account. A pure BR approach would be to train a separate network for each label. If there are enough images per label, this approach should in theory be sufficient to classify the images. For instance, it should be possible to detect a *car* in an image indepently of the presence of a *road*. However, in practice, image classifiers are imperfect and could be improved by having information on the other labels.
 
@@ -139,17 +139,45 @@ G_{k}=-\frac{1}{N}\sum_{n=1}^{N}\sum_{m=1}^{M^{k}}1\{y_{n}^{k}=m\}\cdot \beta_{m
 $$
 where $\beta_{m}^{k}=\frac{1/N_{m}^{k}}{\sum_{l=1}^{k}1/N_{l}^{k}}$. $N_{m}^{k}$ is the number of samples holding $m$-th class label of $k$-th attribute and it meets $\sum_{m=1}^{M}N_{m}^{k}=N^{k}$. Make sure first that this loss is much different to the others proposed and what the difference is between attribute and label. This might not be applicable to a pure MLC problem.
 
-+ https://arxiv.org/pdf/1609.07982.pdf
-+ replace last FC with maxout
-+ replace last pooling with spatial pyramid pooling
-+ other option use FCN with global max pool at end before sigmoid
-+ dropout only on first layers after representation (fixed VGG)
-+ note they also used dropout at testing and then combined for mean prediction
-+ see [https://cs.nju.edu.cn/_upload/tpl/01/0b/267/template267/zhouzh.files/publication/tkde06a.pdf] for ML-loss function
-
 ### Sparsemax ML loss
 
-+ see https://arxiv.org/pdf/1602.02068.pdf
+[@Martins2016] propose the sparsemax transformation. Sparsemax has the distinctive feature that it can return sparse posterior distributions, *i.e.* it may assign exactly zero scores to some of its ouput variables. This is a convenient feature for MLC, especially when the labelset is large. Added benefits of this transformation is that it preserves the attractive properties of the softmax: it is simple to evaluate, it is even cheaper to differentiate and it can be turned into a convex loss function.
+
+Let $\Delta^{K-1}:=\{\boldsymbol{p}\in \mathbb{R}^{K}|\boldsymbol{1}^{T}\boldsymbol{p}=1,\boldsymbol{p}\ge\boldsymbol{0}\}$ be the ($K-1$)-dimensional simplex. We are interested in functions that map vectors in $\mathbb{R}^{K}$ to probability distributions in $\Delta^{K-1}$, such that we can obtain label posterior probabilities from label scores. We have already seen the softmax function defined as
+
+$$
+\text{softmax}_{i}(\boldsymbol{z})=\frac{\exp(z_{i})}{\sum_{j}\exp(z_{j})}.
+$$
+A limitation of the softmax transformation is that $\text{softmax}_{i}(\boldsymbol{z})\ne 0$ for every $\boldsymbol{z}$ and $i$. This is disadvantageous in applications where a sparse probability distribution is desired. An alternative is to use the sparsemax transformation:
+
+$$
+\text{sparsemax}(\boldsymbol{z}):=\arg\min_{\boldsymbol{p}\in\Delta^{K-1}}||\boldsymbol{p}-\boldsymbol{z}||^{2}.
+$$
+Therefore, the sparsemax returns the Euclidean projection of the input vector $\boldsymbol{z}$ onto the probability simplex. This projection is likely to hit the boundary of the simplex, in which the $\text{sparsemax}(\boldsymbol{z})$ becomes sparse. In the paper they show that the sparsemax retains most of the important properties of the softmax.
+
+Now we need to show how to use the sparsemax transformation to design a new loss function that resembles the logistic loss but can yield sparse distributions. The loss function associated with the softmax is the logisitc loss (or negative log-likelihood):
+
+$$
+\begin{aligned}
+L_{\text{softmax}}(\boldsymbol{z};k)&=-\log(\text{softmax}_{k}(\boldsymbol{z}))\\
+&=-z_{k}+\log\left(\sum_{j=1}\exp(z_{j})\right)
+\end{aligned}
+$$
+Can find the gradient ... Need something similar for sparsemax.
+
+The authors derived a convex and differentiable loss names the softmax loss:
+
+$$
+L_{\text{softmax}}(\boldsymbol{z};k)=-z_{k}+\frac{1}{2}\sum_{j\in S(\boldsymbol{z})}(z_{j}^{2}-\tau^{2}(\boldsymbol{z}))+\frac{1}{2},
+$$
+where $\tau^{2}$ is the square of the threshold function (see paper). They show that in the binary case, the sparsemax reduces to the Huber classification loss. The generalisation to the MLC case can be given by:
+
+$$
+L_{\text{sparsemax}}(\boldsymbol{z};\boldsymbol{q})=-\boldsymbol{q}^{T}\boldsymbol{z}+\frac{1}{2}\sum_{j\in S(\boldsymbol{z})}(z_{j}^{2}-\tau^{2}(\boldsymbol{z}))+\frac{1}{2}||\boldsymbol{q}||^{2}.
+$$
+Details omitted here.
+
+The results do not seem that convincing. 
 
 ### F-measure maximisation
 
