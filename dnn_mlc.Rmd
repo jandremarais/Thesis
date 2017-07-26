@@ -310,20 +310,33 @@ Attention maps interpretable.
 
 [@Wang2017] designed a DCNN for multi-label classification of diseases from chest x-rays. They used a transition layer between the pretrained CNN activations and the classification layer. They also experimented with the Hinge Loss, Euclidean loss and Cross-entropy loss. See the section on loss functions above. The other things they tried were using an alternative pooling layer, named Log-Sum-Exp (LSE) pooling. Can be seen as weighted combination of max and average pooling. There is an optimal weight that achieve the best results, but I suspect it might be quite variable and difficult to determine. Also see their approach to heat map localisation.
 
-## Context Gating
-
-+ winner of yt8m challenge: https://arxiv.org/pdf/1706.06905.pdf [@Lee2017a]
-
-## Chaining
-
-+ https://arxiv.org/pdf/1706.05150.pdf 
-+ https://arxiv.org/pdf/1707.03296.pdf 
-
 ## Mixture of Experts
 
 + see https://arxiv.org/pdf/1409.4698.pdf for MOE for MLC
 + https://arxiv.org/pdf/1707.01408.pdf
 + https://arxiv.org/pdf/1707.03296.pdf
+
+## Context Gating
+
+The winner [@Miech2017] of the YouTube 8m video classification challenge [^yt8m], also hosted on Kaggle, proposed a network unit to better capture non-linear interdependencies between features as well as among output variables. The context gating layer transforms the input represetation $X$ into a new representation, $Y$, in the following way:
+
+$$
+Y=\sigma(WX+b)\circ X,
+$$
+where $X\in \mathbb{R}^{n}$ is a vector of input feature activations, $\sigma$ is the element-wise sigmoid activation and $\circ$ is the element-wise multiplication operator. $W\in \mathbb{R}^{n\times n}$ and $b\in \mathbb{R}^{n}$ are trainable parameters. The vector of weights ouput by $\sigma(\cdot)$ acts as a set of learnt gates with values between 0 and 1 on the individual dimensions of the input feature $X$.
+
+[^yt8m]: https://www.kaggle.com/c/youtube8m
+
+There are two reasons why this transformation be effective. First, it introduces non-linear interactions among activations of the input representation. Second, it recalibrates the strengths of different activations of the input representation through a self-gating mechanism. [Miech2017] used conext gating to both transform the feature vector before passing it to the classification module, and after the classification layer to capture the prior structure of the output label space.
+
+The aim of the context gating of the feature vector is to capture the dependencies among the features. For example, the context gating can learn to suppress features likely to be on background and emphasise the foreground objects. For instance, if features corresponding to 'Trees', 'Skier' and 'Snow' have high co-occurring activations in a skiing video, context gating could learn to suppress the background features such as 'Trees' and 'Snow', which are less important for the classification.
+
+The aim of the context gating unit after the classification layer is to downweight unlikely combinations such as 'Car' and 'Makeup'. It does this by reweighting the output probabilities.
+
+## Chaining
+
++ https://arxiv.org/pdf/1706.05150.pdf 
++ https://arxiv.org/pdf/1707.03296.pdf 
 
 ## Label Concept Learning
 
