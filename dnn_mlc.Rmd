@@ -312,6 +312,25 @@ Attention maps interpretable.
 
 ## Mixture of Experts
 
+The original baseline solution to the YT8M competition [@Abu-El-Haija2016] used an approach called Mixture-of-Experts (MoE) as a classification unit to their DNN. Subsequently, all the top solutions to the competition used a variation of MoE. Therefore, it is worth looking into here. Especially, since it can easily be built on top of a CNN while the complete networks is still trainable in an end-to-end fashion.
+
+MoEs were first introduced in [@Jordan1994]. The binary classifier for an entity $e$ is composed of a set of hidden states, or experts, $\mathcal{H}_{e}$. A softmax is typically used to model the probability of choosing each expert. Given an expert, we can use a sigmoid to model the existence of the entity. Thus, the final probablity for entity $e$'s existence is
+
+$$
+p(e|\boldsymbol{x})=\sum_{h\in\mathcal{H}_{e}}p(h|\boldsymbol{x})\sigma(\boldsymbol{u}_{h}^{T}\boldsymbol{x}).
+$$
+
+$p(h|\boldsymbol{x})$ is the softmax over $|\mathcal{H}_{e}|+1$ states, *i.e.*
+
+$$
+p(h|\boldsymbol{x})=\frac{\exp(\boldsymbol{w}_{h}^{T}\boldsymbol{x})}{1+\sum_{h'\in\mathcal{H}_{e}}\exp(\boldsymbol{w}_{h'}^{T}\boldsymbol{x})}.
+$$
+The last, ($|\mathcal{H}_{e}|+1$)-th, state is as dummy state that always results in the non-existence of the entity. In the paper, they show how to derive the gradient in terms of the log-loss.
+
+The number of experts, $|\mathcal{H}_{e}|$, is a parameter to be tuned. [@Abu-El-Haija2016] found a 0.5%-1% increase on all performance metrics when the number of experts increased from 1 to 2 to 4. However, the number of model parameters also increases with this increase and therefore they settled on choosing 2 mixtures as a good compromise between performance and number of parameters. (The increase seems rather small).
+
+
+
 + see https://arxiv.org/pdf/1409.4698.pdf for MOE for MLC
 + https://arxiv.org/pdf/1707.01408.pdf
 + https://arxiv.org/pdf/1707.03296.pdf
