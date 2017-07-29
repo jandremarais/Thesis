@@ -397,9 +397,25 @@ The above sections were concerned with single variables, but all concepts extend
 
 + http://cs231n.github.io/
 
++ introduce multi-label image classification (briefly)
+
++ maybe mention that pure classification of objects in an image seem limited and that we might want to localise the objects in terms of bounding boxes or segmentation. This is somewhat true. However, ML-CNNs can provide a rough localisation with attention maps. Also, annotation of bounding boxes and segmentation maps are expensive to obtain.
+
++ add challenges to image classification
+
 ## Outline
 
-The motivations and objectives of the thesis has been discussed and the problem of image classification has been introduced. The rest of the thesis will follow the following outline. Chapter \ref{chp:dnn} introduces deep neural networks for image classifcation. Chapter \ref{chp:mlc} reviews the field of multi-label classification. The objective of this chapter is to find approaches that could help extend DNNs for MLC. Chapter \ref{chp:dnn_mlc} reviews approaches to deep learning for multi-label image classification. Chapter \ref{chp:results} evaluates proposals on benchmark datasets. The results will also be compared to the findings in the literature. The thesis is concluded in Chapter \ref{chp:conc} with a summary of the work done in this project, general discussion of the results and literature and what directions can be followed for future research.
+From this point on the reader should have a basic understanding of the topic of this thesis. The reasons why this topic was chosen has been described in the Motivations section and the goals of completing this thesis under the Objectives section. How this thesis will contribute to the literature has also been given. The problem of image classification has been introduced with the help of basic examples, along with a brief conceptual description of the multi-label image classification problem. Therefore, the reader should also be comfortable with the problem we want the DNNs to solve and the common challenges to such a problem. Although, DNNs have not yet been introduced, it should have been sufficient to know that it is class of algorithms. However, brief glimpses of the main components of DNNs have been given under the image classification problem description.
 
-> this is super rough. give more detail
+The rest of the thesis will follow the following outline. Chapter \ref{chp:dnn} introduces deep neural networks for image classifcation. Convolutional neural networks are specifically good at image classification and therefore most of the chapter will deal with them. The main focus is on the different structures and layers of the networks and how these influence performance (review this sentence - probably need to elaborate). 
+
+Chapter \ref{chp:mlc} starts with the fundamentals of multi-label classification. It includes a formal definition and emphasis on the important concepts, such as multi-label evaluation metrics and the modelling of label dependencies (maybe add class imbalance here). The chapter also includes a review of the state-of-the-art algorithms for MLC. A discussion is given on the challenges and ongoing research of the field. One of the objectives of this chapter is to find approaches that could help extend DNNs for multi-label image classification. 
+
+Chapter \ref{chp:dnn_mlc} reviews deep learning approaches for multi-label image classification. It looks at practically all of the proposals in the latest literature, how they attempt to model multiple labels and what are their shortcomings. The extensions are mostly adaptions of loss functions to be optimised or structural changes of the networks. An extensive comparision of the approaches is an important part of the chapter. Should I make proposals in this chapter?
+
+Chapter \ref{chp:results} evaluates the highlighted approaches in previous chapter on popular benchmark image datasets. Note that more on the benchmark datasets are given in Appendix \ref{app:data}. The goal is to give a comprehensive empirical comparison of the best representative approaches in terms of many multi-label evaluation metrics (with standard errors). It includes discussions on the challenges of implementing these approaches and how the results correlate with the literature. The experiments done in this chapter are made as reproducible as possible with additional information on the code and software given in Appendix \ref{app:code}.
+
+The thesis is concluded in Chapter \ref{chp:conc} with a summary of the work done in this project, general discussion of the literature and results and what directions can be followed for future research. It includes a section on the limitations of this study.
+
++ should I mention the appendices?
 
