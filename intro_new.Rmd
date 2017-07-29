@@ -44,13 +44,28 @@ When all these objectives are completed a master's level understanding on the to
 
 ## Contributions
 
-Novel contributions made to the literature by this thesis.
+> rough - will complete after the contributions are actually done. This is roughly what I attempt to contribute.
+
+Novel contributions made to the literature by this thesis:
+
++ First review of multi-label DNNs - there are a few papers on ML-CNN. They are usually compared to only a limited number of other approaches, on limited number of datasets and limited number of metrics. To the best of our knowledge, at the time of completing this thesis, no other work provides such an extensive review of the literature.
+
++ Some of the proposed algorithms empirical evaluations are lacking completeness. Usually they lack combinations of either or all of the following:
+
+    + evaluated on multiple benchmark datasets
+    + evaluated in terms of a representative set of multi-label evaluation metrics
+    + estimated errors provided with standard errors
+    + compared with a wide range of state-of-the-art algortihms
+
++ improvements on existing approaches?
 
 ## Code and Reproducibility
 
-All of the code for this project, including the source docoments, is made available at https://github.com/jandremarais/Thesis. More instructions on how to implement the code is contained in the file named, `README.md`, in the GitHub repository.
+All of the code for this project, including the source docoments, is made available in the Thesis Github repository [^repo]. More instructions on how to implement the code is contained in the file named, `README.md`, in the repository.
 
 > not sure about this section
+
+[^repo]: https://github.com/jandremarais/Thesis
 
 ## Background and Important Concepts
 
