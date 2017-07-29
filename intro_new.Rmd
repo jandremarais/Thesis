@@ -8,33 +8,43 @@
 *Image Classification* is the task of assigning one (or more) label(s) to an input image. It is one of the core problems in Computer Vision. This seemingly simple task has a large variety of practical applications. For example, detecting deforestation in the Amazon from satellite images [^Amazon] or detecting cancer from images of skin lesions taken by a mobile phone [@Esteva2017]. Image classification is a thoroughly researched subject and already regarded by many as a 'solved' problem. This progress is mainly attributed to the yearly large-scale image classification competition, called *ImageNet*[^imagenet], providing researchers millions of labelled images to train their image classification models.
 
 [^Amazon]: https://www.kaggle.com/c/planet-understanding-the-amazon-from-space
+[^imagenet]: http://www.image-net.org/
 
-The other driver of the recent success of image classification systems is the development of *Deep Learning*, a subfield of Machine Learning. Deep Learning or *Deep Neural Networks* (DNNs) is a class of models inspired by the structure and function of the brain called artificial neural networks. The type of DNN proven best suited for image classification problems are *Convolutional Neural Networks* (CNNs). CNNs is the uncontested state-of-the-art model for practically all image classification problems, mainly because of its ability of 'learning' highly discriminative feature representations of its input images. In the past, conventional approaches was built on carefully designed hand-crafted features such sa SIFT and BOW. AlexNet [@Krizhevsky2012] was the first CNN to win ImageNet (in 2012) and thereafter, each of the following annual ImageNet competitions was won by a CNN.
+The other driver of the recent success of image classification systems is the development of *Deep Learning* [@Lecun2015], a subfield of Machine Learning. Deep Learning or *Deep Neural Networks* (DNNs) is a class of models inspired by the structure and function of the brain called artificial neural networks. The type of DNN proven best suited for image classification problems are *Convolutional Neural Networks* (CNNs). CNNs is the uncontested state-of-the-art model for practically all image classification problems, mainly because of its ability of 'learning' highly discriminative feature representations of its input images. In the past, conventional approaches was built on carefully designed hand-crafted features such as SIFT and BoW. AlexNet [@Krizhevsky2012] was the first CNN to win ImageNet (in 2012) and thereafter, each of the following annual ImageNet competitions was won by a CNN.
 
-The main focus in the fields of image classification and deep learning, until recently, was on problems where each image is only annotated with a single label. *Multi-Label Classification* (MLC) of images generalises this task to allow images to be annotated with more than one label. The majority of real-world images contain more than one object, making multi-label image classification a more general and practical problem, and naturally, also more challenging. Only recently more attention was given to multi-label image classification (for example, [@Wei2014]) and therefore the field is nowhere near the maturity level of its single-label counterpart. It is fair to assume that since DNNs are so powerful with single-label image classification, it may also be extended to successfully model images with multiple labels.
+The main focus in the fields of image classification and deep learning, until recently, was on problems where each image is only annotated with a single label. *Multi-Label Classification* (MLC) [@Zhang2014] of images generalises this task to allow images to be annotated with more than one label. The majority of real-world images contain more than one object, making multi-label image classification a more general and practical problem, and naturally, also more challenging. Only recently more attention was given to multi-label image classification (for example, [@Wei2014]) and therefore the field is nowhere near the maturity level of its single-label counterpart. It is fair to assume that since DNNs are so powerful with single-label image classification, it may also be extended to successfully model images with multiple labels.
 
-Extending CNNs and other DNNs to handle images with multiple labels is not a trivial task. Recently, a handful of proposals were made on how to tackle this task. However, these suggestions were mostly given in isolation of one another and no comprehensive review and comparison of these methods exist in the literature. Most of the proposals also come from a deep learning background and could gain from insights and methods already discovered in the field of MLC. In summary, the relevance of multi-label image classification, in terms of its range of useful practical applications, and the power of deep learning methods for image classification tasks, is the main motivation behind this thesis. This area of research is still relatively under explored and a comprehensive understanding and review of on the subject could lead to novel contributions to the literature. This is the secondary motivation behind the study. Exactly what this thesis aims to achieve will be discussed next.
+Extending CNNs and other DNNs to handle images with multiple labels is not a trivial task. Recently, a handful of proposals were made on how to tackle this task [cite them?]. However, these suggestions were mostly given in isolation of one another and no comprehensive review and comparison of these methods exist in the literature. Most of the proposals also come from a deep learning background and could gain from insights and methods already discovered in the field of MLC. 
+
+In summary, the relevance of multi-label image classification, in terms of its range of useful practical applications, and the power of deep learning methods for image classification tasks, is the main motivation behind this thesis. This area of research is still relatively under explored and a comprehensive understanding and review of on the subject could lead to novel contributions to the literature. This is the secondary motivation behind the study. Exactly what this thesis aims to achieve will be discussed next.
 
 ## Objectives
 
-This thesis study will explore ways of extending the conventional single-label DNNs to make it applicable to problems of multi-label image classification. The main aim is to gain a comprehensive understanding of these methods and how they compare and relate to each other. The methodology for achieving this is as follows:
+The core of this study is to explore ways of applying DNNs to multi-label image classification problems. The direction of the research can be described by the following objectives. The intermediate objective of this study is to obtain a comprehensive understanding of the following research areas:
 
-+ Briefly introduce the domain of image classification.
-+ Provide a dense introduction to deep neural networks for image classification.
-+ Provide a comprehensive review of the multi-label classification framework and its common approaches.
-+ Review the various proposals to apply deep neural networks to multi-label image classification.
-+ Provide a framework in which these methods can be compared.
-+ Evaluate on benchmark datasets?
++ **The image classification problem** - This is the application domain for this study. A good understanding of the problem would lead to a solid foundation for further study in the domain. By disussing previous and basic approaches to the problem, the challenges and shortcomings in the domain can be identified.
 
-> these are still preliminary
++ **Deep neural networks and how they are applied to image classification** - This is the class of algorithms the study focusses on (more specifically, CNNs). Therefore, the understanding of DNNs is essential for further study on how they can be extended. The typical structures of DNNs for image classfication should be given attention to, in addition to how variations thereof influence the algorithms effectiveness in certain scenarios. Learning the limitations of the current networks would also be beneficial to the rest of the study.
 
-The insights gained from the primary objective of this study may lead to the possibility of:
++ **The multi-label classification framework** - This is the *supervised learning* paradigm in which this study will take place. Although only recently became popular, many contributions have been made to this field. Knowledge of the basic concepts, especially those novel relative to single label classification, the common challenges in the field and the state-of-the art algorithms would give valuable insights to the core of this thesis. The focus can mostly be agnostic to the application domain, however, previous work on multi-label image classifcation (other than DNNs), will also be insightfull.
 
-+ suggesting improvements on the exsiting proposals to multi-label deep neural networks,
-+ propose a novel method for multi-label deep neural networks and/or
-+ being able to recommend some approaches above others.
+> confused to how I must use could vs can and would vs will
 
-These are the seconday objectives of this study.
+The fulfillment of the above intermediate objective would be complementary to the main objective of learning how to effectively apply DNNs to a multi-label image classification probelm. This objective can be deconstructed into the following sub-objectives:
+
++ **Gather and review all the proposals on how to extend DNNs for multi-label image classification in the literature** - The literature on this subject is sparse, but there are enough proposals for a review on the subject to be relevant. The aim is to obtain a thorough understanding of each proposal, how it solves the multi-label classification problem and how effective it is in doing so. The conceptual differences between the approaches would be given considerable attention. If there are proposals for DNNS for MLC in other application domains, but their approach is transferable to image classification, these should also be considered.
+
++ **Suggest ways to improve existing approaches** - Learning from the strengths and weaknesses of each existing approach (from the review) would provide a good basis on to suggest improvements on existing approaches. These can either be extensions of existing approaches or novel approaches. The possibility of transferring ideas in pure MLC to deep learning to improve upon existing approaches would also be explored.
+
++ **Provide empirical evaluations and comparisons of the highlighted approaches** - The theory and discussions of the study can be complemented by empirical evaluations. Existing and suggested approaches can be evaluated on popular benchmark image datasets in order to compare them to each other and to compare them with the existing literature. This task will teach the implementations of such algorithms and highlight some of the challenges in doing so, not necessarily mentioned in the literature. 
+
+When all these objectives are completed a master's level understanding on the topic of DNNs for multi-label image classification would have been obtained. Given a certain multi-label image classification problem, one would have the knowledge to reccommend some approaches above others, know its limitiation and have the ability to implement the approach.
+
+> review these objectives as writing continues.
+
+## Contributions
+
+Novel contributions made to the literature by this thesis.
 
 ## Code and Reproducibility
 

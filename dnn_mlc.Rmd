@@ -331,7 +331,6 @@ The number of experts, $|\mathcal{H}_{e}|$, is a parameter to be tuned. [@Abu-El
 
 [@Hong2014] defines MoE to be a mixture model that consists of a set of experts that are combined via a gating (or switching) module to represent the conditional distribution $P(y|\boldsymbol{x})$. They were the first to apply MoE to the MLC problem, but they used conditional tree-structured bayesian networks as there experts. The MoE model defines a soft-partitioning of the input space via the gating module on which each expert represent different input-output relations. Therefore, MoE models are especially useful when individual experts are effective for certain subsets of input-output relations, but not all of them. The ability to switch among experts in different regions of the input space allows to compensate for individual experts 'weak spots' and increases the overall performance. The gating module chooses, given the input, which expert is the expert for that input space. (maybe some of this should be mentioned in the Chapter \ref{chp:mlc})
 
-+ see https://arxiv.org/pdf/1409.4698.pdf for MOE for MLC
 + https://arxiv.org/pdf/1707.01408.pdf
 + https://arxiv.org/pdf/1707.03296.pdf
 
