@@ -75,19 +75,22 @@ First, a brief introduction to the general problem of image classification is gi
 
 ### Image Classification
 
-There are three main tasks in Computer Vision (CV), namely: image classification, object detection and image segmentation. Traditional image classification is the task of assigning one label from a fixed set of categories to an input image. More recently the task has been generalised to assigning multiple labels to an input image, *i.e.* multi-label classification (MLC). First, we will only look at the single label case.
+Classification is only one of many important tasks in Computer Vision (CV). Other examples of important tasks are localisation and segmentation (should I give example papers?). See \autoref{fig:cvtasks} for a display of the conceptual differences of these tasks. There are many similarities between these tasks, whereas classification can be viewed as the core of them. Image classification is the main focus of this study (out of the other CV tasks). 
 
-Image classification is the core of computer vision tasks and probably the most explored since it has a large variety of practical applications. It can be shown that the other two CV tasks, detection and segmentation, can be reduced to classification. Classification will be the main task of this thesis.
+![Different Computer Vision tasks. \label{fig:cvtasks}](figures/CVtasks.png)
 
-> show visual difference between classification, segmentation and detection.
+Traditional image classification is the task of assigning one label from a fixed set of categories to an input image. A rather neglected topic in the literature, is that of assigning potentially more than one label to an input image, known as multi-label image classification. First, we will only look at the single label case.
 
-Instead of hard coding rules on how to classify images into an image classification model, it can learn to classify images by seeing many examples of images and its corresponding labels. In this way it learns the visual appearance of each class. This is sometimes referred to as a data-driven approach. A very intuitive approach to image classification (and supervised learning in general) is called the nearest neighbour approach.
-
-Although this approach is rarely used in practice, this description helps with the understanding of the image classification problem. The nearest neighbour classifier will take a test image, compare it to every single one of the training images, and predict its label to be the label of the closest training image. This leaves the question of how to measure the similarity between images.
-
++ mention applications?
 + challenges for image classification: (still add this somewhere around here)
 
     + http://cs231n.github.io/classification/
+
+One way of building an image classification model is to hard code into the model how to classify images. Clearly, with the possibly endless number of rules, this process is super inefficient, inflexible and inaccurate. A much more effective way of doing this is to let the model learn by itself how to classify images by providing it with many examples of images and its corresponding labels. This is sometimes referred to as a data-driven approach. This task of *training* a model to learn from labelled data (the set of annotated images in this case) is known as *Supervised Learning*.
+
++ give definition here?
+
+A very intuitive approach to image classification (and supervised learning in general) is called the nearest neighbour approach. Although this approach is rarely used for image classification in practice, a description thereof can help with the understanding of the image classification problem. The nearest neighbour classifier will take a test image, compare it to every single one of the training images, and predict its label to be the label of the closest, *i.e.* most similar,  training image. This leaves the question of how to measure the similarity between images.
 
 An image is a grid of many small, square cells of different colors. These cells are known as pixels and one pixel represents one color. A grayscale image, 32 pixels wide and 32 pixels long, can be represented by a $32\times 32$ matrix of integers, where each integer represents the 'brightness' (intensity) of each pixel. These integers are usually in $[0,255]$, such that the greater the integer the brighter the pixel, *i.e.* a pixel with intensity 0 is totally black and a pixel with intensity 255 is totally white. Note that a color image consists of 3 spectral bands, red, green and blue (RGB), *i.e.* the color of one pixel is determined by 3 integers each representing the intensity of the color red, green and blue, respectively. 
 
@@ -422,3 +425,6 @@ The thesis is concluded in Chapter \ref{chp:conc} with a summary of the work don
 + unsure about the capitalisation of subject names - capitalise first letters all the time or only once?
 + unsure about the use of abbreviations - sometimes it feels more clear when writing out the full word(s)
 + want to highlight important concepts when first mentioned with italics - is this acceptable?
++ an alternative is to place image classification as a separate chapter, but then not sure what the rest of chapter 1 would be about. Maybe short introductions to image classification, deep learning and MLC.
++ is it okay to use others images - how to cite?
++ unsure on when to cite papers

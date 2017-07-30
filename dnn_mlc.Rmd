@@ -389,7 +389,8 @@ Multi-label classification can also be achieved by learning a joint image/label 
 
 ## Unsorted
 
-+ [@Hu2016] for structured inference neural networks with label relations
++ [@Hu2015] for structured inference neural networks with label relations
 + https://arxiv.org/pdf/1704.08756.pdf for stratification
 + https://pdfs.semanticscholar.org/92f5/bd6aa3544c36490e2dac798513055233b02c.pdf for Multi-Label Transfer Learning with Sparse Representation
 + http://www.cripac.ia.ac.cn/irds/People/lwang/M-MCG/Publications/2013/YH2013ICIP.pdf for Mutli-Task but not very good paper.
++ see Correlative multi-label video annotation and Correlated label propagation with application to multi-label learning for possible evidence that label correlations can be exploited.
