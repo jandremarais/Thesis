@@ -39,6 +39,9 @@ header-includes:
 
 ```{r, echo=FALSE}
 knitr::opts_chunk$set(warning = FALSE, message = FALSE, echo=FALSE)
+library(ggplot2)
+library(imager)
+library(dplyr)
 ```
 
 

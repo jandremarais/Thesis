@@ -40,7 +40,7 @@ Representational power -> universal approximators.
 
 More on size, overfitting and generalisation, regularisation
 
-+ + https://arxiv.org/abs/1706.01350
++ https://arxiv.org/abs/1706.01350
 
 ## Setup
 
@@ -167,6 +167,8 @@ See code at: https://github.com/titu1994/Wide-Residual-Networks or https://githu
 
 + https://github.com/raghakot/keras-vis
 + http://yosinski.com/deepvis
++ smoothgrad https://arxiv.org/pdf/1706.03825.pdf
++ zeiler paper
 
 ### Activations and First Layer Weights
 
