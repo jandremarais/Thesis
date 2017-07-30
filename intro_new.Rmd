@@ -90,38 +90,38 @@ One way of building an image classification model is to hard code into the model
 
 + give definition here?
 
-A very intuitive approach to image classification (and supervised learning in general) is called the nearest neighbour approach. Although this approach is rarely used for image classification in practice, a description thereof can help with the understanding of the image classification problem. The nearest neighbour classifier will take a test image, compare it to every single one of the training images, and predict its label to be the label of the closest, *i.e.* most similar,  training image. This leaves the question of how to measure the similarity between images.
+A very intuitive approach to image classification (and supervised learning in general) is called the nearest neighbour approach. Although this approach is rarely used for image classification in practice, a description thereof can help with the understanding of the image classification problem. The nearest neighbour classifier will take a test image, compare it to every single one of the training images, and predict its label to be the label of the closest, *i.e.* most similar,  training image. This leaves the question of how to measure the similarity between images. To answer this question, we need to look at how images are represented as data.
 
-An image is a grid of many small, square cells of different colors. These cells are known as pixels and one pixel represents one color. A grayscale image, 32 pixels wide and 32 pixels long, can be represented by a $32\times 32$ matrix of integers, where each integer represents the 'brightness' (intensity) of each pixel. These integers are usually in $[0,255]$, such that the greater the integer the brighter the pixel, *i.e.* a pixel with intensity 0 is totally black and a pixel with intensity 255 is totally white. Note that a color image consists of 3 spectral bands, red, green and blue (RGB), *i.e.* the color of one pixel is determined by 3 integers each representing the intensity of the color red, green and blue, respectively. 
+An image is a grid of many tiny, square cells of different colors. These cells are known as pixels and one pixel represents one color. A grayscale image, 32 pixels wide and 32 pixels long, can be represented by a $32\times 32$ matrix of integers, where each integer represents the 'brightness' (intensity) of each pixel. These integers are usually in $[0,255]$, such that the greater the integer the brighter the pixel, *i.e.* a pixel with intensity 0 is totally black and a pixel with intensity 255 is totally white. \autoref{fig:img_mat} illustrates this representation. Note, that a standard color image consists of 3 spectral bands, red, green and blue (RGB), *i.e.* the color of one pixel is determined by 3 integers in $[0,255]$, each representing the intensity of the color red, green and blue, respectively. Thus a $32\times32$ sized image is represented by an array of size $32\times32\times3$.
 
-![Greyscale intensities. http://ai.stanford.edu/~syyeung/cvweb/tutorial1.html](figures/imagematrix.png)
+![Greyscale intensities. http://ai.stanford.edu/~syyeung/cvweb/tutorial1.html \label{fig:img_mat}](figures/imagematrix.png)
 
-The (dis)similarity between two images can now be measured pixel by pixel. It is possible to represent the grayscale image mentioned above in a vector of length $32\times 32$. Suppose a grayscale Image 1 is flattened out to be represented by the vector $\boldsymbol{I}_{1}=\{I_{11},I_{12},\dots,I_{1p}\}$ and similary, Image 2 by $\boldsymbol{I}_{2}$, where $p=32\times 32$. Then the dissimilarity between Image 1 and Image 2 can be calculated by the $L_{1}$-distance:
-
-$$
-d_{1}(\boldsymbol{I}_{1},\boldsymbol{I}_{2})=\sum_{j=1}^{p}|I_{1j}-I_{2j}|.
-$$
-
-![Pixelwise difference](figures/imagedist.jpeg)
-
-Now, suppose we want to predict the label of an test image $a$, then the nearest neighbour approach would assign the label of train image $b^{*}$ to test image $a$ if:
+The (dis)similarity between two images can now be measured pixel by pixel. It is possible to represent the grayscale image mentioned above in a vector of length 1024 ($32\times 32$). Suppose the matrix of pixel values of a grayscale image is flattened out to be represented by the vector $\boldsymbol{x}_{1}=\{x_{11},x_{12},\dots,x_{1p}\}$ and similary, another similar image by $\boldsymbol{x}_{2}$, where $p=1024$. Then the dissimilarity between Image 1 and Image 2 can be calculated by the $L_{1}$-distance:
 
 $$
-b^{*} = \arg\min_{b} d_{1}(\boldsymbol{I}_{a},\boldsymbol{I}_{b}),
+d_{1}(\boldsymbol{x}_{1},\boldsymbol{x}_{2})=\sum_{j=1}^{p}|x_{1j}-x_{2j}|.
 $$
-for $b=1,2,/dots,N$, where $N$ is the number of training images. Of course there are other ways of measuring the dissimilarity between images. Another example would be to use the $L_{2}$-distance:
+This operation is illustrated in \autoref{fig:img_sim}.
+
+![Pixelwise difference. \label{fig:img_sim}](figures/imagedist.jpeg)
+
+Now, suppose we want to predict the label of a test image $a$, then the nearest neighbour approach would assign the label of train image $b^{*}$ to test image $a$ if:
 
 $$
-d_{2}(\boldsymbol{I}_{1},\boldsymbol{I}_{2})=\sqrt{\sum_{j=1}^{p}(I_{1j}-I_{2j})^{2}}.
+b^{*} = \arg\min_{b} d_{1}(\boldsymbol{x}_{a},\boldsymbol{x}_{b}),
 $$
+for $b=1,2,\dots,N$, where $N$ is the number of training images. Of course there are other ways of measuring the dissimilarity between images. Another common distance metric is the $L_{2}$-distance:
 
+$$
+d_{2}(\boldsymbol{x}_{1},\boldsymbol{x}_{2})=\sqrt{\sum_{j=1}^{p}(x_{1j}-x_{2j})^{2}}.
+$$
 The chosen metric depends on the use case.
 
-The nearest neighbour approach can be generalised to use more than 1 nearest neighbour when predicting the label of a test image. This approach is called the $k$-Nearest Neighbours ($k$-NN). The only difference is that, you now search for the $k$ (instead of just 1) images with the smallest dissimilarity with the test image and then combine the labels of these $k$ images, either through averaging or majority voting, to predict the label of the test image. Choosing the right value of $k$ is important and is usually done by cross-validation. See Hastie ref.
+The nearest neighbour approach can be generalised to use more than 1 nearest neighbours when predicting the label of a test image. This approach is called the $k$-Nearest Neighbours ($k$-NN). The only difference is that you now search for the $k$ (instead of just 1) images with the smallest dissimilarity with the test image. Then the labels of these $k$ images are aggregated, either through averaging or majority voting, to determine the label to be assigned to the test image. Choosing the right value of $k$ is important and is usually done by *cross-validation* [@Hastie2009] (give page numbers?). 
 
-The advantage of using $k$-NN is that it is simple and requires no time to train. Unfortunately, when it comes to test time, the algorithm needs to calculcate the distance between the test image and all the other images in the training set, which is computationally very expensive. Also in [Haste ref], they show that $k$-NN suffers severely from the *curse of dimensionality* and that it is mostly only useful to classify lower dimensional objects. Images are very high-dimensional objects.
+The advantages of using $k$-NN is that it is simple and requires no time to train. Unfortunately, when it comes to test time, the algorithm needs to calculcate the distance between the test image and all the other images in the training set. This quickly becomes extremely computationally heavy as the size of the training set increases. Also in [@Haste2009], they show that $k$-NN suffers severely from the so-called *curse of dimensionality* and that the algorithm is mostly only useful for the classification of lower dimensional objects. Images are typically very high-dimensional objects.
 
-The dissimilarity measures discussed above are actually proven to be very poor in discriminating between images in an image classification problem. Images that are nearby in terms of the $L_{1}$ and $L_{2}$ distances are much more of a function of the general color distribution of the images, or the type of background rather than their semantic identity. Refer to the $t$-SNE figure.
+The dissimilarity measures discussed above are actually proven to be very poor in discriminating between images in an image classification problem. Images that are nearby in terms of the $L_{1}$ and $L_{2}$ distances are much more of a function of the general color distribution of the images (mostly determined by the background) rather than their semantic identity. Refer to the $t$-SNE figure. Actually, replace this image with a cat vs dog example, where the color distribution determines similarity and not semantics.
 
 ![Caption](figures/pixels_embed_cifar10.jpg)
 
