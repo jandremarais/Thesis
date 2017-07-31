@@ -230,6 +230,8 @@ We assume the pairs $(\boldsymbol{x}_{i},y_{i})$ to be fixed, but we do have con
 
 Another interpretation of this linear classifier is that each row of the weight matrix is a template for the corresponding class. The linear classifier matches the input image with each of the class templates in $W$ by calculating a dot product between the pairs. A high class score would imply a higher similarity between the input image and the class template. Since the negative of a dot product can be seen as distance measure, this interpretation is closely related to the nearest neighbour approach. However, in this case the distance between the input image and each of the $K$ class templates are calculated instead of its distance to each of the $N$ images in the training set.
 
+> I can add illustrations of the interpretations and also add the images as high dimensional points interpretation - each image is a point in a high-dimensional space and the linear classifier is a (separating) hyperplane in this space with its orientation determined by $W$ and position by $b$.
+
 Later on it becomes too cumbersome to keep track of two sets of parameters, $W$ and $\boldsymbol{b}$. A common trick in the literature is to write the linear classifier as:
 
 $$
@@ -241,16 +243,16 @@ Note that thus far we have used raw pixel values in the range of $[0,255]$ as in
 
 ### Loss Function
 
-To evaluate the agreement between the score function and the ground truth labels, we need a loss function. A loss function, also known as the cost function or the objective, is high when the score function does a poor job of mapping the input images to the class scores, and low when it does so accurately. There are multiple ways of defining such a loss function.
+To evaluate the agreement between the outputs of the score function and the ground truth labels, we need a loss function. A loss function, also known as the cost or the objective function, is high when the score function does a poor job of mapping the input images to the class scores, and low when it does so accurately. There are multiple ways of defining such a loss function.
 
 #### Multiclass Support Vector Machine Loss
 
-A commonly used loss is the Multiclass Support Vector Machine (SVM) loss. In statistical learning this is more commonly known as the Hinge Loss. The SVM loss is designed in such a way that it wants the correct class for each image to have a score higher than the incorrect classes by some fixed margin $\Delta$. More precisely, the multiclass SVM loss for the $i$-th example with label $y_{i}$ can be given by:
+A commonly used loss is the Multiclass Support Vector Machine (SVM) loss. In statistical learning this is more commonly known as the (multiclass) Hinge Loss [@Crammer2002]. The SVM loss is designed in such a way that it rewards examples when the correct class for the image has a score higher than the incorrect classes by some fixed margin, $\Delta$. More precisely, the multiclass SVM loss for the $i$-th example with ground-truth label $y_{i}$ can be given by:
 
 $$
 L_{i}=\sum_{j\neq y_{i}}\max (0,s_{j}-s_{y_{i}}+\Delta),
 $$
-where $s_{j}=f(x_{i},W)_{j}$ is the score for the $j$-th class computed for image $i$. Here $L_{i}$ consists of $K-1$ components, each representing an incorrect class. A component will make no contribution to the loss if the calculated class score for the corresponding incorrect class is less than the correct class score by a margin of $\Delta$, *i.e.* $s_{y_{i}}-s_{j}>\Delta$. It will make a positive contribution otherwise. As an example, suppose we have three predicted class scores for an image $s = [4, 5, -3]$ and that the second class is the true label. Let $\Delta = 2$. The loss computed for this image will then consist of 2 components:
+where $s_{k}=f(x_{i},W)_{k}$ is the score for the $k$-th class computed for image $i$, $k=1,\dots,K$. Here, $L_{i}$ is the summation of $K-1$ components, each representing an incorrect class. A component will make no contribution to the loss if the calculated class score for the corresponding incorrect class is less than the correct class score by a margin of $\Delta$, *i.e.* $s_{y_{i}}-s_{j}>\Delta$. It will make a positive contribution otherwise. As an example, suppose we have three predicted class scores for an image, $s = [4, 5, -3]$, and that the second class is the true label. Also, let $\Delta = 2$. The loss computed for this image will then consist of 2 components:
 
 $$
 \begin{aligned}
@@ -258,11 +260,11 @@ L_{i}&=\max(0, 4-5+2)+\max(0,-3-5+2)\\
 &=1+0
 \end{aligned}
 $$
-We see that although the predicted class score for class 1 was smaller that the predicted class score for the true label, class 2, it was still within a margin of $\Delta=2$ and there had a positive contribution to the loss. The predicted class score for class 3 was far lower than predicted class score for the true label and therefore did not make any contibution to the loss. In summary, the SVM loss function wants the score of the correct class to be larger than the incorrect class scores by at least $\Delta$, if not, we will accumulate a loss.
+We see that although the predicted class score for class 1 was smaller that the predicted class score for the true label, class 2, it was still within a margin of $\Delta=2$ and therefore had a positive contribution to the loss. The predicted class score for class 3 was far lower than predicted class score for the true label and therefore did not make any contibution to the loss.
 
-Note that the loss is typically evaluated on a set of images and not just one, as we have describe thus far. The average loss of a set with $N$ images can be written as $L=\frac{1}{N}\sum_{i=1}^{N}L_{i}$. Another variation of the SVM loss is to replace the $\max(0,\cdot)$ term with the term, $\max(0,\cdot)^{2}$, which results in the squared hinge loss or the $L_{2}$-SVM loss. This penalises violated margins more heavily and may work better in some cases. [https://arxiv.org/abs/1306.0239]
+Note, that the loss is typically evaluated on a set of images and not just one, as we have describe thus far. The average loss of a set with $N$ images can be written as $L=\frac{1}{N}\sum_{i=1}^{N}L_{i}$. Another variation of the SVM loss is to replace the $\max(0,\cdot)$ term with the term, $\max(0,\cdot)^{2}$. This results in the squared hinge loss or the $L_{2}$-SVM loss. This penalises violated margins more heavily and may work better in some cases [@Tang2013].
 
-There is still one problem with the SVM loss described thus far. Suppose we have found a weight matrix $W$ that correctly classifies all input images and by the correct margins, *i.e.* $L_{i}=0$, $\forall i$, then setting the weight matrix to $\lambda W$, for $\lambda>1$ will have the same solution. This means the solution to the optimisation problem is not unique. It would make the optimisation task easier if we could remove this ambiguity. This can be done by adding a penalty term to the loss function, also know as regularisation. The mosty common regularisation penalty, $R(W)$, is the $L_{2}$-norm:
+There is still one problem with the SVM loss described thus far. Suppose we have found a weight matrix, $W$, that correctly classifies all input images by the correct margins, *i.e.* $L_{i}=0$, $\forall i$. Then setting the weight matrix to $\lambda W$, for $\lambda>1$ will have the same solution. This means the solution to the optimisation problem is not unique. It would make the optimisation task easier if we could remove this ambiguity. This can be done by adding a penalty term to the loss function, also know as regularisation. The most common regularisation penalty, $R(W)$, is the $L_{2}$-norm:
 
 $$
 R(W)=\sum_{k}\sum_{l}W_{k,l}^{2},
@@ -274,11 +276,9 @@ L=\frac{1}{N}\sum_{i}L_{i}+\lambda R(W).
 $$
 The two components of the loss can be called the *data loss* and the *regularisation loss*. $\lambda$ determines how much regularisation should be done. If $\lambda$ is large, more regularisation will take place. The value of $\lambda$ is typically determined through cross-validation.
 
-The regularisation penalty ensures a unique (or less solutions?) solution to the optimisation problem by restricting the weight parameters in size. Greater weight parameters will result in bigger loss, if everything else remain constant. Another appealing property is that penalising large weights tends to improve generalisation, because it means that no input dimension can have a very large inlfuence on the scores all by itself.
+The regularisation penalty ensures a unique solution to the optimisation problem by restricting the weight parameters in size. Greater weight parameters will result in bigger loss, if everything else remain constant. Another appealing property is that penalising large weights tends to improve generalisation, because it means that no input dimension can have a very large inlfuence on the scores all by itself. The benefits of regularisation are discussed in detail in [@Hastie2009]. Also note that, typically, only the weight parameters are regularised, since the bias terms do not control the strength of influence of an input dimension. Howerver, in practice this often has a negligible effect. 
 
-Typically, only the weight parameters are regularised, since the bias terms do not control the strength of influence of an input dimension. Howerver, in practice the often turns out to have a negligible effect. 
-
-To return to the value of $\Delta$ - it turns out that $\Delta$ and $\lambda$ control the same trade-off and therefore we can safely set $\Delta=1$ and only use cross-validation for determining $\lambda$. This might not seem obvious, but the key to understanding this is to realise that the weights in $W$ have a direct influence on the class scores and therefore also on the differences between them. If all the elements in $W$ are shrinked, all the differences in class scores will shrink and if all the elements are scaled up, the opposite will happen. Therefore, the margin $\Delta$ becomes meaningless in the sense that the weights can shrink or stretch to match $\Delta$. Thus the only real trade-off is how large we allow the weights to be and this we specify through $\lambda$.
+We have not yet mentioned how to determine the value of $\Delta$. It turns out that $\Delta$ and $\lambda$ control the same trade-off and therefore we can safely set $\Delta=1$ and only tune the $\lambda$ parameter. The weights in $W$ have a direct influence on the class scores and therefore also on the differences between them. If all the elements in $W$ are shrinked, all the differences in class scores will shrink and if all the elements are scaled up, the opposite will happen. Therefore, the margin $\Delta$ becomes meaningless in the sense that the weights can shrink or stretch to match $\Delta$. Thus the only real trade-off is how large we allow the weights to be and this we specify through $\lambda$.
 
 #### Softmax Classifier
 
