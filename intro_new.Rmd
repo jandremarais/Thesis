@@ -316,38 +316,29 @@ Note that although we used the term 'probabilities' to describe the output the s
 
 ### Optimisation
 
-From the previous sections we learned that the key components for the image classification task is the score function and the loss function. We looked at the linear mapping of raw pixel values to class scores and various loss functions, such as the hinge loss and cross-entropy loss, to evaluate the mapping against the ground truth labels. Putting all of this together, the SVM classifier can be reduced to the problem of minimising the loss:
+The previous sections covered the first two key components of an image classification model - the score and loss function. We looked at the linear mapping of raw pixel values to class scores and two important loss functions, the hinge and cross-entropy loss, to evaluate the mapping against the ground truth labels. Putting all of this together, the SVM classifier can be reduced to the problem of minimising the loss:
 
 $$
 L=\frac{1}{N}\sum_{i}\sum_{j\neq y_{i}}\left[\max(0,f(\boldsymbol{x}_{i};W)_{j}-f(\boldsymbol{x}_{i};W)_{y_{i}}+1)\right]+\alpha R(W),
 $$
-where $f(\boldsymbol{x}_{i};W)=W\boldsymbol{x}_{i}$. This process of minimising the loss is also known as optimisation, which is the third key component. Optimisation is the process of finding the set of parameters $W$ that minimise the loss function.
-
-Once we get to convolutional neural networks, the only major difference is the use of a more complicated score function. The loss and optimisation components remain mostly unchanged.
+where $f(\boldsymbol{x}_{i};W)=W\boldsymbol{x}_{i}$. This process of minimising the loss is also known as optimisation, which is the third key component of an image classifier. Optimisation is the process of finding the set of parameters $W$ that minimise the loss function. Note, CNNs also fit into this framework of image classification. The only difference is the use of more complicated score function - the loss and optimisation components remain mostly unchanged.
 
 > Visualise a loss function in 2-dimensions to give idea of how it looks. [http://cs231n.github.io/optimization-1/]
 
-> SVM classifier has a convex loss function. Whole research field in convex optimisation. When we get to more complex neural netorks, the loss becomes non-convex.
-
 > The loss functions we use are technnically non-differentiable, since there are 'kinks' in the loss function (gradients not define everywhere). However, the subgradient still exists and is commonly used instead. [https://en.wikipedia.org/wiki/Subderivative]
 
-For this discussion on how to minimise the loss function with respect to $W$, we will use the SVM loss. The methods discussed may seem odd, since it is a convex optimisation problem. We only use this example for simplicity, since when we get to complex neural networks, the optimisation will not be a convex problem.
+For this discussion on how to minimise the loss function with respect to $W$, we will use the SVM loss. Minimising the SVM loss is a convex optimisation problem. The approach discussed here is not optimal for convex optimisation, but used as an example for illustration purposes. The optimisation of complex neural networks are non-covex problems and this simple example is a good introduction to this.
 
-The core idea of this approach to minimise the loss with respect to $W$ is that of iterative refinement - start with a random $W$ and then iteratively refining it to get a lower loss. Finding the best set of weights, $W$ is hard, but the problem of refining a specific set of weights to only be slightly better, is much easier.
+The core idea of this optimisation approach is that of iterative refinement - start with a random intitialisation of $W$ and then iteratively update (refine) it to obtain a lower loss until convergence. Finding the best set of weights, $W$ is hard, but the problem of refining a specific set of weights to only be slightly better, is much easier. A helpful analogy is that of a hiker on a hilly terrain trying to reach the bottom in pitch black darkness. In this analogy, the height of the terrain represents the loss achieved and therefore reaching the bottom of the terrain is equivalent to finding the position of the loss minima. A possible strategy for the hiker to reach the bottom would be to test a step in a random direction and then only take the step if it leads downhill. In optimisation terms, this is equivalent to starting with a random initialisation of $W$, generating random perturbations $\delta W$ and then if the loss at the perturbed $W + \delta W$ is smaller than at $W$, the paramater updates are performed. This approach improves on a random search strategy of $W$ but still inefficient and computationally expensive.
 
-A helpful analogy is that of the blindfolded hiker, who is on a hilly terrain, trying to reach the bottom. The height of the terrain represents the loss achieved. A possible strategy for the hiker to reach the bottom would be to test a step into a random direction and the only take the step if it leads downhill. In optimisation terms, we can start with a random initialisation of $W$, generate random perturbations $\delta W$ to it and if the loss ath the perturbed $W + \delta W$ is lower, we will perform an update. This approach is better than a random search of $W$ but still inefficient and computationally expensive.
+It would be foolish to randomly search for a good direction to step towards since the best direction can be determined mathematically. This best direction along which the weights should change corresponds to the direction of steepest descend and is related to the gradient of the loss function. In the hiking analogy, this approach roughly corresponds to feeling the slope of the hill below our feet and stepping down the direction that feels the steepest.
 
-It turns out that it is actually not necessary to randomly search for a good direction to move towards. The best direction can be determined mathematically. This best direction along which the weights should change corresponds to the direction of steepest descend and is related to the gradient of the loss function. In the hiking analogy, this approach roughly corresponds to feeling the slope of the hill below our feet and stepping down the direction that feels the steepest.
-
-In one-dimensional functions, the slope is the instantaneous rate of change of the function at any specified point. The gradient is a generalisation of slope for multi-dimensional functions and is simply a vector of slopes, better known as derivatives, for each dimension in the search space. Mathematically, the expression for the derivative of a 1-dimensional function with respect to its input is:
+In one-dimensional functions, the slope is the instantaneous rate of change of the function at any specified point. The slope for multi-dimensional functions is known as the gradient and is simply a vector of slopes, better known as derivatives, for each dimension in the search space. Mathematically, the expression for the derivative of a 1-dimensional function with respect to its input is:
 
 $$
 \frac{df(x)}{dx}=\lim_{h\to 0}\frac{f(x+h)-f(x)}{h}.
 $$
-
-When the function of interest take a vector of numbers instead of a single number, we call the derivatives partial derivatives. The gradient is simply the vector of partial derivatives in each dimension.
-
-There are two approaches to computing the gradient: the **numerical gradient** and the  **analytic gradient**. Their pro's and con's are discussed in the following section.
+When the function of interest takes a vector as input, the derivatives are called partial derivatives. The gradient is simply the vector of partial derivatives in each dimension. The gradient can either be determined by calculating the *numerical gradient* or the  *analytic gradient*. These are discussed next.
 
 #### Computing the Gradient Numerically
 
