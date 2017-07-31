@@ -77,33 +77,41 @@ First, a brief introduction to the general problem of image classification is gi
 
 Classification is only one of many important tasks in Computer Vision (CV). Other examples of important tasks are localisation and segmentation (should I give example papers?). See \autoref{fig:cvtasks} for a display of the conceptual differences of these tasks. There are many similarities between these tasks, whereas classification can be viewed as the core of them. Image classification is the main focus of this study (out of the other CV tasks). 
 
-![Different Computer Vision tasks. \label{fig:cvtasks}](figures/CVtasks.png)
+![Some of the important Computer Vision tasks. \label{fig:cvtasks}](figures/CVtasks.png)
 
 Traditional image classification is the task of assigning one label from a fixed set of categories to an input image. A rather neglected topic in the literature, is that of assigning potentially more than one label to an input image, known as multi-label image classification. First, we will only look at the single label case.
 
 + mention applications?
-+ challenges for image classification: (still add this somewhere around here)
-
-    + http://cs231n.github.io/classification/
 
 One way of building an image classification model is to hard code into the model how to classify images. Clearly, with the possibly endless number of rules, this process is super inefficient, inflexible and inaccurate. A much more effective way of doing this is to let the model learn by itself how to classify images by providing it with many examples of images and its corresponding labels. This is sometimes referred to as a data-driven approach. This task of *training* a model to learn from labelled data (the set of annotated images in this case) is known as *Supervised Learning*.
 
-+ give definition here?
++ give more formal definition of supervised learning here?
 
 A very intuitive approach to image classification (and supervised learning in general) is called the nearest neighbour approach. Although this approach is rarely used for image classification in practice, a description thereof can help with the understanding of the image classification problem. The nearest neighbour classifier will take a test image, compare it to every single one of the training images, and predict its label to be the label of the closest, *i.e.* most similar,  training image. This leaves the question of how to measure the similarity between images. To answer this question, we need to look at how images are represented as data.
 
 An image is a grid of many tiny, square cells of different colors. These cells are known as pixels and one pixel represents one color. A grayscale image, 32 pixels wide and 32 pixels long, can be represented by a $32\times 32$ matrix of integers, where each integer represents the 'brightness' (intensity) of each pixel. These integers are usually in $[0,255]$, such that the greater the integer the brighter the pixel, *i.e.* a pixel with intensity 0 is totally black and a pixel with intensity 255 is totally white. \autoref{fig:img_mat} illustrates this representation. Note, that a standard color image consists of 3 spectral bands, red, green and blue (RGB), *i.e.* the color of one pixel is determined by 3 integers in $[0,255]$, each representing the intensity of the color red, green and blue, respectively. Thus a $32\times32$ sized image is represented by an array of size $32\times32\times3$.
 
-![Greyscale intensities. http://ai.stanford.edu/~syyeung/cvweb/tutorial1.html \label{fig:img_mat}](figures/imagematrix.png)
+```{r,fig.cap="A low resolution grayscale profile of a man with pixel values overlayed on the image.\\label{fig:img_mat}", cache=TRUE, fig.width=3, fig.height=3}
+load.image("figures/wim.jpeg") %>% 
+  grayscale %>% 
+  resize(16, 16) %>% 
+  as.data.frame %>% 
+  ggplot(aes(x, y)) + 
+  geom_raster(aes(fill = value), show.legend = FALSE) +
+  scale_y_continuous(trans=scales::reverse_trans(), expand = c(0, 0)) +
+  scale_x_continuous(expand = c(0, 0)) + 
+  scale_fill_gradient(low = "black", high = "white") +
+  coord_fixed() +
+  theme(text = element_blank(), line = element_blank()) +
+  geom_text(aes(label = round(value * 256), color = value), show.legend = FALSE, size = 2) +
+  scale_color_gradient(low = "white", high = "black")
+```
 
 The (dis)similarity between two images can now be measured pixel by pixel. It is possible to represent the grayscale image mentioned above in a vector of length 1024 ($32\times 32$). Suppose the matrix of pixel values of a grayscale image is flattened out to be represented by the vector $\boldsymbol{x}_{1}=\{x_{11},x_{12},\dots,x_{1p}\}$ and similary, another similar image by $\boldsymbol{x}_{2}$, where $p=1024$. Then the dissimilarity between Image 1 and Image 2 can be calculated by the $L_{1}$-distance:
 
 $$
 d_{1}(\boldsymbol{x}_{1},\boldsymbol{x}_{2})=\sum_{j=1}^{p}|x_{1j}-x_{2j}|.
 $$
-This operation is illustrated in \autoref{fig:img_sim}.
-
-![Pixelwise difference. \label{fig:img_sim}](figures/imagedist.jpeg)
 
 Now, suppose we want to predict the label of a test image $a$, then the nearest neighbour approach would assign the label of train image $b^{*}$ to test image $a$ if:
 
@@ -119,44 +127,117 @@ The chosen metric depends on the use case.
 
 The nearest neighbour approach can be generalised to use more than 1 nearest neighbours when predicting the label of a test image. This approach is called the $k$-Nearest Neighbours ($k$-NN). The only difference is that you now search for the $k$ (instead of just 1) images with the smallest dissimilarity with the test image. Then the labels of these $k$ images are aggregated, either through averaging or majority voting, to determine the label to be assigned to the test image. Choosing the right value of $k$ is important and is usually done by *cross-validation* [@Hastie2009] (give page numbers?). 
 
-The advantages of using $k$-NN is that it is simple and requires no time to train. Unfortunately, when it comes to test time, the algorithm needs to calculcate the distance between the test image and all the other images in the training set. This quickly becomes extremely computationally heavy as the size of the training set increases. Also in [@Haste2009], they show that $k$-NN suffers severely from the so-called *curse of dimensionality* and that the algorithm is mostly only useful for the classification of lower dimensional objects. Images are typically very high-dimensional objects.
+The advantages of using $k$-NN is that it is simple and requires no time to train. Unfortunately, when it comes to test time, the algorithm needs to calculcate the distance between the test image and all the other images in the training set. This quickly becomes extremely computationally heavy as the size of the training set increases. Also in [@Hastie2009], they show that $k$-NN suffers severely from the so-called *curse of dimensionality* and that the algorithm is mostly only useful for the classification of lower dimensional objects. Images are typically very high-dimensional objects.
 
-The dissimilarity measures discussed above are actually proven to be very poor in discriminating between images in an image classification problem. Images that are nearby in terms of the $L_{1}$ and $L_{2}$ distances are much more of a function of the general color distribution of the images (mostly determined by the background) rather than their semantic identity. Refer to the $t$-SNE figure. Actually, replace this image with a cat vs dog example, where the color distribution determines similarity and not semantics.
+In addition, it turns out that the dissimilarity measures discussed above are proven to be very poor in discriminating between images in an image classification problem. Images that are nearby in terms of the $L_{1}$ and $L_{2}$ distances are much more of a function of the general color distribution of the images rather than their semantic identity. For example, if two images share roughly the same color background and their backgrounds take up a large part of the image, they will most probably have a low $d_{1}$ and $d_{2}$ between them, regardless of the foreground object. To illustrate this, look at the images in \autoref{fig:img_dist}. 
 
-![Caption](figures/pixels_embed_cifar10.jpg)
+```{r, fig.cap="Two images of a Chihuahua, (a), (b), and an image of a blueberry muffin. \\label{fig:img_dist}", cache=TRUE}
+chi_im <- load.image('figures/chihuahua.jpeg') %>% 
+  crop.borders(nx = 50) %>% 
+  resize(128, 128) %>% 
+  as.data.frame()
+
+chi2_im <- load.image('figures/chihuahua2.jpeg') %>% 
+  resize(128, 128) %>% 
+  as.data.frame()
+
+muff_im <- load.image('figures/muffin.jpeg') %>% 
+  resize(128, 128) %>% 
+  as.data.frame()
+
+chi_df <- load.image('figures/chihuahua.jpeg') %>% 
+  crop.borders(nx = 50) %>% 
+  resize(128, 128) %>% 
+  as.data.frame(wide = "c")
+
+chi2_df <- load.image('figures/chihuahua2.jpeg') %>% 
+  resize(128, 128) %>% 
+  as.data.frame(wide = "c")
+
+muff_df <- load.image('figures/muffin.jpeg') %>% 
+  resize(128, 128) %>% 
+  as.data.frame(wide = "c")
+
+
+bind_rows(
+  chi_df %>% mutate(im = "(a)"),
+  chi2_df %>% mutate(im = "(b)"), 
+  muff_df %>% mutate(im = "(c)")
+) %>% 
+  mutate(rgb.val=rgb(c.1,c.2,c.3)) %>% 
+  ggplot(aes(x, y)) + 
+  geom_raster(aes(fill = rgb.val)) + 
+  scale_fill_identity() + 
+  scale_y_reverse(expand = c(0, 0)) +
+  scale_x_continuous(expand = c(0, 0)) +
+  coord_fixed() +
+  facet_wrap(~ im, strip.position = "bottom") +
+  theme(line = element_blank(), 
+        axis.text = element_blank(),
+        axis.title = element_blank(),
+        strip.background = element_rect(fill="white"),
+        panel.border = element_rect(colour = "black", fill = NA))
+```
+
+The images laballed (a) and (b) are clearly pictures of dogs (Chihuahuas) and image (c) is a picture of a blueberry muffin. Suppose images (b) and (c) are in the training set and we want to find the nearest neighbour to the test image (a). If we compute the $L_{2}$-distance measure between (a) and (b), and (a) and (c), we observe the following unsatisfactory results[^scale]:
+
+$$
+\begin{aligned}
+d_{2}(I_{a}, I_{b}) &\approx `r round(sqrt(sum((chi_im$value - chi2_im$value)^2)), 2)`\\
+d_{2}(I_{a}, I_{c}) &\approx `r round(sqrt(sum((chi_im$value - muff_im$value)^2)), 2)`
+\end{aligned}
+$$
+By this measure, Image (a) is more similar to the muffin than it is to the other Chihuahua. The same conclusion would be made by using the $L_{1}$-distance. As mentioned previously, this is because a large part of images (a) and (c) is white background and also the color of the dog in Image (a) is similar to the muffin in Image (c). Therefore, more sophisticated approaches are needed to identify patterns and objects in images.
+
+[^scale]: The values were scaled to be in the range, $[0,1]$, before the distance was calculated.
+
+Before moving on, it is worth noting some of the things that make it hard for computers to classify images [^challenges]:
+
++ **Viewpoint variation** - A single instance of an object can be oriented in various ways with respect to the camera position.
++ **Scale variation** - Objects of the same class can appear in different sizes in the images.
++ **Deformation** - 
++ **Occlusion**
++ **Illumination conditions**
++ **Background clutter**
++ **Intra-class variation**
+
+> incomplete since I'm not sure if I want to add this list. Thus far it is basically a copy of the one found in the reference. Think the challenges should be mentioned but this section is getting very long.
+
+[^challenges]: http://cs231n.github.io/classification/ unsure how to cite websites.
 
 ### Score Function
 
-The following simple approach to image classification naturally extends to neural networks and convolutional neural networks and is therefore very important to comprehend. This approach has to major components: a score function and a loss function. The score function maps raw data (*e.g.* an image) to a set of class scores, and a loss function quantifies the agreement between the predicted class scores and the actual ground truth labels associated with the raw data. This approach can then be described as an optimization problem in which the minimisation of the loss function with respect to the parameters of the score function is the main goal.
+The following basic approach to image classification naturally extends to neural networks and convolutional neural networks. There are three major components to this approach:
 
-Some notation is needed to formally define this approach. Suppose we have $N$ training images $\boldsymbol{x}_{i}\in \mathbb{R}^{p}$ each associated with a label $y_{i}\in \{1,2,\dots, K\}$, where $i=1,2,\dots,N$ and $K$ is the number of possible categories an image can belong to and $p$ the number of pixels of each image. The score function is then defined as the function $f$ that maps the raw image pixels to class scores:
++ **score function** - This a function that maps raw data (*e.g.* an image) to a set of class scores.
++ **loss function** - This function quantifies the disagreement between the predicted class scores and the actual labels associated with the raw data.
++ **optimisation** - The task of training an image classification model can be reduced to an optimisation problem in which the minimisation of the loss function with respect to the parameters of the score function is the goal.
+
+Some notation is needed to formally define this approach. Suppose we have $N$ training images $\boldsymbol{x}_{i}\in \mathbb{R}^{p}$ each associated with a label $y_{i}\in \{1,2,\dots, K\}$, where $i=1,2,\dots,N$ and $K$ is the number of possible categories an image can belong to and $p$ the number of pixels of each image. The score function is then defined as the function, $f$, that maps the raw image pixels to class scores:
 
 $$
 f:\mathbb{R}^{p}\to\mathbb{R}^{K}.
 $$
 
-The simplest possible score function is a linear mapping:
+A very simple score function can be a linear mapping between the inputs and the class scores (outputs), *i.e.*
 
 $$
 f(\boldsymbol{x}_{i},W,b)=W\boldsymbol{x}_{i}+\boldsymbol{b}.
 $$
+Applying this expression to an image classification problem, Image $i$ is flattened out to be represented by a $p$-dimensional vector. The paramters of $f$ are the weight matrix, $W:K\times p$, and the bias vector $\boldsymbol{b}$. These terms are comparable to the coefficient and constant terms in a statistical linear model and thus should not be confused with bias in the statistical sense. Notice that this score function determines the score for each class as a weighted sum of the pixel values of the input image. Therefore, suppose a linear classifier is trained to classify ships, we would expect that the weight matrix assigns heavier weights to blue pixels on the sides of an image, since they loosely represent water.
 
-In the above equation, Image $i$ is flattened out to be represented by a $p$-dimensional vector. The paramters of $f$ are the matrix $W:K\times p$ and the vector $\boldsymbol{b}$, often called the weights and biases, respectively. These terms are comparable to the coefficient and constant terms in a statistical linear model and thus should not be confused with bias in the statistical sense.
+We assume the pairs $(\boldsymbol{x}_{i},y_{i})$ to be fixed, but we do have control over the $W$ and $\boldsymbol{b}$ terms. Our goal will be to set these in such a way so that the computed class scores for each image in the training set matches its associated ground truth label as close as possible. What we have described thus far is very similar to the approach taken by convolutional neural networks, with the exception of the shape of the score function, $f$, which in a CNN's case is much more complicated with sometimes millions of parameters to tune.
 
-We assume the pairs $(\boldsymbol{x}_{i},y_{i})$ to be fixed, but we do have control over the $W$ and $\boldsymbol{b}$ terms. Our goal will be to set these in such a way so that the computed class scores for each image in the training set match the associated ground truth label as close as possible. What we have described thus far is very similar to the approach taken by convolutional neural networks, but instead the function, $f$, which maps the raw pixels to class scores, is much more complicated with plenty more parameters to tune.
+Another interpretation of this linear classifier is that each row of the weight matrix is a template for the corresponding class. The linear classifier matches the input image with each of the class templates in $W$ by calculating a dot product between the pairs. A high class score would imply a higher similarity between the input image and the class template. Since the negative of a dot product can be seen as distance measure, this interpretation is closely related to the nearest neighbour approach. However, in this case the distance between the input image and each of the $K$ class templates are calculated instead of its distance to each of the $N$ images in the training set.
 
-Notice that this score function determines the score for each class as a weighted sum of the pixel values across all 3 of its spectral bands. We would imagine that a linear classifier trained to classify, say, ships would have a weight matrix that assigns heavier weights to blue pixels on the sides of an image, which loosely corresponds to water.
-
-If we picture the images as points in a high-dimensional space, $f$ is a hyperplane, $W$ determines the angle of the hyperplane and $\boldsymbol{b}$ translates the hyperplane through the space. Another interpretation of this linear classifier is that each row of the weight matrix is a so-called template for the corresponding class. The linear classifier matches the input image with each of the class templates in $W$ by calculating a dot product. A high class score would translate to a higher similarity between the input image and the class template. This interpretation is closely related to the nearest neighbour approach, but here only the test image's distance (here the negative of the inner product) to each of the $K$ class templates are calculated instead of its distance to each of the $N$ images in the training set.
-
-Later on it becomes too cumbersome to keep track of two sets of parameters, $W$ and $\boldsymbol{b}$, and therefore, for the rest of the thesis we will write the linear classifier as:
+Later on it becomes too cumbersome to keep track of two sets of parameters, $W$ and $\boldsymbol{b}$. A common trick in the literature is to write the linear classifier as:
 
 $$
 f(\boldsymbol{x}_{i},W)=W\boldsymbol{x}_{i},
 $$
-where $\boldsymbol{b}$ is now contained in the last(/first?) column of $W$ and the last element of $\boldsymbol{x}_{i}$ is now the constant, $1$. This is the so-called bias trick.
+where $\boldsymbol{b}$ is now contained in the last column of $W$ and the last element of $\boldsymbol{x}_{i}$ is now the constant, $1$. This is the so-called *bias trick*.
 
-Note that thus far we have used raw pixel values in the range of $[0,255]$ as input. However, in practice, it is more common to subject the input images to some preprocessing before inputting them into the score function. The benefits of this will be made clear in the optimisation section. Common preprocessing techniques are the centering and scaling of the pixels so that their values lie in the range of $[-1,1]$. To center the input image, is to calculate a *mean image* from the training images and subtract each of its pixel values to from the corresponding pixel values of each image in the training set. This is identical to zero mean centering for standard statistical learning tasks - each pixel is seen as in input feature. Scaling is done by dividing each pixel by a function of its variance accross the whole training set.
+Note that thus far we have used raw pixel values in the range of $[0,255]$ as input. However, in practice, it is more common to subject the input images to some preprocessing before using it as input to the score function. The benefits of this will be made clear in the optimisation section. Common preprocessing techniques are the centering and scaling of the pixels so that their values lie in the range of $[-1,1]$. To center the input image, is to calculate a *mean image* from the training images and subtract each of its pixel values to from the corresponding pixel values of each image in the training set. This is identical to zero mean centering for standard statistical learning tasks - each pixel is seen as in input feature. Scaling is done by dividing each pixel by a function of its variance accross the whole training set.
 
 ### Loss Function
 
