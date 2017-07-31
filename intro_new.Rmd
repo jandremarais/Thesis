@@ -342,40 +342,32 @@ When the function of interest takes a vector as input, the derivatives are calle
 
 #### Computing the Gradient Numerically
 
-Iterate over all dimensions one by one, make a small change, $h$, along that dimension and calculate the partial derivative of the loss function along that dimension by seeing how much the function changed. Ideally, we want $h$ to be as small as possible, since the mathematical formulation requires $h\to 0$. In practice it often works better to compute the numeric gradient using the centered difference formula: $\frac{f(x+h)-f(x-h)}{2h}$.
+The numeric computation of the gradient can be described as follows. For each dimension in the search space, make a small change, $h$, along that dimension and calculate the partial derivative of the loss function along that dimension by seeing how much the function changed. Ideally, we want $h$ to be as small as possible, since the mathematical formulation requires $h\to 0$. In practice, it often works better to compute the numeric gradient using the centered difference formula: $\frac{f(x+h)-f(x-h)}{2h}$. Note that the update of $W$ should be made in the negative direction of the gradient, since we wish to decrease the loss function.
 
-Note that the update of $W$ should be made in the negative direction of the gradient, since we wish to decrease the loss function.
-
-The gradient tells us the direction in which the function has the steepest rate of increase, but it does not tell us how far along this direction we should step, *i.e.* what is the value of the step size? This value is also known as the *learning rate* and we will soon learn that it is one of the most important hyperparameters of a neural network. Choosing a small step size in the direction of steepest descent will ensure consistent but slow progress. A large step in this direction may lead to a quicker descent but also has the risk of overshooting the optimal point.
-
-The obvious downfall of this approach (in addition to that is only an approximation) is that we need to calculate the gradient in each direction/dimension. Neural networks have millions of parameters and therefore optimising them in this manner is clearly not feasible.
+The gradient tells us the direction in which the function has the steepest rate of increase, but it does not tell us how far along this direction the step should be, *i.e.* what the value of the step size is. This value is also known as the *learning rate* - one of the most important hyperparameters of a neural network, soon to be discussed. Choosing a small step size in the direction of steepest descent will ensure consistent but slow progress and a large step in this direction may lead to a quicker descent but also leads to the risk of overshooting the optimal point. The obvious downfall of this approach (in addition to that it is only an approximation) is that the gradient needs to be calculated in each direction/dimension. Neural networks have millions of parameters and therefore optimising them in this manner is clearly not feasible.
 
 #### Computing the Gradient Analytically
 
-The second way to compute the gradient is analytically using Calculus. A direct formula for the gradient can be derived and it also very fast to compute. This approach is more error prone to implement which is why in practice it is very common to perform a *gradient check*, which is the comparision of the analytic gradient to the numeric gradient to chech the correctness of the implementation.
-
-By using the SVM loss for a single data point as an example:
+The second way to compute the gradient is analytically, *i.e.* using Calculus. A direct formula for the gradient can be derived which is also very fast to compute. By using the SVM loss for a single data point as an example:
 
 $$
 L_{i}=\sum_{j\neq y_{i}}\left[\max(0,\boldsymbol{w}_{j}^{T}\boldsymbol{x}_{i}-\boldsymbol{w}_{y_{i}}^{T}\boldsymbol{x}_{i}+\Delta)\right].
 $$
-
-Now, we want to differentiate the function with respect to the weights. Taking the gradient *w.r.t.* $\boldsymbol{w}_{y_{i}}$, gives:
-
-$$
-\nabla_{\boldsymbol{w}_{y_{i}}}L_{i}=-\left(\sum_{j\neq y_{i}}\mathbb{I}(\boldsymbol{w}_{j}^{T}\boldsymbol{x}_{i}-\boldsymbol{w}_{y_{i}}^{T}\boldsymbol{x}_{i}+\Delta>0)\right)\boldsymbol{x}_{i},
-$$
-where $\mathbb{I}$ is the indicator function. This is simply the data vector scaled by the negative of the number of classes scores that did not meet the desired margin. The gradient with respect to the other rows of $W$ where $j\neq y_{i}$ is:
+We want to differentiate the function with respect to the weights. Taking the gradient *w.r.t.* $\boldsymbol{w}_{y_{i}}$, the row of $W$ corresponding to class $y_{i}$, gives:
 
 $$
-\nabla_{\boldsymbol{w}_{j}}L_{i}=\mathbb{I}(\boldsymbol{w}_{j}^{T}\boldsymbol{x}_{i}-\boldsymbol{w}_{y_{i}}^{T}\boldsymbol{x}_{i}+\Delta>0)\boldsymbol{x}_{i}.
+\nabla_{\boldsymbol{w}_{y_{i}}}L_{i}=-\left(\sum_{j\neq y_{i}}I(\boldsymbol{w}_{j}^{T}\boldsymbol{x}_{i}-\boldsymbol{w}_{y_{i}}^{T}\boldsymbol{x}_{i}+\Delta>0)\right)\boldsymbol{x}_{i},
 $$
+where $I$ is the indicator function. This is simply the data vector scaled by the negative of the number of classes whose scores did not meet the desired margin. The gradient with respect to the other rows of $W$ where $j\neq y_{i}$ is:
 
+$$
+\nabla_{\boldsymbol{w}_{j}}L_{i}=I(\boldsymbol{w}_{j}^{T}\boldsymbol{x}_{i}-\boldsymbol{w}_{y_{i}}^{T}\boldsymbol{x}_{i}+\Delta>0)\boldsymbol{x}_{i}.
+$$
 Determining these equations are the tricky part. Once this is done, it is easy to implement the expressions and use them to perform gradient updates.
 
 #### Gradient Descent
 
-The procedure of repeatedly evaluating the gradient and then performing a parameter update is called *gradient descent*. This is by far the most common and established way of optimising neural network loss functions. Although there are some 'bells and whistles' to add to this algorithm, the core ideas remains the same when optimising neural networks.
+The procedure of repeatedly evaluating the gradient and then performing a parameter update is called *gradient descent*. This is by far the most common and established way of optimising neural network loss functions. Although there are some 'bells and whistles' (see Chapter \ref{chp:dnn}) to add to this algorithm, the core ideas remain the same when optimising neural networks.
 
 One of the advantages of gradient descent is that a weight update can be made by only evaluating the gradient over a subset of the data, called *mini-batch gradient descent*. This is extremely helpful for large-scale applications, which are almost the norm for Deep Learning, since it is not necessary to compute the full loss function over the entire dataset. This leads to faster convergence and allows for the processing of large datasets that are too big to fit into a computer's memory. A typical batch consists of 64/128/256 data points, but it depends on the computational power at hand. The gradient computed using a mini-batch is only an approximation of the gradient of the full loss. This seems to be sufficient in practice since the data points/images are correlated. 
 
