@@ -203,6 +203,8 @@ Before moving on, it is worth noting some of the things that make it hard for co
 
 > incomplete since I'm not sure if I want to add this list. Thus far it is basically a copy of the one found in the reference. Think the challenges should be mentioned but this section is getting very long.
 
+> maybe mention that pure classification of objects in an image seem limited and that we might want to localise the objects in terms of bounding boxes or segmentation. This is somewhat true. However, ML-CNNs can provide a rough localisation with attention maps. Also, annotation of bounding boxes and segmentation maps are expensive to obtain.
+
 [^challenges]: http://cs231n.github.io/classification/ unsure how to cite websites.
 
 ### Score Function
@@ -369,17 +371,17 @@ Determining these equations are the tricky part. Once this is done, it is easy t
 
 The procedure of repeatedly evaluating the gradient and then performing a parameter update is called *gradient descent*. This is by far the most common and established way of optimising neural network loss functions. Although there are some 'bells and whistles' (see Chapter \ref{chp:dnn}) to add to this algorithm, the core ideas remain the same when optimising neural networks.
 
-One of the advantages of gradient descent is that a weight update can be made by only evaluating the gradient over a subset of the data, called *mini-batch gradient descent*. This is extremely helpful for large-scale applications, which are almost the norm for Deep Learning, since it is not necessary to compute the full loss function over the entire dataset. This leads to faster convergence and allows for the processing of large datasets that are too big to fit into a computer's memory. A typical batch consists of 64/128/256 data points, but it depends on the computational power at hand. The gradient computed using a mini-batch is only an approximation of the gradient of the full loss. This seems to be sufficient in practice since the data points/images are correlated. 
+One of the advantages of gradient descent is that a weight update can be made by only evaluating the gradient over a subset of the data, called *mini-batch gradient descent*. This is extremely helpful for large-scale applications, since it is not necessary to compute the full loss function over the entire dataset. This leads to faster convergence, because of more frequent parameter updates, and allows for the processing of large datasets that are too big to fit into a computer's memory. A typical batch consists of 64,128 or 256 data points, but it depends on the computational power available. The gradient computed using a mini-batch is only an approximation of the gradient of the full loss but it seems to be sufficient in practice [@Li2014]. 
 
-The specification of the mini-batch size is not very important and is usually determined based on memory constraints. Usually they are in powers of two, because in practice many vectorised operation implementations work faster when ther inputs are sized in powers of 2. The extreme case of mini-batch gradient descent is when the batch size is selected to be 1. This is called *Stochastic Gradient Descent* (SGD). Recently, this is much less common, since it is more efficient to calculate the gradient in larger batches compared to only using one example. However, it is still widely acceptable to use the term SGD even though you are referring mini-batch gradient descent. This is actually the norm.
+The specification of the mini-batch size is not very important and is usually determined based on memory constraints. Usually they are in powers of two, because in practice many vectorised operation implementations work faster when their inputs are sized in powers of 2. The extreme case of mini-batch gradient descent is when the batch size is selected to be 1. This is called *Stochastic Gradient Descent* (SGD). Recently, this is much less common, since it is more efficient to calculate the gradient in larger batches compared to only using one example. However, it is still widely acceptable to use the term, SGD, even though actually referring to mini-batch gradient descent.
 
 ![Good visual summary of data flow.](figures/dataflow.jpeg)
 
 #### Backpropagation
 
-Way of computing gradients of expressions through recursive application of the chain rule. Critical to understanding the optimisation of neural networks.
+With more complicated score functions, such as deep neural networks, computing the gradients is not that easy as described above. The *backpropogation* algorithm is a way of computing the gradients of expressions through recursive application of the chain rule [@Rumelhart1988]. Backpropogation is critical to the optimisation of neural networks.
 
-The core problem for this section is: We are given some function $f(\boldsymbol{x})$, where $\boldsymbol{x}$ is a vector of inputs, and we are interested in computing the gradient of $f$ at $\boldsymbol{x}$, *i.e.* $\nabla f(\boldsymbol{x})$. In our case, $f$ corresponds to the loss function (*e.g.* SVM loss) and the inputs $\boldsymbol{x}$ will consists of the training data and the neural network weights.
+The core problem for this section is: given some function $f(\boldsymbol{x})$, where $\boldsymbol{x}$ is a vector of inputs, compute the gradient of $f$ at $\boldsymbol{x}$, *i.e.* $\nabla f(\boldsymbol{x})$. In our case, $f$ corresponds to the loss function (*e.g.* SVM loss) and the inputs $\boldsymbol{x}$ will consists of the training data and the neural network weights, $W$, although we are mostly only interested in the gradient for the paramaters, $W$.
 
 Consider this simple example to introduce some of the conventions. Suppose we have the following function $f(x,y)=xy$. The partial derivative for either input is then:
 
@@ -389,23 +391,34 @@ $$
 \frac{\partial f}{\partial y}&=x
 \end{aligned}
 $$
-These indicate the rate of change of $f$ with respect to $x$ and $y$ respectively surrounding an infinitelly samll region near a particular point. For example, if $x=2$ and $y=-5$, then $f(x,y)=-10$. The derivative on $x$ is $-5$, which tells us that if we were to increase the value of $x$ by a tiny amount, the effect on the whole expression would be to decrease by 5 times that amount.
+These indicate the rate of change of $f$ with respect to $x$ and $y$, respectively, surrounding an infinitelly small region near a particular point. For example, if $x=2$ and $y=-5$, then $f(x,y)=-10$. The derivative on $x$ is $-5$, which tells us that if we were to increase the value of $x$ by a tiny amount, the effect on the whole expression would be to decrease by 5 times that amount.
 
-As used before, the vector of partial derivatives is called the gradiemt, $\nabla f$. So for the previous simple example we have $\nabla f=\left[\frac{\partial f}{\partial x},\frac{\partial f}{\partial y}\right]=[y,x]$. What follows are another two simple examples that will prove to be useful in later discussions.
-
-For $f(x,y)=x+y$, $\nabla f=[1,1]$, and if $f(x,y)=\max(x,y)$, then $\nabla f =\left[\mathbb{I}(x\geq y), \mathbb{I}(y\geq x)\right]$. Technically, $nabla f$ for the latter function is called a subgradient, since the derivative for $\max(x,y)$ is not defined everywhere (?).
+As used before, the vector of partial derivatives is called the gradient, $\nabla f$. So for the previous simple example we have $\nabla f=\left[\frac{\partial f}{\partial x},\frac{\partial f}{\partial y}\right]=[y,x]$. The following two simple examples of expressions with its corresponding gradients will prove to be useful in later discussions. For $f(x,y)=x+y$, $\nabla f=[1,1]$, and if $f(x,y)=\max(x,y)$, then $\nabla f =\left[I(x\geq y), I(y\geq x)\right]$. Technically, $\nabla f$ for the latter function is called a subgradient, since the derivative for $\max(x,y)$ is not defined everywhere.
 
 #### Compound Expressions with the Chain Rule
 
-Now for the calculating of a more complicated expression, we will use the chain rule. Consider the expression $f(x,y,z)=(x+y)z$. Note that this expression can be decomposed into two expressions: $q=x+y$ and $f=qz$. From the previous simpler examples, we saw how to calculalte the gradient for these simple expression of addition and multiplication separately. But what we are really interested in is how to calculate the gradient of $f$ *w.r.t.* its inputs, $x,y,z$. This can be done using the *chain rule*. According to the chain rule, $\frac{\partial f}{\partial x}=\frac{\partial f}{\partial q}\frac{\partial q}{\partial x}$, and similarly for $\frac{\partial f}{\partial y}$ and $\frac{\partial f}{\partial z}$. This can be viewed as the simplest form of backpropogation.
+The calculation of more complicated expressions can be done by utilising the chain rule. Consider the expression $f(x,y,z)=(x+y)z$. This can be decomposed into two expressions: $q=x+y$ and $f=qz$. The previous section showed how to calculalte the gradient for these simple expressions of addition and multiplication, individually. This will help us to calculate the gradient of $f$ *w.r.t.* its inputs, $x,y,z$. According to the chain rule, 
+
+$$
+\frac{\partial f}{\partial x}=\frac{\partial f}{\partial q}\frac{\partial q}{\partial x},
+$$ 
+whereas a similar expression exist for $\frac{\partial f}{\partial y}$. Applying these expressions, the gradient of can easily be calculated as
+
+$$
+\begin{aligned}
+\nabla f&=\left[\frac{\partial f}{\partial x},\frac{\partial f}{\partial y},\frac{\partial f}{\partial z}\right]\\
+&=\left[\frac{\partial f}{\partial q}\frac{\partial q}{\partial x},\frac{\partial f}{\partial q}\frac{\partial q}{\partial y},\frac{\partial f}{\partial z}\right].
+\end{aligned}
+$$
+This can be viewed as the simplest form of backpropogation.
 
 ![Simple circuit diagram to visualise backpropogation.](figures/simplecircuit.png)
 
-Suppose we want to compute the gradient at inputs $x=-2$, $y=5$ and $z=-4$. First, we make a *foreward pass* to compute the outputs from the given inputs, *i.e.* $q=3$ and then $f=-12$. These values are shown in green in the circuit diagram. The following step is to make a *backward pass* (backpropogation), which is to start at the end and recursively apply the chain rule to copmute the gradients, shown in red in the circuit diagram, all the way to the inputs of the circuit. In the example, $\frac{\partial f}{\partial f}=1$, $\frac{\partial f}{\partial z}=3$, $\frac{\partial f}{\partial q}=-4$, $\frac{\partial f}{\partial x}=-4$ and $\frac{\partial f}{\partial y}=-4$. The gradients can be thought of as flowing backwards through the circuit.
+Suppose we want to compute the gradient at inputs $x=-2$, $y=5$ and $z=-4$. First, we make a *foreward pass* to compute the outputs from the given inputs, *i.e.* $q=3$ and $f=-12$. These values are shown in green in the circuit diagram. The following step is to make a *backward pass* (backpropogation), which is to start at the end and recursively apply the chain rule to copmute the gradients, shown in red in the circuit diagram, all the way to the inputs of the circuit. In the example, $\frac{\partial f}{\partial f}=1$, $\frac{\partial f}{\partial z}=3$, $\frac{\partial f}{\partial q}=-4$, $\frac{\partial f}{\partial x}=-4$ and $\frac{\partial f}{\partial y}=-4$. The gradients can be thought of as flowing backwards through the circuit.
 
-Each circle in the diagram can be referred to as a gate. Notice that every gate (the addition gate $(+)$ and the multiplication gate $(*)$) gets some inputs and can right away compute its output value and the local gradient of its inputs with respect to its output value. This is done completely indpendently without being aware of any of the details of the full circuit that they are embedded in. However, during backpropogation the gate will eventually learn about the gradient of its ouput value on the final output of the entire circuit. According to the chain rul, the gate should take that gradient and multiply it into every gradient it normally computes for all of its inputs. Let us look at the example again to make this clear.
+Each circle in the diagram can be referred to as a gate. Notice that every gate (the addition gate $(+)$ and the multiplication gate $(*)$) receives some input and can immdediately determine its output value and the local gradient of its inputs with respect to its output value. This is done completely indpendently without being aware of any of the details of the full circuit in which they are part of. However, during backpropogation the gate will eventually learn about the gradient of its ouput value on the final output of the entire circuit. According to the chain rule, the gate should take that gradient and multiply it into every gradient it normally computes for all of its inputs. Let us look at the example again to make this clear.
 
-The $(+)$ gate received inputs $[2,-5]$ and computed output 3. It also computed its local gradient with respect to both of its inputs, which is 1, since it is an addition operation. The rest of the circuit copmuted the final value to be -12. During the backward pass, the $(+)$ gate learns that the gradient for its output was -4. It then takes that gradient and multiplies it to all of the local gradients for its inputs, which results in -4 and -4. This implies that if $x,y$ were to decrease (responding to their negative gradients) then the $(+)$ gate's output would decrease, which in turn makes the $(*)$ gate's output increase. Thus backpropogation can be thought of as gates communicating to each other through the gradient signal whether they want their outputs to increase or decrease, so as to make the final output higher.
+The $(+)$ gate received inputs $[2,-5]$ and computed output 3. It also computed its local gradient with respect to both of its inputs, which is 1, since it is an addition operation. The rest of the circuit computed the final value to be -12. During the backward pass, the $(+)$ gate learns that the gradient for its output was -4. It then takes that gradient and multiplies it to all of the local gradients for its inputs, which results in -4 and -4. This implies that if $x,y$ were to decrease (responding to their negative gradients) then the $(+)$ gate's output would decrease, which in turn makes the $(*)$ gate's output increase. Thus backpropogation can be thought of as gates communicating to each other through the gradient signal whether they want their outputs to increase or decrease, so as to make the final output higher.
 
 #### Modularity
 
@@ -455,17 +468,9 @@ From the diagram above, the following patterns should be clear:
 
 + The multiply gate switches the gradients of its inputs and then multiply it by its output gradient.
 
-Notice that if one of the inputs to the multiply gate is very small and the other is very big, then the multiply gate will do something slightly unintuitve: it will assign a relatively huge gradient to the small input and a tiny gradient to the large input. This is good to know, since in linear classifiers where the weights are multiplied by the inputs, it means that if the inputs are multiplied by a 1000, then the gradient on the weights will be 1000 times larger and you would have to lower the learning rate by that factor to compensate. This show how important preprocessing is for the optimisation of a classifier.
-
-The above sections were concerned with single variables, but all concepts extend in a straight-forward manner to matrix and vector operations. However, one must pay closer attention to dimensions and transpose operations.
+Notice that if one of the inputs to the multiply gate is very small and the other is very big, then the multiply gate will do something slightly unintuitve: it will assign a relatively large gradient to the small input and a small gradient to the large input. This is why the normalising of the inputs is such an essential part of the optimisation probelm. In linear classifiers, where the weights are multiplied by the inputs, if the inputs are scaled by a 1000, the gradient on the weights will be 1000 times larger and the learning rate should then have to be shrunk that factor to compensate for it. The above sections were concerned with single variables, but all concepts extend in a straight-forward manner to matrix and vector operations.
 
 + http://cs231n.github.io/
-
-+ introduce multi-label image classification (briefly)
-
-+ maybe mention that pure classification of objects in an image seem limited and that we might want to localise the objects in terms of bounding boxes or segmentation. This is somewhat true. However, ML-CNNs can provide a rough localisation with attention maps. Also, annotation of bounding boxes and segmentation maps are expensive to obtain.
-
-+ add challenges to image classification
 
 ## Outline
 
