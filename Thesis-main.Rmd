@@ -37,7 +37,7 @@ header-includes:
 - \usetikzlibrary{arrows,shapes,positioning,shadows,trees}
 ---
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
 knitr::opts_chunk$set(warning = FALSE, message = FALSE, echo=FALSE)
 library(ggplot2)
 library(imager)
