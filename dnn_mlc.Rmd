@@ -1,5 +1,17 @@
-# Multi-Label Deep Neural Networks
+# Deep Neural Networks for Multi-Label Image Classification
 \label{chp:dnn_mlc}
+
++ In this work, we focus on multi-label image classification methods with deep learning techniques.
++ Every real-world image can be annotated with multiple labels, because an image normally abounds with rich semantic information, such as objects, parts, scenes, actions, and their interactions or attribute 
++ transfer learning with single label networks not optimal (see CNN: Single-label to Multi-label)
++ labels may relate to different visual regions over the whole image (SRN paper intro). Proposal based approaches attempt to solve this, but they ignore semantic label relations.
++ The diverse and complex contents in multi-label images make it difficult to learn effective feature representations and classifiers.
++ important task in computer vision with various applications, such as scene recognition, multi-object recognition, human attribute recognition, etc.
++ not well studied compared to single-label. Also more challenging and practical (more natural problem).
++ ml loss (for ml output and label dependence)
++ proposal based methods to accommodate that objects relate to different regions in an image
++ model semantic relations, with graphical models, RNNs, structured inference
++ model spatial relations, with SRN. Usually not possible because need annotations. (attention mechanism important here)
 
 ## Introduction 
 

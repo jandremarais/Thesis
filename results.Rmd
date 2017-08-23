@@ -39,3 +39,29 @@ Where possible, the basic framework will be to extract features from input image
 + is there a 'best' method?
 + are there any patterns?
 + do they perform as reported by original papers?
+
+## Experiments
+
+First want to look at how the important papers did their experiments.
+
+[@Gong2013] did their experiments in the following way:
+
++ NUS-WIDE:
+
+    + ignored images without tags
+    + used 150000 images for training and the rest for testing
+    + evaluated using per-class precision and recall, and overall precision and recall
+    + used a custom cnn similar to overfeat for feature extraction
+    + compared to visual feature extraction + classifier, and CNN extractor plus classifier with different loss functions.
+
+[@Wei2014] did their experiments in the following way:
+
++ Pascal VOC2007 and 2012
+
+    + seems like they used predefined splits for train/val/test
+    + evaluated using AP and mAP.
+    + pretrained on ImageNet
+    + copmared to other manual feature extractions and CNN extractions plus classifier
+    + did not really follow the hypothesis pooling part.
+    + also giver per class score seprately
+    + as second glance, does not look like real MLC since parts of images are extracted and then single label classification is done.

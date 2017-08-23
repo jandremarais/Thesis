@@ -221,3 +221,7 @@ as.data.frame(table(unlist(label_list))) %>%
 ## WIDER-Atribute
 
 + Human attribute recognition by deep hierarchical contexts [@Li2016]
+
+## OpenImages dataset
+
++ https://github.com/openimages/dataset

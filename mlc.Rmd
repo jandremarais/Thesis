@@ -39,11 +39,7 @@ As should be expected, the MLC framework has a few concepts novel to the single-
 
 > review above paragraph on completion of chapter
 
-## The Task of Multi-Label Learning
-
-A more formal definition of the ML learning task will be given in the following chapter. However, it is important to note that we will define the utlimate task of ML learning as the assigning of multiple labels to an observation. ML learning covers to very similar approaches, namely, ML classification and ML ranking. ML classification algorithms output whether or not labels are relevant to an observation (binary) and ML ranking algorithms outputs a real-valued score assigned to each label indicating its relative importance to an observation. Thus with ML ranking, for each observation we seek a list of labels ordered by their scores representing the confidence in how relevant they are to the specific observation. Many classifiers base their final (categorical) prediction on the thresholding of the real-valued output of the algorithm and thus can also be used for ranking. Similarly, ranking algorithms can also be used for classification if a thresholding function is applied to the real-valued output. (see [@Zhang2014] for a more brief description)
-
-### Notation
+### Classification vs Ranking
 
 The following notation will be used throughout the thesis. Define the input matrix as
 $$
@@ -52,20 +48,20 @@ X=
 x_{11} & x_{12} & \dots & x_{1p} \\
 x_{21} & x_{22} & \dots & x_{2p} \\
 \vdots & \vdots & \ddots & \vdots \\
-x_{n1} & x_{n2} & \dots & x_{np}
+x_{N1} & x_{N2} & \dots & x_{Np}
 \end{bmatrix} =
 \begin{bmatrix}
 \boldsymbol{x}_{1}^{\intercal} & \boldsymbol{x}_{2}^{\intercal} & \dots & \boldsymbol{x}_{n}^{\intercal}
 \end{bmatrix},
 $$
-where $n$ is the number of observations and $p$ is the number of features. $\boldsymbol{x}_{i}^{\intercal}$ represents the $p$-dimensional vector that forms the $i$-th row of $X$. For a text classification problem, $x_{ij}$ might indicate the number of times a word $j$ appeared in document $i$. Define the label or output matrix as 
+where $N$ is the number of observations and $p$ is the number of features. $\boldsymbol{x}_{i}^{\intercal}$ represents the $p$-dimensional vector that forms the $i$-th row of $X$. For a text classification problem, $x_{ij}$ might indicate the number of times a word $j$ appeared in document $i$. Define the label or output matrix as 
 $$
 Y = 
 \begin{bmatrix}
 y_{11} & y_{12} & \dots & y_{1K} \\
 y_{21} & y_{22} & \dots & y_{2K} \\
 \vdots & \vdots & \ddots & \vdots \\
-y_{n1} & y_{n2} & \dots & y_{nK}
+y_{N1} & y_{N2} & \dots & y_{NK}
 \end{bmatrix} =
 \begin{bmatrix}
 \boldsymbol{y}_{1}^{\intercal} & \boldsymbol{y}_{2}^{\intercal} & \dots & \boldsymbol{y}_{K}^{\intercal}
@@ -74,17 +70,17 @@ y_{n1} & y_{n2} & \dots & y_{nK}
 \boldsymbol{Y}_{(1)} & \boldsymbol{Y}_{(2)} & \dots & \boldsymbol{Y}_{(K)}
 \end{bmatrix},
 $$
-where $K$ is the size of the label set $\mathcal{L}$. $Y$ only contains zeros and ones, *i.e.* $y_{ik}=1$ if label $l_{k}$, $k=1,\dots,K$, is present for observation $i$ and $y_{ik}=0$ if it is absent. Thus $\boldsymbol{Y}_{(k)}$ is a $n$-dimensional binary vector indicating which observations are associated with label $l_{k}$. A ML data set will be defined as $D=\begin{bmatrix} X & Y \end{bmatrix}$, which contains the $n$ input-output pairs, $\{\left(\boldsymbol{x}_{i},\boldsymbol{y}_{i}\right)|i=1,\dots,n\}$. Note that, $\boldsymbol{y}_{i}=(y_{1},y_{2},\dots,y_{K})$, $y_{k}\in \{0,1\}$, used here is the label vector, however, it is also common to use the label set notation, *i.e.* $L_{i} \subseteq \mathcal{L}$, where $\mathcal{L}$ is the complete label set and $L_{i}$ is the set of relevant labels for observation $i$.
+where $K$ is the size of the label set $\mathcal{L}$. $Y$ only contains zeros and ones, *i.e.* $y_{ik}=1$ if label $l_{k}$, $k=1,\dots,K$, is present for observation $i$ and $y_{ik}=0$ if it is absent. Thus $\boldsymbol{Y}_{(k)}$ is a $N$-dimensional binary vector indicating which observations are associated with label $l_{k}$. A multi-label dataset will be defined as $D=\begin{bmatrix} X & Y \end{bmatrix}$, which contains the $N$ input-output pairs, $\{\left(\boldsymbol{x}_{i},\boldsymbol{y}_{i}\right)|i=1,\dots,N\}$. Note that, $\boldsymbol{y}_{i}=(y_{1},y_{2},\dots,y_{K})$, $y_{k}\in \{0,1\}$, used here is the label vector, however, it is also common to use the labelset notation, *i.e.* $L_{i} \subseteq \mathcal{L}$, where $\mathcal{L}$ is the complete label set and $L_{i}$ is the set of relevant labels for observation $i$.
 
-### Classification and Ranking
+Often, the terms multi-label classification and multi-label learning are used interchangeably in the literature. Strictly speaking, multi-label learning is the umbrella term including both the tasks of multi-label classification and multi-label ranking. Both these tasks learn from multi-labelled data (multi-label learning) but their objectives differ slightly. Multi-label classification is concerned with approaches that output a subset of relevant labels (binary output) for each input, whereas multi-label ranking requires the output to be a list of all labels in the labelset ordered by their predicted relevance (real-valued output) to the input. There are minor differences between the two and therefore using one term to refer to both is usually acceptable. Many classifiers base their final (categorical) prediction on the thresholding of the real-valued output of the algorithm and thus can also be used for ranking. Similarly, ranking algorithms can also be used for classification if a thresholding function is applied to the real-valued output. We will use multi-label classification to refer to both classification and ranking, unless otherwise specified.
 
-The task of ML classification is to find a function $h$ that accurately maps the observations contained in $X$ to the label matrix $Y$, i.e., $h:X\to Y$, so that given a new observation, $h$ can determine which labels belong to it. The accuracy aforementioned is a topic that will be discussed shortly. The measurement thereof is another unique problem for ML classification.
+The task of ML classification is to find a function $h$ that accurately maps the observations contained in $X$ to the label matrix $Y$, i.e., $h:X\to Y$, so that given a new observation, $h$ can determine which labels belong to it. 
 
 On the other hand, the goal of ML ranking is to find a function $f:X\to G$, where $G$ is a similar matrix to $Y$, but with the $g_{ij}$ a real value representing the relative confidence score that label $j$ is relevant to observation $i$. $f$ is found by optimising a ranking metric, also discussed shortly. From the confidence scores of observation $i$, $f(\boldsymbol{x}_{i})$, a ranking $\boldsymbol{r}_{i}$ can be obtained, giving the rank of labels in descending order of $f(\boldsymbol{x}_{i})$.
 
 #### Threshold Calibration
 
-++ explained at the end of this chapter
++ explained at the end of this chapter
 + maybe not in detail here
 + calibrate real-valued output against thresholding function output in order to determine labels of unseen instances.
 + constant vs induced from training data + ad hoc specific to certain learning algorithms
