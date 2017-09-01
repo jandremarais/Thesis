@@ -292,6 +292,8 @@ Deep learning is a specific kind of statistical learning, therefore a broad reci
 
 ### Image Classification
 
++ see also [Object recognition from local scale-invariant features] for sliding window approach.
+
 Conventional image classification is the task of assigning one label from a fixed set of categories to an input image. This is an important task in Computer Vision with many applications already mentioned in \Cref{sec:moti}. A rather neglected topic in the literature, and the focus of this thesis, is that of assigning potentially more than one label to an input image, known as multi-label image classification. However, before we move on to the multi-label case, we must obtain a thorough understadning of single label image classification.
 
 A generic approach for building a standard image classifer is as follows. First, one needs to collect a large set of labelled images, relevant to the application. The image classifier is supposed to take a raw image as input and produce a vector of class scores as output. The class scores represent the classifier's confidence for each class's presence in the input image. We want the classifier to assign the highest class score to the actual class of the image. Without any training of the classifier, this is not likely to happen. The amount by which the predicted class scores deviate from the ground truth can be measured by an objective function (also called a loss function). 
