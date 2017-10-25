@@ -364,35 +364,38 @@ $$
 
 Needless to say, this representation is not very effective. Firstly, this transformation discards most of the shape and structural information of an image. In addition, these flattened vectors are very high-dimensional ($p = 256\times 256 \times 3 = 196608$ for a colour image of size $256\times 256$), subjecting the classifier to the well-known problem in statistical learning, the *curse of dimensionality* [@Hastie2009, pp. 22-27].
 
-On top of that, in a typical image classification, the images in its raw representation can have high intra-class variance and/or very low inter-class variance - making it extremely difficult for even the state-of-the-art classifiers, such as Random Forests, Support Vector Machines and Boosting to discriminate between classes. The intra-class variation can come from different viewpoints, scales, illumination and backgrounds of images of the same object, amongst others. On the other hand, suppose the task is to distinguish between a __ and __ from an image. Then there will be very little variation between the classes (inter-class) since the two breeds look very similar.
+On top of that, in a typical image classification, the images in its raw representation can have high intra-class variance and/or very low inter-class variance - making it extremely difficult for even the state-of-the-art classifiers, such as Random Forests, Support Vector Machines and Boosting to discriminate between classes. The intra-class variation can come from different viewpoints, scales, illumination and backgrounds of images of the same object, amongst others (see \autoref{fig:intra-inter}). On the other hand, suppose the task is to distinguish between an ostrich and an emu from an image. Then there will be very little variation between the classes (inter-class) since the two species look very similar.
 
-![ImageNet example of inter and intra class variation]()
+```{r, echo=FALSE, cache=TRUE, fig.cap="ImageNet examples of ostriches (a) and emus (b) showing the intra-class and inter-class variations. Notice how different images of are of the same class but also how similar they are between classes\\label{fig:intra-inter}."}
+library(png)
+library(grid)
+library(gridExtra)
+library(cowplot)
+library(tidyverse)
 
+plot_png <- function(fname, interpolated = TRUE){
 
-Before the success of deep learning, the state-of-the-art image classification models were Bag-of-Words (BoW) based models. BoW based models can roughly be decomposed into the following modules: 
+  img <- readPNG(fname) %>%
+    rasterGrob(interpolate = interpolated)# enable/disable linear interpolation
+  ggplot() +
+    annotation_custom(img,
+                      xmin = -Inf,
+                      xmax = Inf,
+                      ymin = -Inf,
+                      ymax = Inf)
 
-+ Feature Representation,
-+ Classification and
-+ Context Modelling.
+}
 
-To compensate for this shortcoming of conventional classifiers, plenty of attention was given to the design of feature representations of images. Using these feature representations as input to a conventional classifier (instead of raw pixel data) makes it considerably easier for a classifier to recognise the input-output relationships. Building these feature representations are quite complex. Generally, building a feature representation will consist of some or all all of the following steps. First, hand-engineerd (local) features, such as Scale Invariant Feature Transform (SIFT) [@Lowe2004] and Histogram of Oriented Gradients (HOG) [@Dalal2005], are extracted from dense grids or via sparse interest point detection in the images. Feature encoding. Feature pooling. This results in a feature representation of an image that is much easier for conventional classifiers to learn from than raw pixel data.
+img1 <- plot_png("figures/ostrich2.png")
+img2 <- plot_png("figures/emu.png")
+#grid.arrange(img1, img2, ncol = 2)
 
-> Still need to explain (but its complicated):
+plot_grid(img1, img2, labels = c('(a)', '(b)'), vjust = 2.5)
+```
 
-+ feature coding (quantize of points of interest): Vector quantization (Image coding using vector quantization: A review), Sparse coding (Sparse representation for computer vision and pattern recognition,  Locality-constrained linear coding for image classification, Linear spatial pyramid matching uisng sparse coding for image classification) and Gaussian Mixture models (Vector quantization based on gaussian mixture models)
-+ and feature pooling (aggregation of features): SPatial pyramid matching (Beyond bags of features: Spatial pyramid matching for recognizing natural scene categories) looks like this also utilises spatial context
-+ dont know yet where fisher vectors (Fisher kernels on visual vocabularies for image categorization) and VLAD (Aggregating local descriptors into a compact image representation) fit in. Think under pooling
+To compensate for this problem one can attempt to extract features from images for which the intra-class variation is lower and the inter-class variance higher. Before we had the computational power to optimise DNNs this was the standard procedure in image classification - designing feature representation of images that are much easier for conventional classifiers to learn from than raw pixel data. Building these feature representations can become quite complex. The most popular representation (before deep learning) for classification is the Bag-of-Visual words (BoV) [@Csurka2004]. Without going into too much detail, the BoV approach consists of extracting a set of local descriptors of images (see *Scale Invariant Feature Transform* (SIFT) [@Lowe2004] and *Histogram of Oriented Gradients* (HOG) [@Dalal2005]), encoding them into a high-dimensional vector (see *Fisher Vectors* [@Sanchez2013]) and then pooling them into an image level signature (see *Spatial Pyramid Pooling* [@Lazebnik2006]).
 
-> i am considering elaborating on these methods, to make this a chapter that can replace the previous image classification chapter.
-    
-Examples of commonly used classifiers on-top of the above mentioned feature representations are Random Forests [@Breiman2001] and Support Vector Machines (SVMs) (as used in [@Sanchez2011], for example). However, these classifiers can be further improved upon by making use of contextual information such as the spatial location of an object [@Harzallah2009].
-
-As mentioned before, this approach to image classification is not trivial, with many complex facets to the modelling process. It usually requires considerable engineering skill and/or domain expertise, especially to create feature representations of images. In addition, these feature representations are only suited for a subset of image classification tasks and do not generalise well. This is where deep learning methods prove to be superior, since it has the ability to learn these feature representations from the data.
-
-
-+ see also [Object recognition from local scale-invariant features] for sliding window approach.
-
-+ will promote a deeper understanding of the image classification problem in general and will most likely lead to a better appreciation of the power and effectiveness of deep learning methods.
+As mentioned before, this approach to image classification is not trivial, with many complex facets to the modelling process. It usually requires considerable engineering skill and/or domain expertise. In addition, these feature representations are only suited for a narrow subset of image classification tasks and do not generalise well. This is where deep learning methods prove to be superior, since it has the ability to learn these feature representations from the data. This is discussed in detail in the next chapter. Hopefully now the reader has a better understanding of the image classification problem in general, which will most likely lead to a better appreciation of the power and effectiveness of deep learning methods.
 
 ## Outline \label{sec:outline}
 
