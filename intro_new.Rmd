@@ -54,9 +54,7 @@ Through the above objectives, the thesis should guide a reader to a thorough und
 
 ## Contributions
 
-> rough - will complete after the contributions are actually done. This is roughly what I attempt to contribute.
-
-> should go at the end
+> hierdie afdeling moet eerder aan einde kom. Nog onvoltooid.
 
 Novel contributions made to the literature by this thesis:
 
@@ -75,9 +73,7 @@ Novel contributions made to the literature by this thesis:
 
 All of the code for this project, including the source docoments, is made available in the Thesis Github repository [^repo]. More instructions on how to implement the code is contained in the file named, `README.md`, in the repository.
 
-> not sure about this section
-
-> too short. Where should I rather mention this?
+> Weet dit moet nie hier kom nie, maar weet nog nie waar anders nie?
 
 [^repo]: https://github.com/jandremarais/Thesis
 
@@ -324,6 +320,12 @@ plot_grid(p, p_loss, labels = c("(a)", "(b)"), nrow = 1, align = "vh", rel_width
 
 Since deep learning is a specific kind of statistical learning, it can also be decomposed into the same components of: model, loss funciton, optimisation prodcedure and dataset. We have discussed all of these ingredients in simple and general terms, and are now ready to narrow the focus to deep learning methods. The next section on image classification introduces the type of data we will be using for this research.
 
+> moet ek subopskrifte vir die afdeling by sit?
+
+> bang my notasie is nie duidelik genoeg nie of deurmekaar.
+
+> nie seker wat alles gecite moet word nie.
+
 ### Image Classification
 
 We have already introduced the statistical learning task of classification. As can be derived by its name, image classification refers to this task but narrowed down to the case where the inputs are images, *i.e* the task is to assign labels to images. Just like in the general classification case, the main focus up until recently was restricted to images associated with a single label. The more general case, and the focus of this thesis, where images can belong to more than one class simultaneously (for example images containing more than one object) is still relatively new. For this section we will mostly consider the single-label classification case, but most of the concepts are transferable to multi-label image classification. The novel concepts and challenges of multi-label image classification will be introduced in \Cref{chp:mlc} and \Cref{chp:DNN-MLC}.
@@ -395,11 +397,17 @@ plot_grid(img1, img2, labels = c('(a)', '(b)'), vjust = 2.5)
 
 To compensate for this problem one can attempt to extract features from images for which the intra-class variation is lower and the inter-class variance higher. Before we had the computational power to optimise DNNs this was the standard procedure in image classification - designing feature representation of images that are much easier for conventional classifiers to learn from than raw pixel data. Building these feature representations can become quite complex. The most popular representation (before deep learning) for classification is the Bag-of-Visual words (BoV) [@Csurka2004]. Without going into too much detail, the BoV approach consists of extracting a set of local descriptors of images (see *Scale Invariant Feature Transform* (SIFT) [@Lowe2004] and *Histogram of Oriented Gradients* (HOG) [@Dalal2005]), encoding them into a high-dimensional vector (see *Fisher Vectors* [@Sanchez2013]) and then pooling them into an image level signature (see *Spatial Pyramid Pooling* [@Lazebnik2006]).
 
+> is dit genoeg details? Wil nie eintlik meer hieroor se nie.
+
 As mentioned before, this approach to image classification is not trivial, with many complex facets to the modelling process. It usually requires considerable engineering skill and/or domain expertise. In addition, these feature representations are only suited for a narrow subset of image classification tasks and do not generalise well. This is where deep learning methods prove to be superior, since it has the ability to learn these feature representations from the data. This is discussed in detail in the next chapter. Hopefully now the reader has a better understanding of the image classification problem in general, which will most likely lead to a better appreciation of the power and effectiveness of deep learning methods.
 
 ## Outline \label{sec:outline}
 
-From this point on the reader should have a basic understanding of the topic of this thesis. The reasons why this topic was chosen has been described in \Cref{sec:moti} section and the goals of completing this thesis under the \Cref{sec:obj}. The problem of image classification has been introduced with the help of basic examples, along with a brief conceptual description of the multi-label image classification problem. Therefore, the reader should also be comfortable with the problem we want the DNNs to solve and the common challenges to such a problem. Although, DNNs have not yet been introduced, it should have been sufficient to know that it is class of algorithms. However, brief glimpses of the main components of DNNs have been given under the image classification problem description.
+> gaan eers weer hierna kyk as tesis klaar is.
+
+> is dit nodig om eers 'n paragraaf te gee wat opsom wat to dusver gedoen is - soos hieronder?
+
+From this point on the reader should have a basic understanding of the topic of this thesis. The reasons why this topic was chosen has been described in \Cref{sec:moti} and the goals of this thesis under \Cref{sec:obj}. After briefly covering the fundamentals of statistical learning, the problem of image classification was introduced with the help of basic examples, along with a brief conceptual description of the multi-label image classification problem. Therefore, the reader should also be comfortable with the problem we want the DNNs to solve and the common challenges to such a problem. Although, DNNs have not yet been introduced, it should have been sufficient to know that it is class of algorithms. However, brief glimpses of the main components of DNNs have been given under the image classification problem description.
 
 The rest of the thesis will follow the following outline. \Cref{chp:dnn} introduces deep neural networks for image classifcation. Convolutional neural networks are specifically good at image classification and therefore most of the chapter will deal with them. The main focus is on the different structures and layers of the networks and how these influence performance (review this sentence - probably need to elaborate). 
 
