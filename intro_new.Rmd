@@ -32,7 +32,7 @@ Extending CNNs and other DNNs to handle images with multiple labels is not a tri
 
 In summary, the relevance of multi-label image classification in terms of its wide range of useful practical applications, combined with the power of deep learning methods for image classification tasks, forms the main motivation for the chosen research topic. Deep learning for multi-label image classification constitutes a research area that seems still to be relatively under-explored. As such, it may well be that a comprehensive understanding and review of the subject could lead to novel contributions. 
 
-## Objectives
+## Objectives \label{sec:obj}
 
 The core objective of this study is to learn how to effectively apply DNNs in a multi-label image classification context. In its pursuit, a thorough understanding of the following research areas seems essential:
 
@@ -97,7 +97,29 @@ Many kinds of tasks can be solved with statistical learning. One of the most com
 
 *Regression* is the other main learning task and requires the algorithm to predict a continuous value given some input. This task requires a function $f:\mathbb{R}^{p}\to\mathbb{R}$, where the only difference to classification is the format of its output.
 
-Learning algorithms can learn to perform such tasks by observing a relevant set of data points, *i.e.* a dataset. A dataset containing $N$ observations of $p$ features is commonly described as a design matrix $X:N\times p$, where each row of the matrix represents a different observation and each column corresponding to a different feature of the observations. Often the dataset includes annotations for each observation in the form of a label (classification) or a target value (regression). The $N$ annotations are represented by the vector $\boldsymbol{y}$, where element $y_{i}$ is associated with the $i$-th row of $X$. Note, in the case of multiple labels or targets, a matrix representation $Y:N\times K$ is required.
+Learning algorithms can learn to perform such tasks by observing a relevant set of data points, *i.e.* a dataset. A dataset containing $N$ observations of $p$ features is commonly described as a design matrix $X:N\times p$, where each row of the matrix represents a different observation and each column corresponding to a different feature of the observations, *i.e.*
+
+$$
+X = 
+\begin{bmatrix}
+x_{11} & x_{12} & \dots & x_{1p}\\
+x_{21} & x_{22} & \dots & x_{2p}\\
+\vdots & \vdots & \ddots & \vdots\\
+x_{N1} & x_{N2} & \dots & x_{Np}
+\end{bmatrix}.
+$$
+Often the dataset includes annotations for each observation in the form of a label (classification) or a target value (regression). The $N$ annotations are represented by the vector $\boldsymbol{y}$, where element $y_{i}$ is associated with the $i$-th row of $X$.
+
+$$
+\boldsymbol{y}=
+\begin{bmatrix}
+y_{1}\\
+y_{2}\\
+\vdots\\
+y_{N}
+\end{bmatrix}.
+$$
+Note, in the case of multiple labels or targets, a matrix representation $Y:N\times K$ is required.
 
 Statistical learning algorithms can roughly be divided into two main categories, *supervised* and *unsupervised* algorithms, determined by the presence of annotations in the dataset to be analysed. Unsupervised learning algorithms learn from data consisting of only features, $X$, and are used to find useful properties and structure in the dataset [see @Hastie2009, Ch. 14]. On the other hand, superivised learning algorithms learn from datasets which consist of both features and annotations, $(X,Y)$, with the aim to model the relationship between them. Therefore, both classification and regression are considered supervised learning tasks.
 
@@ -300,21 +322,15 @@ p_loss <- loss_data %>%
 plot_grid(p, p_loss, labels = c("(a)", "(b)"), nrow = 1, align = "vh", rel_widths = c(3,2))
 ```
 
-Since deep learning is a specific kind of statistical learning, it can also be decomposed into the components: model, loss funciton, optimisation prodcedure and dataset. We have discussed all of these ingredients in simple and general terms, and are now ready to narrow the focus to deep learning methods. The next section on image classification introduces the type of data we will be using for this research.
+Since deep learning is a specific kind of statistical learning, it can also be decomposed into the same components of: model, loss funciton, optimisation prodcedure and dataset. We have discussed all of these ingredients in simple and general terms, and are now ready to narrow the focus to deep learning methods. The next section on image classification introduces the type of data we will be using for this research.
 
 ### Image Classification
 
-+ see also [Object recognition from local scale-invariant features] for sliding window approach.
+We have already introduced the statistical learning task of classification. As can be derived by its name, image classification refers to this task but narrowed down to the case where the inputs are images, *i.e* the task is to assign labels to images. Just like in the general classification case, the main focus up until recently was restricted to images associated with a single label. The more general case, and the focus of this thesis, where images can belong to more than one class simultaneously (for example images containing more than one object) is still relatively new. For this section we will mostly consider the single-label classification case, but most of the concepts are transferable to multi-label image classification. The novel concepts and challenges of multi-label image classification will be introduced in \Cref{chp:mlc} and \Cref{chp:DNN-MLC}.
 
-Conventional image classification is the task of assigning one label from a fixed set of categories to an input image. This is an important task in Computer Vision with many applications already mentioned in \Cref{sec:moti}. A rather neglected topic in the literature, and the focus of this thesis, is that of assigning potentially more than one label to an input image, known as multi-label image classification. However, before we move on to the multi-label case, we must obtain a thorough understadning of single label image classification.
+Before the age of deep learning, the main point of consideration for image classification was how to numerically represent images in such a way that an image classifier can distinguish between its classes, *i.e.* what features to extract from the images to be used as input. Before answering this question we need a better understanging of the nature of images as inputs and how they can represented in a digital format.
 
-A generic approach for building a standard image classifer is as follows. First, one needs to collect a large set of labelled images, relevant to the application. The image classifier is supposed to take a raw image as input and produce a vector of class scores as output. The class scores represent the classifier's confidence for each class's presence in the input image. We want the classifier to assign the highest class score to the actual class of the image. Without any training of the classifier, this is not likely to happen. The amount by which the predicted class scores deviate from the ground truth can be measured by an objective function (also called a loss function). 
-
-Now the *training* of the classifier can commence, and it works as follows. The classifier is iteratively shown images in the training dataset. For each image it computes its class scores and then evaluates the accuracy of these scores in terms of the loss function. Then the classifier can adjust its internal parameters in an attempt to improve its accuracy. These steps can be repeated until a satisfactory loss value has been reached. This task of training a model to learn from labelled data is known as *Supervised Learning*.
-
-### Conventional Methods to Image Classification
-
-Now that we understand the principles of supervised learning, let us look at the nature of the inputs and outputs of a typical image classification problem. An image is a grid of many tiny, square cells of different colors. These cells are known as pixels and one pixel represents one color. A grayscale image, 32 pixels wide and 32 pixels long, can be represented by a $32\times 32$ matrix of integers, where each integer represents the 'brightness' (intensity) of each pixel. These integers are usually in $[0,255]$, such that the greater the integer the brighter the pixel, *i.e.* a pixel with intensity 0 is totally black and a pixel with intensity 255 is totally white. \autoref{fig:img_mat} illustrates this representation. Note, that a standard color image consists of 3 spectral bands, red, green and blue (RGB), *i.e.* the color of one pixel is determined by 3 integers in $[0,255]$, each representing the intensity of the color red, green and blue, respectively. Thus a $32\times32$ sized image is represented by an array of size $32\times32\times3$.
+An image is made up of a grid of many tiny square cells of different colors. These cells are known as pixels and one pixel represents one color. A grayscale image, 32 pixels wide and 32 pixels long, can be represented by a $32\times 32$ matrix of integers, where each integer represents the 'brightness' (intensity) of each pixel. These integers are usually in $[0,255]$, such that the greater the integer the brighter the pixel, *i.e.* a pixel with intensity 0 is totally black and a pixel with intensity 255 is totally white. \autoref{fig:img_mat} illustrates this representation. Note, that a standard color image consists of 3 spectral bands, red, green and blue (RGB), *i.e.* the color of one pixel is determined by 3 integers in $[0,255]$, each representing the intensity of the color red, green and blue, respectively. Thus a $32\times32$ sized image is represented by an array of size $32\times32\times3$.
 
 ```{r,fig.cap="A low resolution grayscale profile of a man with pixel values overlayed on the image.\\label{fig:img_mat}", cache=TRUE, fig.width=3, fig.height=3}
 load.image("figures/wim.jpeg") %>% 
@@ -332,33 +348,32 @@ load.image("figures/wim.jpeg") %>%
   scale_color_gradient(low = "white", high = "black")
 ```
 
+A straighforward approach to transforming an array of pixel intensities to a representation fitting the input format of conventional classifiers is to *flatten* each array into a vector of size $width \times height \times channels$. For example a hypothetical grayscale image of size $3\times 3\times1$ is transformed as:
 
+$$
+\begin{bmatrix}
+x_{1} & x_{2} & x_{3}\\
+x_{4} & x_{5} & x_{6}\\
+x_{7} & x_{8} & x_{9}
+\end{bmatrix}
+\to
+\begin{bmatrix}
+x_{1} & x_{2} & x_{3} &x_{4} & x_{5} & x_{6} & x_{7} & x_{8} & x_{9}
+\end{bmatrix}.
+$$
 
-Before moving on, it is worth noting some of the things that make it hard for computers to classify images [^challenges]:
+Needless to say, this representation is not very effective. Firstly, this transformation discards most of the shape and structural information of an image. In addition, these flattened vectors are very high-dimensional ($p = 256\times 256 \times 3 = 196608$ for a colour image of size $256\times 256$), subjecting the classifier to the well-known problem in statistical learning, the *curse of dimensionality* [@Hastie2009, pp. 22-27].
 
-+ **Viewpoint variation** - A single instance of an object can be oriented in various ways with respect to the camera position.
-+ **Scale variation** - Objects of the same class can appear in different sizes in the images.
-+ **Deformation** - 
-+ **Occlusion**
-+ **Illumination conditions**
-+ **Background clutter**
-+ **Intra-class variation**
+On top of that, in a typical image classification, the images in its raw representation can have high intra-class variance and/or very low inter-class variance - making it extremely difficult for even the state-of-the-art classifiers, such as Random Forests, Support Vector Machines and Boosting to discriminate between classes. The intra-class variation can come from different viewpoints, scales, illumination and backgrounds of images of the same object, amongst others. On the other hand, suppose the task is to distinguish between a __ and __ from an image. Then there will be very little variation between the classes (inter-class) since the two breeds look very similar.
 
-> incomplete since I'm not sure if I want to add this list. Thus far it is basically a copy of the one found in the reference. Think the challenges should be mentioned but this section is getting very long.
+![ImageNet example of inter and intra class variation]()
 
-> maybe mention that pure classification of objects in an image seem limited and that we might want to localise the objects in terms of bounding boxes or segmentation. This is somewhat true. However, ML-CNNs can provide a rough localisation with attention maps. Also, annotation of bounding boxes and segmentation maps are expensive to obtain.
-
-[^challenges]: http://cs231n.github.io/classification/ unsure how to cite websites.
-
-Singel-label image classification is the task of assigning a label from a predefined set to an image. It is already practically considered a solved problem, mostly owed to large-scale labelled image datasets, such as ImageNet [@Deng2009], and the recent developments in Deep Convolutional Neural Networks (DCNNs) [@Krizhevsky2012]. Although the main work of this thesis is on deep learning methods for multi-label image classification, a brief overview of conventional (non-deep learning) methods for single-label image classification, will promote a deeper understanding of the image classification problem in general and will most likely lead to a better appreciation of the power and effectiveness of deep learning methods.
 
 Before the success of deep learning, the state-of-the-art image classification models were Bag-of-Words (BoW) based models. BoW based models can roughly be decomposed into the following modules: 
 
 + Feature Representation,
 + Classification and
 + Context Modelling.
-
-Conventional Statistical Learning methods struggle to process data in its natural or raw form, *e.g.* images as raw pixel intensities. An effective image classifier is insensitive to irrelevant variations of the input, such as the position, orientation or illumination of an object, while being very sensitive to other particular details such as the facial attributes of an animal when distinguishing a cat from a dog, for example. Even the state-of-the-art classifiers, such as Random Forests, Support Vector Machines and Boosting find it extremely difficult to discriminate between the relevant and irrelevant aspects of an image from only raw pixel data. There are some obvious reasons for this. Firstly, the conventional classifiers require each observation to be represented by a vector and therefore the raw pixel data of each image is first flattend into a vector before it is given as input to the classifier. This approach discards most of the shape information in the image. In addition, these flattened vectors are very high-dimensional ($256\times 256 \times 3 = 196608$ for a colour image of size $256\times 256$), subjecting the classifier to the well-known problem in Statistical Learning, the *curse of dimensionality* [@Hastie2009].
 
 To compensate for this shortcoming of conventional classifiers, plenty of attention was given to the design of feature representations of images. Using these feature representations as input to a conventional classifier (instead of raw pixel data) makes it considerably easier for a classifier to recognise the input-output relationships. Building these feature representations are quite complex. Generally, building a feature representation will consist of some or all all of the following steps. First, hand-engineerd (local) features, such as Scale Invariant Feature Transform (SIFT) [@Lowe2004] and Histogram of Oriented Gradients (HOG) [@Dalal2005], are extracted from dense grids or via sparse interest point detection in the images. Feature encoding. Feature pooling. This results in a feature representation of an image that is much easier for conventional classifiers to learn from than raw pixel data.
 
@@ -375,20 +390,20 @@ Examples of commonly used classifiers on-top of the above mentioned feature repr
 As mentioned before, this approach to image classification is not trivial, with many complex facets to the modelling process. It usually requires considerable engineering skill and/or domain expertise, especially to create feature representations of images. In addition, these feature representations are only suited for a subset of image classification tasks and do not generalise well. This is where deep learning methods prove to be superior, since it has the ability to learn these feature representations from the data.
 
 
++ see also [Object recognition from local scale-invariant features] for sliding window approach.
 
-
-
++ will promote a deeper understanding of the image classification problem in general and will most likely lead to a better appreciation of the power and effectiveness of deep learning methods.
 
 ## Outline \label{sec:outline}
 
-From this point on the reader should have a basic understanding of the topic of this thesis. The reasons why this topic was chosen has been described in the Motivations section and the goals of completing this thesis under the Objectives section. How this thesis will contribute to the literature has also been given. The problem of image classification has been introduced with the help of basic examples, along with a brief conceptual description of the multi-label image classification problem. Therefore, the reader should also be comfortable with the problem we want the DNNs to solve and the common challenges to such a problem. Although, DNNs have not yet been introduced, it should have been sufficient to know that it is class of algorithms. However, brief glimpses of the main components of DNNs have been given under the image classification problem description.
+From this point on the reader should have a basic understanding of the topic of this thesis. The reasons why this topic was chosen has been described in \Cref{sec:moti} section and the goals of completing this thesis under the \Cref{sec:obj}. The problem of image classification has been introduced with the help of basic examples, along with a brief conceptual description of the multi-label image classification problem. Therefore, the reader should also be comfortable with the problem we want the DNNs to solve and the common challenges to such a problem. Although, DNNs have not yet been introduced, it should have been sufficient to know that it is class of algorithms. However, brief glimpses of the main components of DNNs have been given under the image classification problem description.
 
-The rest of the thesis will follow the following outline. Chapter \ref{chp:dnn} introduces deep neural networks for image classifcation. Convolutional neural networks are specifically good at image classification and therefore most of the chapter will deal with them. The main focus is on the different structures and layers of the networks and how these influence performance (review this sentence - probably need to elaborate). 
+The rest of the thesis will follow the following outline. \Cref{chp:dnn} introduces deep neural networks for image classifcation. Convolutional neural networks are specifically good at image classification and therefore most of the chapter will deal with them. The main focus is on the different structures and layers of the networks and how these influence performance (review this sentence - probably need to elaborate). 
 
-Chapter \ref{chp:mlc} starts with the fundamentals of multi-label classification. It includes a formal definition and emphasis on the important concepts, such as multi-label evaluation metrics and the modelling of label dependencies (maybe add class imbalance here). The chapter also includes a review of the state-of-the-art algorithms for MLC. A discussion is given on the challenges and ongoing research of the field. One of the objectives of this chapter is to find approaches that could help extend DNNs for multi-label image classification. 
+\Cref{chp:mlc} starts with the fundamentals of multi-label classification. It includes a formal definition and emphasis on the important concepts, such as multi-label evaluation metrics and the modelling of label dependencies (maybe add class imbalance here). The chapter also includes a review of the state-of-the-art algorithms for MLC. A discussion is given on the challenges and ongoing research of the field. One of the objectives of this chapter is to find approaches that could help extend DNNs for multi-label image classification. 
 
-Chapter \ref{chp:dnn_mlc} reviews deep learning approaches for multi-label image classification. It looks at practically all of the proposals in the latest literature, how they attempt to model multiple labels and what are their shortcomings. The extensions are mostly adaptions of loss functions to be optimised or structural changes of the networks. An extensive comparision of the approaches is an important part of the chapter. Should I make proposals in this chapter?
+\Cref{chp:dnn_mlc} reviews deep learning approaches for multi-label image classification. It looks at practically all of the proposals in the latest literature, how they attempt to model multiple labels and what are their shortcomings. The extensions are mostly adaptions of loss functions to be optimised or structural changes of the networks. An extensive comparision of the approaches is an important part of the chapter. Should I make proposals in this chapter?
 
-Chapter \ref{chp:results} evaluates the highlighted approaches in previous chapter on popular benchmark image datasets. Note that more on the benchmark datasets are given in Appendix \ref{app:data}. The goal is to give a comprehensive empirical comparison of the best representative approaches in terms of many multi-label evaluation metrics (with standard errors). It includes discussions on the challenges of implementing these approaches and how the results correlate with the literature. The experiments done in this chapter are made as reproducible as possible with additional information on the code and software given in Appendix \ref{app:code}.
+\Cref{chp:results} evaluates the highlighted approaches in previous chapter on popular benchmark image datasets. Note that more on the benchmark datasets are given in \Cref{app:data}. The goal is to give a comprehensive empirical comparison of the best representative approaches in terms of many multi-label evaluation metrics (with standard errors). It includes discussions on the challenges of implementing these approaches and how the results correlate with the literature. The experiments done in this chapter are made as reproducible as possible with additional information on the code and software given in \Cref{app:code}.
 
-The thesis is concluded in Chapter \ref{chp:conc} with a summary of the work done in this project, general discussion of the literature and results and what directions can be followed for future research. It includes a section on the limitations of this study.
+The thesis is concluded in \Cref{chp:conc} with a summary of the work done in this project, general discussion of the literature and results and what directions can be followed for future research. It includes a section on the limitations of this study.
