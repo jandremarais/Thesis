@@ -2,6 +2,8 @@
 English abstract
 \end{abstract}
 
+Deforestation has devastaing effects on the environment, contributing to climate change and habitat loss amongst others. Better data about the location and cause of deforestation can help authorities improve their response time and understanding of the problem. Therefore, a classifier that can label satellite images of a rainforest with various classes of land cover and land use, would be very helpful. We pose this problem as a mutli-label image classification (MLIC) problem, where each satellite image can potentially be annotated with more than one label. Convolutional Neural Networks (CNNs) have consistently proven their superiority in single-label image classification problems. However, it is unclear how to best extend CNNs to effectively deal with the unique challenges that arise in the multi-label setting. This work critically reviews the proposals made in the literature and compares them on a dataset of > 100000 labelled satellite images of the Amazon rainforest. We found that (1) training the network with the label-wise binary cross-entropy loss function is sufficient in dealing with label imbalance; (2) making predictions from multi-scale feature maps helps to detect smaller objects; and (3) explicity modelling channel-wise dependencies of feature maps helps the network to exploit semantic and spatial label relationships. A bonus to the chosen network design is that it provides approximate label localisations despite only being trained with label supervision. 
+
 \begin{abstract}[afrikaans]
 Afrikaans abstract
 \end{abstract}
