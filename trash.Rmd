@@ -1,0 +1,7 @@
+# Trash
+
+# MLC
+
+## History
+
+The birth of MLC (around 1999) came from the need to assign multiple labels to text documents. Contributions in [@Schapire1999] and [@Schapire2000] adapted a boosting algorithm to handle multi-labelled data. [@Elisseeff2001] defined a ranking based SVM to deal with multi-label problems in the areas of text mining and also bioinformatics. [@Lewis2004] released an important benchmark collection for multi-label text classification. Another highly cited multi-label SVM implementation is [@Boutell2004a], with application in scene/image classification. [@Zhang2006] showed how to apply neural networks to a multi-label problem and [@Zhang2007] adapted the KNN algorithm for multi-labelled input. The first overview on the subject was given in [@Tsoumakas] where the author discussed the most relevant MLC approaches. Then came applications to music, [@Trohidis2008] and [@Turnbull2008]. [@Vens2008] showed how to use decision trees for hierarchical MLC. Important papers introducing unique MLC approaches are [@Tsoumakas2007a], [@Furnkranz2008] and [@Read2011]. A crucial step for MLC was to make it accesible and useable to more reasearchers. The authors of [@Tsoumakas2011] developed a Java library for MLC. Later on, [@Madjarov2012] did a empirical study on the most important MLC algorithms up to that date, comparing 12 MLC methods using 16 evaluation measures over 11 benchmark datasets. More recent extensive reviews of MLC are given in [@Zhang2014] and [@Gibaja2014]. 

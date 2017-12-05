@@ -1,47 +1,42 @@
-# Single-Label Image Classification with Deep Learning Methods \label{chp:dnn}
+# Deep Learning and Image Classification \label{chp:dnn}
 
 ## Introduction
 
-Representation learning is a set of methods that can take natural unstructured data as input and automatically learn the optimal representations from the data for classification (or regression). Deep learning methods are representation learning methods, explaining their superiority in image classification and related tasks. The 'deep' of deep learning refers to the multiple layers of a deep learning network (/model) stacked on top of each other. Each layer transforms a representation at one level (starting at the input) to a slightly higher level of abstraction, until a level is reached sufficient for classification. These layers are a combination of simple linear and non-linear functions and together (if the network is deep enough) it can approximate any function, no matter how complex [@Hornik1991].
+Representation learning is a set of methods that can take raw unstructured data as input and automatically learn the optimal representations from the data for the specific task, *e.g.* classification. Deep learning methods are representation learning methods, explaining their superiority in image classification and related tasks. The 'deep' of deep learning refers to the multiple layers of a deep learning network stacked on top of each other. Each layer transforms a representation at one level (starting at the input) to a slightly higher level of abstraction, until a level is reached sufficient for classification (or any other task). These layers are a combination of simple linear and non-linear functions and together (if the network is deep enough) it can approximate any function, no matter how complex [@Hornik1991].
 
 For many years, dating back to the late 1950s, researches have tried to find ways to replace hand-crafted feautres with multilayer networks [@Selfridge1959; @Rosenblatt1957]. The first real progress was made when they found that the networks can be trained by simple gradient descent and the backpropogation algorithm [@Rumelhart1988]. Until the early 2000s, research communities related to statistics and artificial intelligence did not have much hope for neural networks. They believed training the network by gradient descent will result in solutions stuck in a poor local minima. In practice this is not true and it has actually been shown that the solutions tend to get stuck in saddle points, which are not that problematic [@Dauphin2014; @Choromanska2014].
 
 Hope was restored when unsupervised methods were developed to pretrain networks on unlabelled data to obtain a weight initialisation for the supervised learning training process [@Hinton2006; @Bengio2006]. This helped the backpropogation algorithm to find good solutions especially when the number of labelled data points were limited. More efficient ways of training the networks were developed by making use of GPUs, decreasing the average training time of networks by at least a factor of 10. Finally, a general consensus on the power of deep learning methods were reached when a CNN was trained on a large-scale image classification data set to beat previous state-of-the-art by a large margin.
 
-This chapter discusses deep neural networks (DNNs) for image classification. Convolutional Neural Networks (CNNs), a specific type of DNN, is the state-of-the-art model in single label image classification. Therefore the aim of this chapter is to gain an understanding of CNNs such that we can later extend it to handle multi-label image classification. First, \Cref{sec:dnn} introduces Neural Networks. It looks at its structure and the various strategies regarding its optimisation. \Cref{sec:cnn} is CNNs, which are especially useful for image classification. The section focusses on the unique components of a CNN and why it works so well. Then in \Cref{sec:rnn} we will briefly discuss Recurrent Neural Networks (RNNs). These type of networks are especially well suited for sequential input, but they have also been used for multi-label classification and therefore it is included in this chapter. \Cref{sec:over} discusses the important problem of reducing overfitting of DNNs. It reviews the most important strategies for improving the generalisation ability of DNNs. \Cref{sec:transfer} on transfer learning. Maybe also something on attention and then a conclusion.
+This chapter discusses deep neural networks (DNNs) focussing on image classification. Convolutional Neural Networks (CNNs), a specific type of DNN, is the state-of-the-art model in single label image classification. Therefore the aim of this chapter is to gain an understanding of CNNs such that we can later extend it to handle multi-label image classification. First, \Cref{sec:dnn} introduces Neural Networks. It looks at its structure and the various strategies regarding its optimisation. \Cref{sec:cnn} is on CNNs, which are especially useful for image classification. The section focusses on the unique components of a CNN and why it works so well. Then in \Cref{sec:rnn} we will briefly discuss Recurrent Neural Networks (RNNs). These type of networks are especially well suited for sequential input, but they have also been used for multi-label classification and therefore it is included in this chapter. \Cref{sec:over} discusses the important problem of reducing overfitting of DNNs. It reviews the most important strategies for improving the generalisation ability of DNNs. \Cref{sec:transfer} on transfer learning. Maybe also something on attention and then a conclusion.
 
 ## Deep Neural Networks \label{sec:dnn}
 
-We have described the supervised learning framework in which deep learning methods operate. To recap, the main components of a deep learning (or any other supervised learning) model are the model, $f$, loss function, $L$, and the optimisation procedure. The loss function evaluates the amount the scores predicted by the model deviate from the ground truth. The goal is to minimise the loss function by adjusting the weights of the model. Stochastic Gradient Descent is used to determine the amount and directions by which each of the weights should be adjusted to minimise the loss function.
+The main components of any supervised learning task are the data, objective function, model and optimisation procedure. In the previous chapter we have already discussed the type of data relevant for this work (images) and we have given trivial examples of objective functions, models and optimisation. This chapter zooms in on the class of models known as deep neural networks, specifically for images as input data and the relevant objective functions and optimisation procedures for this scenario.
 
-The following section discusses the class of models known as Deep Neural Networks. The simplest form (and also the origin) of DNNs is a *feedforward neural network*, also known as the *multilayer perceptron* (MLP). They are called *feedforward* because information flows through the function being evaluated from the inputs $\boldsymbol{X}$, through the intermediate computations used to define $f$, and finally to the output $\boldsymbol{Y}$ [@Goodfellow2016]. The *network* in the name refers
-
-As mentioned before, the score function is made up of multiple layers, each a simple linear or non-linear transformation of its input. These layers stacked on top of each other are referred to as a network. There are many different types of network architectures, but most of them all consist of the same main modules. These modules will be discussed shortly.
-
-> make sure score function was introduced in chapter 1. Otherwise use the term 'model' instead
-
-
-
+The simplest form (and also the origin) of DNNs is a *feedforward neural network*, also known as the *multilayer perceptron* (MLP). They are called *feedforward* because information flows through the function being evaluated from the inputs $\boldsymbol{X}$, through the intermediate computations used to define $f$, and finally to the output $\boldsymbol{Y}$ [@Goodfellow2016]. The *network* in the name refers to the strucute of this type of model which is most naturally visualised as a network of inter-connected nodes.
 
 ### Single Layer Perceptron
 
-Like most other score functions, a neural networks is a mapping from an input to a an output. The central idea of a neural network is to extract linear combinations of the inputs as derived features, and then model the target as a non-linear function of these features [@Hastie2009, Ch. 11]. This idea was developed separately in the fields of statistics and artificial intelligence. In statistics the first methods built on this idea was called the Projection Pursuit Regression (PPR) model [see @Hastie2009, pp. 389-392]. This model can be written as
+Like most other supervised learning models, a neural network is a mapping from an input to an output. The central idea of a neural network is to extract linear combinations of the inputs as derived features, and then model the target as a non-linear function of these features [@Hastie2009, Ch. 11]. This idea was developed separately in the fields of statistics and artificial intelligence. In statistics, the first methods built on this idea was called the Projection Pursuit Regression (PPR) model [see @Hastie2009, pp. 389-392]. This model can be written as
 
 $$
 f(\boldsymbol{X})=\sum_{m=1}^{M}g_{m}(\boldsymbol{\omega}_{m}^{T}\boldsymbol{X}),
 $$
 where $\boldsymbol{X}$ is the usual input vector of $p$ components and $\boldsymbol{\omega}_{m}$, $m=1,\dots,M$, $p$-sized vectors with unknown parameters. Thus, the PPR model is an additive model in the derived features, $V_{m}=\boldsymbol{\omega}_{m}^{T}\boldsymbol{X}$. $g_{m}(\cdot)$ is called a ridge function and is to be estimated. $V_{m}$ is the projection of $\boldsymbol{X}$ onto the unit vector $\boldsymbol{\omega}_{m}$, and we seek $\boldsymbol{\omega}_{m}$ such that the model fits well, hence the name, Projection Pursuit. The details of this method is beyond the scope of this thesis and can be found at the reference above.
 
-The term neural networks is used for a large class of models and learning methods. First, consider the "vanilla" neural network, known as the single layer perceptron. It is a neural network with a single hidden layer and trained by backpropogation. It can be applied to both regression and classification. It takes an input, $\boldsymbol{X}:1\times p$, transforms it to a hidden layer $\boldsymbol{Z}:1\times M$ and then uses $\boldsymbol{Z}$ as input to model the target, $\boldsymbol{Y}:1 \times K$. This structure can be represented as a network (give illustration).
+The term neural networks is used for a large class of models and learning methods. First, consider the "vanilla" neural network, known as the single layer perceptron. It is a neural network with a single hidden layer and trained by backpropogation. It can be applied to both regression and classification. It takes an input, $\boldsymbol{X}:1\times p$, transforms it to a hidden layer $\boldsymbol{Z}:1\times M$ and then uses $\boldsymbol{Z}$ as input to model the target, $\boldsymbol{Y}:1 \times K$. This structure can be represented as a network as shown in \autoref{fig:vannn}.
+
+![Graph structure of a vanilla neural network.\label{fig:vannn}](figures/vannn.png)
 
 The number of units in the final layer matches the dimensionality of the output, denoted by $K$. Thus for classic regression, $K=1$, and for multiclass classification, $K$ is the number of possible categories, where unit $k$, $k=1,\dots,K$, represents the score for class $k$. For this discussion we will describe neural networks for multiclass classification. Thus there are $K$ target measurements, $\boldsymbol{Y}=\{Y_{1},Y_{2},\dots,Y_{K}\}$. $Y_{k}$ is coded as 1 when class $k$ is present and as 0 otherwise.
 
-The hidden layer units, $\boldsymbol{Z}=\{Z_{1},Z_{2},\dots, Z_{M}\}$, are a set of features derived from the input. They are created by first taking a linear combination of the inputs and then sending it through a non-linear activation function, $\sigma(\cdot)$,
+The hidden layer units, $\boldsymbol{Z}=\{Z_{1},Z_{2},\dots, Z_{M}\}$, are a set of features derived from the input. They are created by first taking a linear combination of the inputs and then sending it through a non-linear *activation function*, $a(\cdot)$,
 
 $$
-Z_{m}=\sigma\left(\alpha_{0m}+\boldsymbol{\alpha}_{m}^{T}\boldsymbol{X}\right),
+Z_{m}=a\left(\alpha_{0m}+\boldsymbol{\alpha}_{m}^{T}\boldsymbol{X}\right),
 $$
-for $m=1,\dots,M$. $\alpha_{0m}$ and $\boldsymbol{\alpha}_{m}$ are the coefficients of the linear mapping. Note that a layer that outputs a linear transformation of its inputs in this fashion is also called a *fully-connected* or *dense* layer. The activation function, $\sigma(\cdot)$, was usually chosen to be the sigmoid function, $\sigma(v)=\frac{1}{1+e^{-v}}$. However these days, there are many more effective activation functions used in deep neural networks which we discuss in \Cref{sec:activation}.
+for $m=1,\dots,M$. $\alpha_{0m}$ and $\boldsymbol{\alpha}_{m}$ are the coefficients of the linear mapping. Note that a layer that outputs a linear transformation of its inputs in this fashion is also called a *fully-connected* or *dense* layer. The activation function, $a(\cdot)$, was usually chosen to be the sigmoid function, $a(v)=\frac{1}{1+e^{-v}}$. However these days, there are many, more effective activation functions used in deep neural networks which we discuss in \Cref{sec:activation}.
 
 The output units of the neural network can then be expressed as
 
@@ -53,27 +48,32 @@ for $k=1,\dots, K$. Here, the $\beta$'s are the coefficients of the linear combi
 $$
 g_{k}(\boldsymbol{T})=\frac{e^{T_{k}}}{\sum_{k}e^{T_{k}}}.
 $$
-This function is exactly the transformation used in the multilogit model discussed in \Cref{sec:supervised}. It produces output in the range  [0,1], summing to 1, similar to the properties of conditional class probabilities.
+This function is exactly the transformation used in the multilogit model discussed in \Cref{sec:supervised}. It produces output in the range [0,1], summing to 1, similar to the properties of conditional class probabilities.
 
 The units in $\boldsymbol{Z}$ are called hidden since they are not directly observed. The aim of this transformation is to derive features, $\boldsymbol{Z}$, so that the classes become linearly separable in the derived feature space [@Lecun2015]. Many more of these hidden layers (combination of linear and non-linear transformations) can be used to derive features to input into the final classifier. This is what we refer to as deep neural networks (DNNs) or deep learning methods.
 
-Note, that if the $\sigma(\cdot)$ activation function was the identity function or another linear function, the whole network would collapse into a single linear mapping. By introducing the non-linear activations, it greatly enlarges the class of functions that can be approximated by the network (see universal approximator).
+Note, that if the $a(\cdot)$ activation function was the identity function or another linear function, the whole network would collapse into a single linear mapping from inputs to outputs. By introducing the non-linear activations, it greatly enlarges the class of functions that can be approximated by the network (see universal approximator).
 
 In a statistical learning sense, the hidden units can be thought of as a basis function expansion of the original inputs. The neural networks is then a standard linear (multilogit) model with the basis expansions as inputs. The only difference to the conventional basis function expansion techinique in Statistical Learning [@Hastie2009, Ch. 5] is that the parameters of the basis functions are learned from the data.
 
-One can now also see the relationship between a neural network and the PPR model. If the neural network has one hidden layer, it can be written in the exact same form as the PPR model. The difference is that the PPR uses a nonparametric function $g_{m}(v)$, while the neural network uses far simpler non-linear activation functions, like $\sigma(\cdot)$.
+One can now also see the relationship between a neural network and the PPR model. If the neural network has one hidden layer, it can be written in the exact same form as the PPR model. The difference is that the PPR uses a nonparametric function $g_{m}(v)$, while the neural network uses far simpler non-linear activation functions, like $a(\cdot)$.
 
 The number of units in the hidden layer, $M$, is also a value to be decided on. Too few units will not allow the network enough flexibility to model complex relationships and too many takes longer to train and increases the chance of overfitting. $M$ is mostly chosen by experimentation. A good starting point would be to choose a large value and training the network with regularisation (discussed shortly).
 
-The difference between the above discussed neural networks and current state-of-the-art deep learning methods, is the number and type of hidden layers. These are discussed in a following section.
+The difference between the above discussed neural networks and current state-of-the-art deep learning methods, is the number and type of hidden layers. The following section discusse the popular activation functions used in DNNs.
 
 ### Activation Functions \label{sec:activation}
 
-> not sure where to fit this section yet
+In the previouse section, we introduced activation functions, which are simple non-linear functions of its input. These are usually applied after a fully connected layer (linear transformation) and are crucial for the flexibility of a deep neural network. We also mentioned that the sigmoid activation, which was originally the go-to activation, is currently not the most popular choice. Another activation function originally thought to work well was, $a(x)=\tanh(x)$. However, by far the most common activation function used at the time of writing is the Rectified Linear Units (ReLU) non-linearity. Its definition is much simpler than its name and is defined as $a(x)=\max(0,x)$. It was introduced in [@Krizhevsky2012] and they showed that using ReLUs in their CNNs reduced the number of training iterations to reach the same point by a factor of 6 compared to using $\tan(x)$.
 
-In the previouse section, we introduced activation functions, which are simple non-linear functions of its input. These are usually applied after a fully connected layer (linear transformation) and are crucial for the flexibility of a deep neural network. We also mentioned that the sigmoid activation, which was originally the go-to activation, is currently not the most popular choice. Another activation function originally thought to work well was, $a(x)=\tanh(x)$. However, by far the most common activation function used at the time writing is the Rectified Linear Units (ReLU) non-linearity. Its definition is much simpler than its name and is defined as $a(x)=\max(0,x)$. It was introduced in [@Krizhevsky2012] and they showed that using ReLUs in their CNNs reduced the number of training iterations to reach the same point by a factor of 6 compared to using $\tan(x)$.
+There are a plethora of proposals for activation functions, since any simple non-linear (differentiable?) function can be used. Some of the recent most popular choices are exponential linear units (ELUs) [@Clevert2015] and scaled exponential linear units (SELUs) [@Klambauer2017]. The choice of activation function usually influences the convergence time and some might protect the training procedure from overfitting in some cases. The different activation functions can be experimented with, however it would be sufficient in most cases to use ReLUs. The other mentioned proposals have inconsistent gains over ReLUs and therefore it remains the standard choice.
 
-There are a plethora of proposals for activation functions, since any simple non-linear function can be used. Some of the recent most popular choices are exponential linear units (ELUs) [@Clevert2015] and scaled exponential linear units (SELUs) [@Klambauer2017]. The choice of activation function usually influences the convergence time and some might protect the training procedure from overfitting in some cases. The different activation functions can be experimented with, however it would be sufficient in most cases to use ReLUs.
+However, very recently [@Ramachandran2017] used automated search techniques to discover novel activation functions. The exhaustive and reinforcement learning based searched identified a few promising novel activation functions on which the authors then did further empirical evaluations. They found that the so-called *Swish* activation function,
+
+$$
+a(x)=x\cdot\sigma(\beta x),
+$$
+where $\beta$ is a constant (can also be a trainable parameter), gave the best empirical results. It consistently matched or outperformed ReLU's on deep networks applied to the domains of image classification and machine translation.
 
 ## Training a Neural Network
 
@@ -155,6 +155,8 @@ Backpropogation is simple and its local nature (each hidden unit passes only inf
 
 The convergence times also depends on the learning rate, $\gamma_{r}$. There are no easy ways for determining $\gamma_{r}$. A small learning rate slows downs the training time, but is safer against overfitting and overshooting the optimal solution. With a large learning rate, convergence will be reached quicker, but the optimal solution may not have been found. One could do a line search of a range of possible values, but this usually takes too long for bigger networks. One possible strategy for effective training is to decrease the learning rate every time after a certain amount of iterations.
 
+Recently, in (https://arxiv.org/abs/1711.00489) (not bibtex entry), the authors found that, instead of learning rate decay, one can alternatively increase the batch size during training. They found that this method reaches equivalent test acccuracies compared to learning rate decay after the same amount of epochs. But their method requires fewer parameter updates.
+
 ### Basic Regularisation
 
 There are many ways to prevent overfitting in deep neural networks. The simplest strategies for single hidden layer networks are by early stopping and weight decay. Stopping the training process early can prevent overfitting. When to stop can be determined by a validation set approach. Weight decay is the addition of a penalty term, $\lambda J(\theta)$, to the objective function, where,
@@ -162,61 +164,17 @@ There are many ways to prevent overfitting in deep neural networks. The simplest
 $$
 J(\theta)=\sum_{km}\beta^{2}_{km} + \sum_{ml}\alpha^{2}_{ml}.
 $$
-This is exactly what is done in ridge regression [@Hastie2009, Ch. 4]. $\lambda \ge 0$ and larger values of $\lambda$ tends to shrink the weights towards zero. This helps with the generalisation ability of a neural network, but recently more effective techniques to combat overfitting in DNNs have been developed. These is dicussed in \Cref{sec:over}.
+This is exactly what is done in ridge regression [@Hastie2009, Ch. 4]. $\lambda \ge 0$ and larger values of $\lambda$ tends to shrink the weights towards zero. This helps with the generalisation ability of a neural network, but recently more effective techniques to combat overfitting in DNNs have been developed. These are dicussed in \Cref{sec:over}.
 
-It is common to standardise all inputs to have mean zero and standard deviation of one. This ensures that all input features are treated equally.
+It is common to standardise all inputs to have mean zero and standard deviation of one. This ensures that all input features are treated equally. Now we have covered all of the basics for simple (1-layer) neural networks.
 
-+ say something on the starting point of the weight initialisations
+> sal n kort afdeling oor neurale netwerke vs die brein 'n goeie idee wees?
 
-+ momentum [@Sutskever2013]
-+ adagrad [@Duchi2011]
+## Convolutional Neural Networks
 
-Starting with the architecture that is proven to be the best for image classification problems, the Convolutional Neural Network.
+As mentioned before, Deep Neural Networks are extensions of Neural Networks. The extensions consist of adding more hidden layers and the use of more advanced layers. The type of DNN best suited for image classification is called a Convolutional Neural Network (CNN). The identifying feature of a CNN is its convolutional layer.
 
-## Convolutional Neural Networks \label{sec:cnn}
 
-Recently it has become possible to collect extremely large datasets of labelled images. To learn about thousands of objects from millions of images, we need a model with a large learning capacity. However, the immense complexity of the object recognition task means that this problem cannot be specified even by a dataset as large as ImageNet, so our model should also have lots of prior knowledge to compensate for all the data we do not have. Convolutional neural networks (CNNs) constitute one such class of models. Their capacity can be controlled by varying their depth and breadth, and they also make strong and mostly correct assumptions about the nature of images (namely, stationarity of statistics and locality of pixel dependencies). Thus, compared to standard feedforward neural networks with similarly-sized layers, CNNs have much fewer connections and parameters and so they are easier to train, while their theoretically-best performance is likely to be only slightly worse. Despite the attractive qualities of CNNs, and despite the relative efficiency of their local architecture, they have still been prohibitively expensive to apply in large scale to high-resolution images. Luckily, current GPUs, paired with a highly-optimized implementation of 2D convolution, are powerful enough to facilitate the training of interestingly-large CNNs, and recent datasets such as ImageNet contain enough labeled examples to train such models without severe overfitting. (all from [@Krizhevsky2012])
-
-Convolutional Neural Networks (CNNs) are a special type of neural network that utilises specific network structures such as convolutions and spatial pooling. Has good generalisation power.
-
-The first paper on Convolutional Neural Networks was by [@Cun1990]. They called it backpropogating networks and showed that it can be applied to an image classification problem by using the raw low level data as input, instead of manually engineered features, as was done by previous state-of-the-art methods.
-
-+ architecture of the network strongly influences the network's generalisation ability
-+ methods relies on automatic learning instead of manual preprocessing.
-+ multilayer network
-+ all layers are adaptive, heavily constrained and trained using backpropogation
-+ first few layers are constrained by only local connections with shared weights
-
-+ where the breakthrough was made: (Imagenet classification with deep convolutional neural networks, Going deeper with convolutions, Very deep convolutional networks for large-scale image recognition, Deep residual learning for image recognition)
-+ more papers: Convolutional deep belief networks for scalable unsupervised learning of hierarchical representations, What is the best multi-stage architecture for object recognition?, Large scale distributed deep network
-
-+ big drawback of DL based methods is the amount of training data and computational power needed for effective models. This is where transfer learning comes in. CNN models pretrained on large datasets can be easily transferred to solve other tasks and boost their performance
-
-+ for image as raw input, first layer may detect edges, second contours, later objects, etc.
-
-+ convnets were much easier to train and generalised much better than networks with full connectivity
-+ they take inputs existing of multiple arrays
-+ keys ideas: local connections, shared weights, pooling, many layers
-+ convolutional layers: units in this layer are organised in feature maps, within which each unit is connected to local patches in the feature maps of previous layers, through a set of weights called a filter bank. The passed through a non-linearity
-+ this works because: in images local groups of values are often highly correlated forming distinctive patterns that are easily detected and the local statistics of an image is invariant to location, making it possible to detect the same pattern in different parts of the image
-+ the filtering operation is called a discrete convolution
-+ role of the pooling layer is to merge semantically similar features into one.
-+ like maximum of a local patch
-+ reduces dimensionality and make invariant to shifts and other distortions
-+ stack two or three convolution + non-linearity + pooling layers and then fully connected layers to build a ConvNet.
-+ also forsaken by community until imagenet
-+ first time using relu, dropout, efficient use of gpus, 
-+ surpas human performance on many vision tasks
-
-## Recurrent Nets \label{sec:rnn}
-
-+ recurrent neural networks (RNNs)
-+ task that involve sequential input
-+ processes an input sequence one element at a time maintaining in their hidden units a state vector that implicity contains information about the history of the past elements of the sequence.
-+ difficult to train because of exploding and vanishing gradients
-+ but these architectures were improved and is now feasible to train (see DL paper for references)
-+ once unfolded in time RNNs can be seen as very deep feed forward networks with each layer sharing the same weight.
-+ LSTM to store memories
 
 ## Reducing Overfitting \label{sec:over}
 
@@ -279,6 +237,4 @@ The reason for the scale and shift step is to allow the layer to represent the i
 
 ## Transfer Learning \label{sec:transfer}
 
-+ unsupervised learning is the future
-
-+ see also https://arxiv.org/pdf/1702.07800.pdf (On the Origin of Deep Learning)
+The major critique against DNNs are that they require a huge amount of training data and that they take extremely long to train. This is somewhat true, however, *transfer learning* provides an effective solution to these problems. Recall that DNNs are examples of representation learning algorithms. Consider the case where a CNN was sucessfully trained on ImageNet. For any input image, each layer of the CNN produces some feature representation of the input image. (Not sure where Zeiler paper is going to be discussed). 

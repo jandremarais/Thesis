@@ -14,8 +14,8 @@ fontsize: 12pt
 papersize: letter
 classoption: oneside, openany
 margin-ratio: goldenblock
-title: "Deep Neural Networks for Multi-Label Image Classification"
-titel: "Diep Neurale Netwerke vir Multi-Etikel Beeldklassifikasie"
+title: "Convolutional Neural Networks for Multi-Label Image Classification"
+titel: "Konvolusie Neurale Netwerke vir Multi-Etikel Beeldklassifikasie"
 author: Jan André Marais
 author-short: J.\ A.\ Marais
 degree-short: MCom (Mathematical Statistics)
@@ -39,9 +39,6 @@ header-includes:
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
 knitr::opts_chunk$set(warning = FALSE, message = FALSE, echo=FALSE)
-library(ggplot2)
-library(imager)
-library(dplyr)
 ```
 
 
@@ -54,7 +51,7 @@ library(dplyr)
 ```{r child = 'mlc.Rmd'}
 ```
 
-```{r child = 'dnn_mlc.Rmd'}
+```{r child = 'MLCNN.Rmd'}
 ```
 
 ```{r child = 'results.Rmd'}
@@ -63,8 +60,6 @@ library(dplyr)
 ```{r child = 'conclusion.Rmd'}
 ```
 
-```{r child = 'unsorted.Rmd'}
-```
 
 \appendix
 \appendixpage\relax

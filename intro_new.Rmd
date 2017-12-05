@@ -1,14 +1,22 @@
 # Introduction
 \label{chp:intro}
 
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, echo=FALSE)
+library(tidyverse)
+library(imager)
+library(MASS)
+library(cowplot)
+```
+
 ## Motivation \label{sec:moti}
 
-*Image Classification* is the task of assigning one (or more) label(s) to an input image. This seemingly simple task is one of the core problems in *computer vision*, and also has a large variety of practical applications. Examples of such applications include detecting deforestation in the Amazon from satellite images [^Amazon], or autonomous lung disease diagnosis from chest X-rays [@Wang2017]. Image classification is a thoroughly researched topic and already regarded by many to be a 'solved' problem. This progress is mainly attributed to the yearly large-scale image classification competition, called *ImageNet*[^imagenet], providing researchers with millions of labelled images to train their image classification models.
+*Image Classification* concerns the task of assigning one (or more) label(s) to an input image. This seemingly simple task is one of the core problems in *Computer Vision*, and also has a large variety of practical applications. Examples of such applications include detecting deforestation in the Amazon from satellite images [^Amazon], or autonomous lung disease diagnosis from chest X-rays [@Wang2017]. Image classification is a thoroughly researched topic and already regarded by many to be a 'solved' problem. This progress is mainly attributed to the yearly large-scale image classification competition, called *ImageNet*[^imagenet], providing researchers with millions of labelled images to train their image classification models.
 
 [^Amazon]: https://www.kaggle.com/c/planet-understanding-the-amazon-from-space
 [^imagenet]: http://www.image-net.org/
 
-The other driver of the recent success of image classification systems is the development of *Deep Learning* [@Lecun2015], a subfield of Machine Learning. Deep learning (by means of *deep neural networks*, or DNNs) extends upon artificial neural networks, which were designed in an attempt to mimic the structure and function of the human brain. The type of DNNs proven best suited for image classification problems is the class of *Convolutional Neural Networks* (CNNs). CNNs is the state-of-the-art model for practically all image classification problems. Its distinguishing feature from other methods is its ability to 'learn' highly discriminative feature representations of its input images, wheras the more conventional approaches require manually hand-crafting features for each specific task (as in SIFT [cite] and BoW [cite]). See \autoref{fig:ImNet} for an illustration of the impact CNNs made on image classification performance.
+The other driver of the recent success of image classification systems is the development of *Deep Learning* [@Lecun2015], a subfield of Machine Learning. Deep Learning (by means of *deep neural networks*, or DNNs) extends upon artificial neural networks, which were designed in an attempt to mimic the structure and function of the human brain. The type of DNNs proven best suited for image classification problems is the class of *Convolutional Neural Networks* (CNNs). The distinguishing feature of CNNs is the ability to 'learn' highly discriminative feature representations of input images, whereas more conventional approaches require one to manually hand-craft features for each specific task (for example in SIFT [cite] and BoW [cite]). Consider \autoref{fig:ImNet} for an illustration of the impact that CNNs have made in image classification.
 
 ```{r, include=FALSE}
 library(tidyverse)
@@ -24,9 +32,11 @@ p <- data.frame(Year = 2010:2017, Error = c(0.28191, 0.25770, 0.16422, 0.1174, 0
 ggsave('figures/IN_perf.png', p, device = "png")
 ```
 
-![Line graph illustrating the decreasing classification error rate of the winning ImageNet models by year\label{fig:ImNet}. Notice the large drop from 2011 to 2012 when the first CNN [@Krizhevsky2012] was used in this competition. Thereafter, all of the winning solutions made use of CNNs. CNNs are now able to surpass human level performace on this task.](figures/IN_perf.png)
+![Classification error rates of the winning ImageNet models by year\label{fig:ImNet}. ](figures/IN_perf.png)
 
-Until recently, the main focus of deep learning approaches for image classification was on problems where each image is annotated with only a single label. *Multi-Label Classification* (MLC) [@Zhang2014] of images generalises this task to allow images to be simultaneously annotated with more than one label. The number of labels to associate with each image, is unknown, and differs across images. Clearly by definition, multi-label image classification is much more challenging than conventional (single-label) classification. Moreover, since the majority of real-world images contain more than one object, multi-label image classification is a more generally occurring problem in practice than single-label classification. In research, it was only fairly recently that more attention was paid to multi-label image classification (for example in [@Wei2014]). Therefore the field is regarded far from the maturity level of its single-label counterpart. Since DNNs have proven to be so successful in the case of single-label image classification, it seems reasonable to ask whether their use may not also be extended to successfully annotate images with multiple labels.
+Notice the large decrease from 2011 to 2012 when the first CNN [@Krizhevsky2012] was used in this competition. Thereafter all of the winning solutions made use of CNNs. CNNs are now able to surpass human level performace on this task.
+
+Until recently, the main focus of deep learning approaches for image classification was on problems where each image is annotated with only a single label. *Multi-Label Classification* (MLC) [@Zhang2014] of images generalises this task to allow images to be simultaneously annotated with more than one label. The number of labels to associate with each image is unknown, and differs across images. By definition, multi-label image classification is much more challenging than conventional (single-label) classification. Moreover, since the majority of real-world images contain more than one object, multi-label image classification is a more generally occurring problem in practice than single-label classification. In research, it was only fairly recently that more attention was paid to multi-label image classification (for example in [@Wei2014]). Therefore the field is regarded far from the level of maturity of its single-label counterpart. Since DNNs have proven to be so successful in the case of single-label image classification, it seems reasonable to ask whether their use may not also be extended to successfully annotate images with multiple labels.
 
 Extending CNNs and other DNNs to handle images with multiple labels is not a trivial task. Thus far only a handful of proposals regarding how to tackle multi-label image classification have been published (for example in [@Gong2013], [@Wei2014], [@Wang2016], [@Zhu2017], [@Chen2017], more?). These contributions were however mostly made in isolation of one another – hence no comprehensive comparison of these methods (whether theoretical or empirical) can be found. Also, the majority of proposals stem from a deep learning background and could possibly gain from insights and methods already discovered in the MLC field.
 
@@ -50,7 +60,7 @@ The above objectives regarding the literature review are of course complementary
 
 + **Empirical evaluation and comparison of approaches** - The literature review and theoretical comparisons should be complemented by empirical evaluations. Existing and proposed classification procedures may be evaluated and compared by means of benchmark image datasets. The practical implementation of algorithms may highlight challenges that may not necessarily be found in the literature. 
 
-Through the above objectives, the thesis should guide a reader to a thorough understanding of recent work on DNNs for multi-label image classification. Given a certain multi-label image classification problem, one should be able to recommend some approaches above others, know their advantages and limitations, and effectively implement them.
+Through the above objectives, the thesis should guide a reader to a thorough understanding of recent work on DNNs for multi-label image classification. Given a certain multi-label image classification problem, one should be able to recommend some approaches above others, know their advantages and limitations, and be able to effectively implement them.
 
 ## Contributions
 
@@ -71,29 +81,28 @@ Novel contributions made to the literature by this thesis:
 
 ## Code and Reproducibility
 
-All of the code for this project, including the source docoments, is made available in the Thesis Github repository [^repo]. More instructions on how to implement the code is contained in the file named, `README.md`, in the repository.
+Note that all of the code used in the thesis, including the source documents, is made available in the Thesis Github repository [^repo]. More instructions on how to implement the code is contained in the file named `README.md`, in the repository.
 
-> Weet dit moet nie hier kom nie, maar weet nog nie waar anders nie?
 
 [^repo]: https://github.com/jandremarais/Thesis
 
 ## Background and Important Concepts
 
-In this thesis, the three key topics of this study, *viz*. image classification, deep neural networks and multi-label classification, will be introduced in their own chapters (image classification here, and the other in the following two chapters). Thereafter, a discussion of the combination of the above topics, in order to conceptualise image classification by means of DNNs for MLC, will follow.
+In this thesis, the three key topics of this study, *viz*. image classification, deep neural networks and multi-label classification, will be introduced in their own chapters (image classification here, and the other in the following two chapters). Subsequently, a discussion of the combination of the above topics, in order to conceptualise image classification by means of DNNs for MLC, will follow.
 
 Since we are interested in applying DNNs for MLC in the image classification domain, some background on image classification is first required. Image classification is an example of a *superivised learning* task, hence in the remainder of this chapter, we start with a brief introduction to supervised learning followed by the general problem of image classification. Discussions of DNNs and of MLC follow in Chapters \ref{chp:dnn} and \ref{chp:mlc} respectively. A more comprehensive outline of the thesis may be found in \Cref{sec:outline}.
 
 ### Statistical Learning \label{sec:Slearning}
 
-Machine or statistical (used interchangably) learning algorithms are used to perform certain task that are too difficult or inefficient to solve with fixed rule-based programs. These algorithms are able to learn how to perform a task from data. For an algorithm to learn from data means that it can improve its ability in performing an assigned *task*, with respect to some *performance measure*, by processing the *data*. This section gives a brief look at some of the important types of tasks, data and performance measures in the field of statistical learning.
+Machine or statistical learning algorithms (used interchangably) are used to perform certain task that are too difficult or inefficient to solve with fixed rule-based programs. These algorithms are able to learn how to perform a task from data. For an algorithm to learn from data means that it can improve its ability in performing an assigned *task*, with respect to some *performance measure*, by processing *data*. This section gives a brief look at some of the important types of tasks, data and performance measures in the field of statistical learning.
 
-A learning task describes the way an algorithm should process an observation. An observation is a collection of features that have been measured from some object or event that we want the system to process, like an image. We will represent an observation by a vector $\boldsymbol{x}\in\mathbb{R}^{p}$ where each element $x_{j}$ of the vector is an observed value of the $j$-th feature, $j=1,\dots,p$. For example, the features of an image are usually the color intensity values of the pixels in the image.
+A learning task describes the way an algorithm should process an observation. An observation is a collection of features that have been measured from some object or event that we want the system to process, for example an image. We will represent an observation by a vector $\boldsymbol{x}\in\mathbb{R}^{p}$ where each element $x_{j}$ of the vector is an observed value of the $j$-th feature, $j=1,\dots,p$. For example, the features of an image are usually the color intensity values of the pixels in the image.
 
-Many kinds of tasks can be solved with statistical learning. One of the most common learning tasks is that of *classification*, where it is expected of an algorithm to determine which of $K$ categories an input belongs to. To solve the classification task, the learning algorithm is usually asked to produce a function $f:\mathbb{R}^{p}\to \{1,\dots,K\}$. When $y=f(\boldsymbol{x})$, the model assigns an input described by the vector $\boldsymbol{x}$ to a category identified by the numeric code $y$, called the output or response. In other variants of the classification task, $f$ may output a probability distribution over the possible classes.
+Many kinds of tasks can be solved with statistical learning. One of the most common learning tasks is that of *classification*, where it is expected of an algorithm to determine which of $K$ categories an input belongs to. To solve the classification task, the learning algorithm is usually asked to produce a function $f:\mathbb{R}^{p}\to \{1,\dots,K\}$. When $y=f(\boldsymbol{x})$, the model assigns an input described by the vector $\boldsymbol{x}$ to a category identified by the numeric code $y$, called the *output* or *response*. In other variants of the classification task, $f$ may output a probability distribution over the possible classes.
 
 *Regression* is the other main learning task and requires the algorithm to predict a continuous value given some input. This task requires a function $f:\mathbb{R}^{p}\to\mathbb{R}$, where the only difference to classification is the format of its output.
 
-Learning algorithms can learn to perform such tasks by observing a relevant set of data points, *i.e.* a dataset. A dataset containing $N$ observations of $p$ features is commonly described as a design matrix $X:N\times p$, where each row of the matrix represents a different observation and each column corresponding to a different feature of the observations, *i.e.*
+Learning algorithms can learn to perform such tasks by observing a relevant set of data points, *i.e.* a dataset. A dataset containing $N$ observations of $p$ features is commonly described as a design matrix $X:N\times p$, where each row of the matrix represents a different observation and each column corresponds to a different feature of the observations, *i.e.*
 
 $$
 X = 
@@ -104,7 +113,7 @@ x_{21} & x_{22} & \dots & x_{2p}\\
 x_{N1} & x_{N2} & \dots & x_{Np}
 \end{bmatrix}.
 $$
-Often the dataset includes annotations for each observation in the form of a label (classification) or a target value (regression). The $N$ annotations are represented by the vector $\boldsymbol{y}$, where element $y_{i}$ is associated with the $i$-th row of $X$.
+Often the dataset includes annotations for each observation in the form of a label (classification) or a target value (regression). The $N$ annotations are represented by the vector $\boldsymbol{y}$, where element $y_{i}$ is associated with the $i$-th row of $X$. Therefore the response vector may be denoted by
 
 $$
 \boldsymbol{y}=
@@ -115,11 +124,11 @@ y_{2}\\
 y_{N}
 \end{bmatrix}.
 $$
-Note, in the case of multiple labels or targets, a matrix representation $Y:N\times K$ is required.
+Note that in the case of multiple labels or targets, a matrix representation $Y:N\times K$ is required.
 
-Statistical learning algorithms can roughly be divided into two main categories, *supervised* and *unsupervised* algorithms, determined by the presence of annotations in the dataset to be analysed. Unsupervised learning algorithms learn from data consisting of only features, $X$, and are used to find useful properties and structure in the dataset [see @Hastie2009, Ch. 14]. On the other hand, superivised learning algorithms learn from datasets which consist of both features and annotations, $(X,Y)$, with the aim to model the relationship between them. Therefore, both classification and regression are considered supervised learning tasks.
+Statistical learning algorithms can be divided into two main categories, *supervised* and *unsupervised* algorithms, determined by the presence or absence of annotations in the dataset to be analysed. Unsupervised learning algorithms learn from data consisting only of features, $X$, and are used to find useful properties and structure in the dataset [see @Hastie2009, Ch. 14]. On the other hand, superivised learning algorithms learn from datasets which consist of both features and annotations, $(X,Y)$, with the aim to model the relationship between them. Therefore, both classification and regression are considered to be supervised learning tasks.
 
-In order to evaluate the ability of a learning algorithm to perform its assigned task, we must design a quantitative measure of its performance. For example, in a classification task we are usually interested in the accuracy of the algorithm, *i.e.* the percentage of times the algorithm makes the correct classification. We are mostly interested in how well the learning algorithm performs on data that it has not seen before, since this demonstrates how it will work in real-world situations. Thus we evaluate the algorithm on a *test set* of data points, alternative to the *training set* of data points used in the learning process.
+In order to evaluate the ability of a learning algorithm to perform its assigned task, we have to design a quantitative performance measure. For example, in a classification task we are usually interested in the accuracy of the algorithm, *i.e.* the percentage of times that the algorithm makes the correct classification. We are mostly interested in how well the learning algorithm performs on data that it has not seen before, since this demonstrates how well it will perform in real-world situations. Thus we evaluate the algorithm on a *test set* of data points, independent of the *training set* of data points used during the learning process.
 
 Consider the following example of a simple learning algorithm, known as *linear regression*, to give a more concrete understanding of supervised learning. The goal here is to build a system that can take a vector $\boldsymbol{x}\in \mathbb{R}^{p}$ as input and predict the value of a scalar $y\in \mathbb{R}$ as its output. In the case of linear regression we assume the output be a linear function of the input. Let $\hat{y}$ be the predicted value of $y$. We define the output to be 
 

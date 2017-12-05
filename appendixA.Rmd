@@ -1,71 +1,15 @@
 # Benchmark Datasets for Multi-Label Image Classification
 \label{app:data}
 
-The progress of areas in machine/statistical learning is highly dependent on the availability of quality and diverse benchmark data sets. This enables researchers to compare their methods in a wide variety of environments. Recently, a decent amount of ML data sets has been published, but not without critique. [@Luaces] argues that the MULAN[^mulan] ML data set repository does not have data sets that are truely ML and that most of the data sets are very similar to each other. Most of the data sets have low cardinality and low label dependence. The problem with this is that these data sets may not show the true performance of ML algorithms. In [@Gibaja2015] the authors also comments on the lack of thorough, comparative empirical studies on these benchmark sets.
+## Introduction
 
-[^mulan]: A Java library for ML learning - http://mulan.sourceforge.net/datasets-mlc.html.
+The progress of areas in machine/statistical learning is highly dependent on the availability of quality and diverse benchmark data sets. This enables researchers to compare their methods in a wide variety of environments.
 
 Some of the most popular and recent ML benchmark data sets for image classification will be introduced here along with their unique properties.
 
-> mention something of simulating ML data. Hard
-
-+ Simulating [@TorresTomas2014] (also gives citations to other papers)
-+ partitioning mentioned in [@Gibaja2015] - referred to [@Sechidis]
-+ [@Luaces] Therefore they created a ML data generator to simulate ML data on which algorithms can be evaluated.
 + very important for stratification: https://arxiv.org/pdf/1704.08756.pdf and more ML metrics
 
-## Multi-Label Indicators
-
-As with all supervised learning problems, no one ML algorithm performs optimally on all problems. It is common practice in classical single output supervised learning to first consider, for example, the number of features ($p$) and the number of observations ($n$) in a data set before deciding on which model(s) to fit to the data. The same naturally holds for a ML problem but with added complexity. The multiple outputs of the data introduces many more factors to consider before continuing to the modelling phase. Some ML data sets have only a few labels per observation, while others have plenty. In some ML data sets the number of label combinations is small, whereas in others it can be very large. Some labels appear more frequently than others. Moreover, the labels can be correlated or not. These characteristics can have a serious impact on the performance of a ML classifier. This is the reason why several specific indicators have been designed to assess ML data set properties.
-
-The two standard measures for the multi-labeledness of a data set are *label cardinality* and *label density*, introduced by [@Tsoumakas]. The label cardinality of a ML data, $D$, set is the average number of labels per observation:
-
-$$
-LCard(D)=\frac{1}{n}\sum_{i=1}^{n}\sum_{k=1}^{K}y_{ik}.
-$$
-This measure can be normalised to be independent of the label set size, which results in the label density indicator:
-
-$$
-LDens(D)=\frac{1}{K}LCard(D)=\frac{1}{nK}\sum_{i=1}^{n}\sum_{k=1}^{K}y_{ik}.
-$$
-According to [@Tsoumakas] it is important to distinguish between these two measures, since two data sets with the same label cardinality but with a great difference in the number of labels might not exhibit the same properties and cause different behaviour to the ML classification methods. These two measures give a good indication of the label frequency of a data set, but we are also interested in the uniformity and regularity of the labeling scheme. The authors of [@Read2011a] suggested measuring the proportion of distinct label sets and the proportion of label sets with the maximum frequency. Consider the number of distinct label sets, also referred to as the label diversity [@Zhang2014], which can be defined as:
-
-> there are multiple ways this is defined in the literature - still need to decide on which one I want to use
-
-$$
-LDiv(D)=|\{Y|\exists \boldsymbol{x}:(\boldsymbol{x},Y)\in D\}|,
-$$
-by [@Zhang2014]. ([@Read2011a] uses $\exists !$ instead of $\exists$ and $Y$ as a vector $\boldsymbol{y}$. I want to consider a way of defining it in matrix notation. Maybe with an indicator function. Some papers define it as $DL$ instead of $LDiv$.) The proportion of distinct label sets in $D$ is then
-
-$$
-PLDiv\{/PUniq/PDL\}(D)=\frac{1}{n}LDiv(D).
-$$
-
-The proportion of label sets with the maximum frequency is defined by [@Read2011a] as:
-
-$$
-PMax(D)=\max_{\boldsymbol{y}}\frac{\mathrm{count}(\boldsymbol{y},D)}{n},
-$$
-where $\mathrm{count}(\boldsymbol{y},D)$ is the frequency that label combination $\boldsymbol{y}$ is found in data set $D$. This represents the proportion of observations associated with the most frequently occurring label sets. High values of $PLDiv$ and $PMax$ indicate an irregular and skewed labeling scheme, respectively, *i.e.* a relatively high number of observations are associated with infrequent label sets and a relatively high number of observations are associated with the most common label sets. (*think about this again*) When this is the case, and the labels are modelled separately, the classifiers will suffer from the class imbalance problem, a common problem in supervised classification tasks. More detail about this will be adressed shortly.
-
-Very little research has been done on how all these ML indicators affect the performance of a ML classifier. [@Chekina2011] made a worthy attempt. Their goal was to find a way of determining which ML algorithm to use given a data set with specific properties and with a specific evaluation metric to optimise. They approached this problem by training a so called meta-learner on a meta-data set containing the performance of multiple ML algorithms on benchmark data sets with different properties. This trained meta-learner is then able to predict which ML algorithm is most likely to give the best results in terms of a specific evaluation metric, given the properties of the data set to be analysed. Although we will not use their meta-learner for this thesis, we will consider some of the additional findings in their research. They found that the following properties (among others) of a ML data set was important to their trained meta-model (which was based on classification trees) in predicting which ML algorithm is most appropriate: $K$; $LDiv(D)$; $LCard(D)$; the standard deviation, skewness and kurtosis of the number of labels per observation in $D$; number of unconditionally dependent label pairs (based on what?); average of $\chi^{2}$ -scores of all dependent label pairs; number of classes with less than 2, 5 and 10 observations; ratio of classes with less than 2, 5, 10 and 50 observations; average, minimal and maximal entropy of labels (def of entropy?); average observations per class. This strengthens the argument that it is important to take ML indicators into account before the training process.
-
-> Some rules that they found that I might refer to later:
-
-+ for micro-AUC target evaluation measure if label cardinality of training data is above 3.028 then the 2BR method (among the single-classifiers) should be used.
-+ Another example for an extracted rule is for ranking loss evaluation measure: if minimum of label entropies is zero (i.e. there is at least one certain label in the training set), number of labels is less than 53 and skewness of label cardinality is below or equal to 2.49 then the EPS method (among ensembles) should be used.
-
-+ create table with properties of data to be used in this study.
-
-+ [@Read2011a] defines a complexity measure as $n\times p\times K$
-
-+ [@Gibaja2015a] long list of datasets. Other than MULAN: Plant and Human, Slashdot, LangLog, IMDB
-+ [@Sorower]
-+ https://manikvarma.github.io/downloads/XC/XMLRepository.html
-+ yelp dataset: http://www.ics.uci.edu/~vpsaini/
-+ also new yt8m
-
-## Amazon
+## Satellite Images
 
 ### Image Format
 
@@ -189,14 +133,14 @@ ggsave("figures/rare-cover.png", grid.arrange(grobs = grobs_arranged, ncol = 1))
 
 Examples of chips with these less common land cover/use labels are given in \autoref{fig:rare-cover-egs}. These labels are more challenging to identify in the chips and since they also appear less frequently, it might be difficult for the classifier to learn these labels. The imbalance in the class distribution is apparent in \autoref{fig:classdist}.
 
-```{r, cache=TRUE, echo=FALSE, fig.cap="Class distribution of the labels in the training set. \\label{fig:classdist}"}
+```{r, cache=FALSE, echo=FALSE, fig.cap="Class distribution of the labels in the training set. \\label{fig:classdist}"}
 library(tidyverse)
 library(stringr)
 train_labels <- read_csv("data/train_v2.csv")
 label_list <- strsplit(train_labels$tags, " ")
 
 as.data.frame(table(unlist(label_list))) %>% 
-  rename(Label = Var1) %>% 
+  dplyr::rename(Label = Var1) %>% 
   mutate(Label = factor(Label, levels = Label[order(-Freq)])) %>% 
   ggplot(aes(Label, Freq)) +
   geom_histogram(stat="identity") +
@@ -205,23 +149,55 @@ as.data.frame(table(unlist(label_list))) %>%
   ylab("Frequency") #+ ggtitle()
 ```
 
-## NUS-WIDE
 
-+ Nus-wide: a real-world web image database from national university of singapore [@Chua2009]
+## Chest X-Rays
 
-## Pascal VOC
+## Compared to Other Multi-Label Image Datasets
 
-+ 2007: The pascal visual object classes (voc) challenge [@Everingham2010]
-+ 2012: [@Everingham2012]
+### Multi-Label Indicators
 
-## MS-COCO
+As with all supervised learning problems, no one ML algorithm performs optimally on all problems. It is common practice in classical single output supervised learning to first consider, for example, the number of features ($p$) and the number of observations ($n$) in a data set before deciding on which model(s) to fit to the data. The same naturally holds for a ML problem but with added complexity. The multiple outputs of the data introduces many more factors to consider before continuing to the modelling phase. Some ML data sets have only a few labels per observation, while others have plenty. In some ML data sets the number of label combinations is small, whereas in others it can be very large. Some labels appear more frequently than others. Moreover, the labels can be correlated or not. These characteristics can have a serious impact on the performance of a ML classifier. This is the reason why several specific indicators have been designed to assess ML data set properties.
 
-+ Microsoft coco: Common objects in contex [@Lin2014]
+The two standard measures for the multi-labeledness of a data set are *label cardinality* and *label density*, introduced by [@Tsoumakas]. The label cardinality of a ML data, $D$, set is the average number of labels per observation:
 
-## WIDER-Atribute
+$$
+LCard(D)=\frac{1}{n}\sum_{i=1}^{n}\sum_{k=1}^{K}y_{ik}.
+$$
+This measure can be normalised to be independent of the label set size, which results in the label density indicator:
 
-+ Human attribute recognition by deep hierarchical contexts [@Li2016]
+$$
+LDens(D)=\frac{1}{K}LCard(D)=\frac{1}{nK}\sum_{i=1}^{n}\sum_{k=1}^{K}y_{ik}.
+$$
+According to [@Tsoumakas] it is important to distinguish between these two measures, since two data sets with the same label cardinality but with a great difference in the number of labels might not exhibit the same properties and cause different behaviour to the ML classification methods. These two measures give a good indication of the label frequency of a data set, but we are also interested in the uniformity and regularity of the labeling scheme. The authors of [@Read2011a] suggested measuring the proportion of distinct label sets and the proportion of label sets with the maximum frequency. Consider the number of distinct label sets, also referred to as the label diversity [@Zhang2014], which can be defined as:
 
-## OpenImages dataset
+> there are multiple ways this is defined in the literature - still need to decide on which one I want to use
 
-+ https://github.com/openimages/dataset
+$$
+LDiv(D)=|\{Y|\exists \boldsymbol{x}:(\boldsymbol{x},Y)\in D\}|,
+$$
+by [@Zhang2014]. ([@Read2011a] uses $\exists !$ instead of $\exists$ and $Y$ as a vector $\boldsymbol{y}$. I want to consider a way of defining it in matrix notation. Maybe with an indicator function. Some papers define it as $DL$ instead of $LDiv$.) The proportion of distinct label sets in $D$ is then
+
+$$
+PLDiv\{/PUniq/PDL\}(D)=\frac{1}{n}LDiv(D).
+$$
+
+The proportion of label sets with the maximum frequency is defined by [@Read2011a] as:
+
+$$
+PMax(D)=\max_{\boldsymbol{y}}\frac{\mathrm{count}(\boldsymbol{y},D)}{n},
+$$
+where $\mathrm{count}(\boldsymbol{y},D)$ is the frequency that label combination $\boldsymbol{y}$ is found in data set $D$. This represents the proportion of observations associated with the most frequently occurring label sets. High values of $PLDiv$ and $PMax$ indicate an irregular and skewed labeling scheme, respectively, *i.e.* a relatively high number of observations are associated with infrequent label sets and a relatively high number of observations are associated with the most common label sets. (*think about this again*) When this is the case, and the labels are modelled separately, the classifiers will suffer from the class imbalance problem, a common problem in supervised classification tasks. More detail about this will be adressed shortly.
+
+Very little research has been done on how all these ML indicators affect the performance of a ML classifier. [@Chekina2011] made a worthy attempt. Their goal was to find a way of determining which ML algorithm to use given a data set with specific properties and with a specific evaluation metric to optimise. They approached this problem by training a so called meta-learner on a meta-data set containing the performance of multiple ML algorithms on benchmark data sets with different properties. This trained meta-learner is then able to predict which ML algorithm is most likely to give the best results in terms of a specific evaluation metric, given the properties of the data set to be analysed. Although we will not use their meta-learner for this thesis, we will consider some of the additional findings in their research. They found that the following properties (among others) of a ML data set was important to their trained meta-model (which was based on classification trees) in predicting which ML algorithm is most appropriate: $K$; $LDiv(D)$; $LCard(D)$; the standard deviation, skewness and kurtosis of the number of labels per observation in $D$; number of unconditionally dependent label pairs (based on what?); average of $\chi^{2}$ -scores of all dependent label pairs; number of classes with less than 2, 5 and 10 observations; ratio of classes with less than 2, 5, 10 and 50 observations; average, minimal and maximal entropy of labels (def of entropy?); average observations per class. This strengthens the argument that it is important to take ML indicators into account before the training process.
+
+
++ [@Read2011a] defines a complexity measure as $n\times p\times K$
+
++ also new yt8m
+
++ provide a table comparing our datasets with other image datasets in terms of ML properties
+
+## General Comments
+
++ on appropriateness
+

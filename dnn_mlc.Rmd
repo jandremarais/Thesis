@@ -48,21 +48,6 @@ Backpropogation for Multi-Label Learning (BP-MLL) [@Zhang2006] is claimed by the
 
 Extensions of conventional DNNs to suit multi-label image problems are either architectural adaptions or the optimisation of different loss functions more suited for MLC. We will first look at the latter.
 
-## Non-Deep Learning Approaches
-
-Traditional bag-of-words model can be decomposed into multiple modules:
-
-+ feature representation: generate global representations for images
-  + feature extraction: Extracted from dense grids and sparse interest points - SIFT, Histogram of Oriented Gradients and Local Binary Patterns
-  + feature coding: Qunatise extracted features - Vector Qunatisation, Sparse Coding and Gaussian Mixture Models.
-  + feature pooling: Feature aggregation methods - Spatial Pyramid Matching
-+ classification: SVM or Random Forest
-+ context modelling: the use of context information such as spatial location of object and background scene from global view can considerably improve the performance
-
-These learnt features are not always optimal.
-
-Where does VLAD and Fisher vectors fit in?
-
 ## Optimising Multi-Label Loss functions
 
 The first proposed approach to extend neural networks to MLC (in general), named Backpropogation for Multi-Label Learning (BP-MLL), was a modification of the loss function to be optimised. Consider the global error of the network on the training set as
@@ -134,7 +119,7 @@ Still need to figure this out.
 
 They only compared on NUS-WIDE with no standard errors and only on per class precision and recall and overall precision and recall. Might be valuable to compare on more datasets and with more metrics. Also, these were tested with older CNN architectures, so it may be unfair to compare novel approaches utilising state-of-the-art CNN architectures to these approaches. They found that WARP loss gave the best results.
 
-[@Zhu2017] used multi-label CNN for pedestrian attribute detection. The adaption they made to the CNN was also by redefining the loss function. The defined the loss function as
+[@Zhu2017a] used multi-label CNN for pedestrian attribute detection. The adaption they made to the CNN was also by redefining the loss function. The defined the loss function as
 
 $$
 F=\sum_{k=1}^{K}\lambda_{k}G_{k},
@@ -210,6 +195,7 @@ where $\beta_{P}=\frac{|P|+|N|}{|P|}$ and $\beta_{N}=\frac{|P|+|N|}{|N|}$. $|P|$
 + see https://arxiv.org/pdf/1701.05616.pdf
 + https://arxiv.org/pdf/1705.02315.pdf
 + see https://arxiv.org/pdf/1706.07960.pdf for pseudo huber loss
++ retina/focal loss!
 
 ## Proposal Based Approaches
 
@@ -274,7 +260,7 @@ Because of the use of a LSTM, a predefined label order is required during traini
 
 Actually, does not look like a huge empirical improvement over the original CNN-RNN (compared on the common 3 ML image datasets). Again they compare with methods that utilise older CNN architectures.
 
-However, these methods do not capture spatial relations between labels. This is a challenging problem because most of the times these spatial locations are not known beforehand, *i.e* the images are not annotated with these spatial locations. Spatial Regularisation Networks [@Zhua] attempt to capture both semantic and spatial relations between labels without any prior knowledge on the spatial locations of each label. This is discussed in the next section.
+However, these methods do not capture spatial relations between labels. This is a challenging problem because most of the times these spatial locations are not known beforehand, *i.e* the images are not annotated with these spatial locations. Spatial Regularisation Networks [@Zhu2017] attempt to capture both semantic and spatial relations between labels without any prior knowledge on the spatial locations of each label. This is discussed in the next section.
 
 ## Spatial Regularization Networks
 

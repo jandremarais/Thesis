@@ -1,67 +1,82 @@
-# Results (/Application)
+# Results
 \label{chp:results}
 
 ## Introduction
 
-Main aim is to compare methods on more datasets and in terms of more evaluation metrics. The datasets to be evaluated on are described in Appendix \ref{app:data}. These are the most popular and most recent multi-labelled image datasets.
+The main aim of this chapter is to empirically compare some of the deep learning for multi-label image classification approaches proposed in the literature in a standardised fashion. We will also attempt to empirically answer some of the questions that arose in the literature study. 
 
-+ mention the importance of evaluating on multiple ml datasets with different properties.
-+ mention the importance of comparing in terms of many evaluation metrics. Which am I going to use here? Probably one of each, example-based, label-based (micro and macro).
+Multi-label image classification with CNNs is still a relatively new research area. No work has been done to provide an extensive and robust comparison of the existing approaches in the literature. Typically, when a new approach is proposed it is empirically compared to other previous proposed approaches. But these evaluations of the approaches are not in a standardised fashion. The base networks and optimisation procedures are just some of the learning components that vary accross the proposed approaches. This makes it difficult to determine whether or not a proposed approach performs empirically better than another because of its ability to model multi-label images or because of the latest general developments of training CNNs. 
 
-Where possible, the basic framework will be to extract features from input images with pretrained (on ImageNet) CNN. The proposals in the literature will be built on top of these features (see transfer learning in Chapter \ref{chp:dnn}). This will not give the best results because these features are trained for single label images. However, they are sufficient for comparison purposes and are much less time consuming. (Maybe I can indentify the most promosing method and see what effect fine-tuning convolutional layers will have on it. This will also allow other bells and whistles such as data augmentation.) The architecture chosen to do the feature extraction is VGG16 because of its simplicity and proven effectiveness in transfer learning. 
+Take the Spatial Regularisation Network (SRN) in the previous chapter as an example. The SRN is an extension of a base CNN that is supposed to help exploiting spatial relations amongs labels. The SRN shows favourable empirical results over all other proposed approaches. However, it also uses a much deeper base CNN (ResNet-101) than the other approaches in the literature. This makes it difficult to determine whether or not the performance boost comes from the SRN or the deeper CNN. 
+
+For this reason, we want to provide a standardised and robust comparison of the some the most promising approaches in the literature. To standardise the comparisons, we will evaluate the chosen approaches using the same base CNN and optimisation procedure. To ensure robustness, we will evaluate the methods on two very distinct multi-label image datasets (described in Appendix \ref{app:data}), using multiple diverse evaluation metrics and using cross-validation for a better estimate of generalisation ability which will also allow us to report standard deviations of errors.
+
+There are 5 main question we attempt to answer in this chapter. They are:
+
+1. How do visual features learned from single-label image classification datasets compare to features learned from object detection datasets in terms of their transferability to multi-label image classification tasks?
+
+2. How do the different loss functions act as a surrogate for the micro and macro F-score? (bce vs weighted bce vs rank loss vs retina loss)
+
+3. Does multi-level predictions help to detect small objects?
+
+4. Which extension works best to explicitly model label correlations? CG vs chaining vs SE-module
+
+5. How does learnable label calibration modules compare to brute force search?
+
+After getting closer to the answers of these questions we will train a final model taking into considerations the empirical findings to see how accurate we can get on both datasets.
+
+- what am I going to do with SRN?
+
+## Transfer Learning for Multi-Label Image Classification
+
+### Method
+
+### Results
+
+### Discussion
+
+## Loss Functions for Multi-Label Image Classification
+
+### Method
+
+### Results
+
+### Discussion
+
+## Multi-Level Predictions to Detect Small Objects
+
+### Method
+
+### Results
+
+### Discussion
+
+## Exploiting Label Correlations
+
+### Method
+
+### Results
+
+### Discussion
+
+## Label Calibration
+
+### Method
+
+### Results
+
+### Discussion
+
+## The Final Model
+
+### Method
+
+### Results
+
+### Discussion
+
+
+## Notes
 
 + maybe also shrink images for faster computations.
 + add time taken for learning as a metric.
-+ 5- or 10-fold cross-validation for more accurate errors and standard deviations.
-+ baseline: sigmoid classification layer optimising binary cross-entropy
-
-## Optimising Multi-Label Loss Functions
-
-+ see the effect of optimising ML loss functions on different metrics.
-
-## Label Embedding Approaches
-
-+ evaluate the effect of label embedding approaches
-+ does it help with class imbalance?
-
-## Novel Architectures
-
-+ evaluate the following classification heads:
-+ spatial regulrisation network
-+ cnn-rnn and improved version
-+ Hypothesis CNN Pooling
-+ Context gating
-+ Chaining
-+ Label Processing layers
-
-## Discussion
-
-+ is there a 'best' method?
-+ are there any patterns?
-+ do they perform as reported by original papers?
-
-## Experiments
-
-First want to look at how the important papers did their experiments.
-
-[@Gong2013] did their experiments in the following way:
-
-+ NUS-WIDE:
-
-    + ignored images without tags
-    + used 150000 images for training and the rest for testing
-    + evaluated using per-class precision and recall, and overall precision and recall
-    + used a custom cnn similar to overfeat for feature extraction
-    + compared to visual feature extraction + classifier, and CNN extractor plus classifier with different loss functions.
-
-[@Wei2014] did their experiments in the following way:
-
-+ Pascal VOC2007 and 2012
-
-    + seems like they used predefined splits for train/val/test
-    + evaluated using AP and mAP.
-    + pretrained on ImageNet
-    + copmared to other manual feature extractions and CNN extractions plus classifier
-    + did not really follow the hypothesis pooling part.
-    + also giver per class score seprately
-    + as second glance, does not look like real MLC since parts of images are extracted and then single label classification is done.
