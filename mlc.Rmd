@@ -3,9 +3,7 @@
 
 ## Introduction
 
-Multi-label Classification (MLC) belongs to the supervised learning paradigm and can be viewed as a generalisation of the conventional single-label classification problem. Suppose the data set to be analysed consists of a set of observations each representing a real-world object such as an image or a text document. In the single-label context each object is restricted to belonging to a single, mutually exclusive class, *i.e.* each observation is associated with a single label. One can quite effortlessly come up with tasks that will not fit into this framework: an image annotation problem where each image contains more than one semantic object, a text classification task where each document has multiple topics or an acoustic classification task where the recordings contain the sounds of multiple bird species. Therefore the need for a multi-label classifier that can assign a set of labels to an observation. Let $\mathcal{L}=\{l_{1},l_{2},\dots,l_{K}\}$ denote the complete set of possible labels that can be assigned to an observation. Whereas a single-label classifier aims to find which single label $l_{k}$, $k=1,2,\dots,K$, belongs to a given observation, a multi-label classifier is capable of assigning a set of labels $L \subseteq \mathcal{L}$ to the observation.
-
-The rapid growth of the MLC (see \autoref{pubsperyear}) is probably owed to the vast and expanding range of MLC application domains, the biggest being text and multimedia categorisation especially those generated and/or stored on the web. Other application domains common to MLC are: biology, chemical data analysis, social network mining and E-learning amongst others. A thorough list of applications and their citations can be found in [@Gibaja2014]. This thesis is on applying MLC in the image classification domain, therefore approaches in multi-label image classification will receive special attention. However, more general approaches and those in other domains will also be looked at if they are transferable to image classification.
+Multi-label Classification (MLC) belongs to the supervised learning paradigm and can be viewed as a generalisation of the conventional single-label classification problem. Suppose the data set to be analysed consists of a set of observations each representing a real-world object such as an image or a text document. In the single-label context each object is restricted to belong to a single, mutually exclusive class, *i.e.* each observation is associated with a single label. One can quite effortlessly come up with tasks that will not fit into this framework: an image annotation problem where each image contains more than one semantic object, a text classification task where each document has multiple topics or an acoustic classification task where the recordings contain the sounds of multiple bird species. Therefore the need for a multi-label classifier that can assign a set of labels to an observation. 
 
 ```{r pubsperyear, include=FALSE, eval = FALSE}
 library(tidyverse)
@@ -27,32 +25,17 @@ ggsave("pubsperyear.png", plot = p, device = "png", path = "figures", width = 7,
 
 ![Line graphs illustrating the rise in multi-label learning publications per year for two databases. The database searches were done on 24-03-2017. The searches were not identical since they were limited to the search features of the databases. (a) The search on Scopus (cite) was for all documents (conference papers, articles, conference, articles in press, reviews, book chapters and books) in any subject area with either the words *multi-label* or *multilabel* and either the words *learning* or *classification* found in either their titles, abstracts or keywords. (b) The search on Semantic Scholar was based on machine learning principles and thus automatically decides which research documents are relevant to a specific search query. The query used was *multilabel multi-label learning classification*. The search only returns research in the computer science and neuroscience fields of study. More technical details can be found on the respective engine's websites. \label{pubsperyear}](figures/pubsperyear.png)
 
-The key challenge in MLC is to exploit dependecies amongst labels, *e.g.* using the information on the presence/absence of label $l_{i}$ to predict label $l_{j}$, $i,j \in \{1,2,\dots,K\}$, $i\neq j$. This becomes especially difficult for a multi-label classifier when dealing with large labelset. It is not uncommon for multi-labelled datasets to have hundreds of thousands of labels. Proof of this can be found at The Extreme Classification Repository[^XML] or the dataset of the recent YouTube Video Classification Challenge [@Abu-El-Haija2016]. Algorithms that can accurately and efficiently model label dependence on these datasets are scarce [@Sorower2010]. This is a focus area of recent MLC research, called extreme multi-label learning [@Xu2016]. A more formal definition of label dependence will be given later on. An in-depth discussion on the unique challenges (thorough list by [@Gibaja2014]) that arise from dealing with label dependence and some of the possible strategies to follow will also be covered.
+The rapid growth of the MLC (see \autoref{pubsperyear}) is probably owed to the vast and expanding range of MLC application domains, the biggest being text and multimedia categorisation especially those generated and/or stored on the web. Other application domains common to MLC are: biology, chemical data analysis, social network mining and E-learning amongst others. A thorough list of applications and their citations can be found in [@Gibaja2014]. This thesis is on applying MLC in the image classification domain. However in this chapter we are interested in the general approach of MLC, regardless of the nature of the inputs.
 
-[^XML]: https://manikvarma.github.io/downloads/XC/XMLRepository.html
+This chapter serves as an overview of the MLC task. Since this framework is not that well known and contains some novelties compared to single label classification, it deserves some exploration. Here we are mainly interested in the formal defintion of MLC (\Cref{sec:def}), how MLC models are evaluated (\Cref{sec:eval}) and some of the representative approaches to solve this problem (\Cref{sec:appr}).
 
-As should be expected, the MLC framework has a few concepts novel to the single-label case. In this chapter, the core notation for the thesis will be introduced and a clear definition of the task of MLC will be given. Multi-label evaluation metrics and the concept of label correlation are among the important topics of MLC, therefore they are discussed here in detail. The main part of this chapter is the analyses of the representative algorithms for MLC.
++ mention challenges?
 
-This chapter serves as an overview of the multi-label classification (MLC) task. Since this framework is not that well known and contains some novelties compared to single label classification, it deserves some exploration. Here we are interested in the formal defintion of MLC, how MLC models are evaluated and some of the representative approaches to solve this problem.
+## Formal Defintion \label{sec:def}
 
-> review above paragraph on completion of chapter
+Let $\mathcal{L}=\{l_{1},l_{2},\dots,l_{K}\}$ denote the complete set of possible labels that can be assigned to an observation. Whereas a single-label classifier aims to find which single label $l_{k}$, $k=1,2,\dots,K$, belongs to a given observation, a multi-label classifier is capable of assigning a set of labels $L \subseteq \mathcal{L}$ to the observation.
 
-### Classification vs Ranking
-
-The following notation will be used throughout the thesis. Define the input matrix as
-$$
-X=
-\begin{bmatrix}
-x_{11} & x_{12} & \dots & x_{1p} \\
-x_{21} & x_{22} & \dots & x_{2p} \\
-\vdots & \vdots & \ddots & \vdots \\
-x_{N1} & x_{N2} & \dots & x_{Np}
-\end{bmatrix} =
-\begin{bmatrix}
-\boldsymbol{x}_{1}^{\intercal} & \boldsymbol{x}_{2}^{\intercal} & \dots & \boldsymbol{x}_{n}^{\intercal}
-\end{bmatrix},
-$$
-where $N$ is the number of observations and $p$ is the number of features. $\boldsymbol{x}_{i}^{\intercal}$ represents the $p$-dimensional vector that forms the $i$-th row of $X$. For a text classification problem, $x_{ij}$ might indicate the number of times a word $j$ appeared in document $i$. Define the label or output matrix as 
+Recall from \Cref{sec:Slearning} that the label or output matrix can be given by (for multiple targets)
 $$
 Y = 
 \begin{bmatrix}
@@ -70,16 +53,14 @@ y_{N1} & y_{N2} & \dots & y_{NK}
 $$
 where $K$ is the size of the label set $\mathcal{L}$. $Y$ only contains zeros and ones, *i.e.* $y_{ik}=1$ if label $l_{k}$, $k=1,\dots,K$, is present for observation $i$ and $y_{ik}=0$ if it is absent. Thus $\boldsymbol{Y}_{(k)}$ is a $N$-dimensional binary vector indicating which observations are associated with label $l_{k}$. A multi-label dataset will be defined as $D=\begin{bmatrix} X & Y \end{bmatrix}$, which contains the $N$ input-output pairs, $\{\left(\boldsymbol{x}_{i},\boldsymbol{y}_{i}\right)|i=1,\dots,N\}$. Note that, $\boldsymbol{y}_{i}=(y_{1},y_{2},\dots,y_{K})$, $y_{k}\in \{0,1\}$, used here is the label vector, however, it is also common to use the labelset notation, *i.e.* $L_{i} \subseteq \mathcal{L}$, where $\mathcal{L}$ is the complete label set and $L_{i}$ is the set of relevant labels for observation $i$.
 
-Often, the terms multi-label classification and multi-label learning are used interchangeably in the literature. Strictly speaking, multi-label learning is the umbrella term including both the tasks of multi-label classification and multi-label ranking. Both these tasks learn from multi-labelled data (multi-label learning) but their objectives differ slightly. Multi-label classification is concerned with approaches that output a subset of relevant labels (binary output) for each input, whereas multi-label ranking requires the output to be a list of all labels in the labelset ordered by their predicted relevance (real-valued output) to the input. There are minor differences between the two and therefore using one term to refer to both is usually acceptable. Many classifiers base their final (categorical) prediction on the thresholding of the real-valued output of the algorithm and thus can also be used for ranking. Similarly, ranking algorithms can also be used for classification if a thresholding function is applied to the real-valued output. We will use multi-label classification to refer to both classification and ranking, unless otherwise specified.
+Often, the terms multi-label classification and multi-label learning are used interchangeably. Strictly speaking, multi-label learning is the umbrella term including both the tasks of multi-label classification and multi-label ranking. Both these tasks learn from multi-labelled data (multi-label learning) but their objectives differ slightly. Multi-label classification is concerned with approaches that output a subset of relevant labels (binary output) for each input, whereas multi-label ranking requires the output to be a list of all labels in the labelset ordered by their predicted relevance (real-valued output) to the input. There are minor differences between the two and therefore using one term to refer to both is usually acceptable. Many classifiers base their final (categorical) prediction on the thresholding of the real-valued output of the algorithm and thus can also be used for ranking. Similarly, ranking algorithms can also be used for classification if a thresholding function is applied to the real-valued output. We will use multi-label classification to refer to both classification and ranking, unless otherwise specified.
 
 The task of ML classification is to find a function $h$ that accurately maps the observations contained in $X$ to the label matrix $Y$, i.e., $h:X\to Y$, so that given a new observation, $h$ can determine which labels belong to it. 
 
 On the other hand, the goal of ML ranking is to find a function $f:X\to G$, where $G$ is a similar matrix to $Y$, but with the $g_{ij}$ a real value representing the relative confidence score that label $j$ is relevant to observation $i$. $f$ is found by optimising a ranking metric, also discussed shortly. From the confidence scores of observation $i$, $f(\boldsymbol{x}_{i})$, a ranking $\boldsymbol{r}_{i}$ can be obtained, giving the rank of labels in descending order of $f(\boldsymbol{x}_{i})$.
 
-#### Threshold Calibration
++ threshold calibration?
 
-+ explained at the end of this chapter
-+ maybe not in detail here
 + calibrate real-valued output against thresholding function output in order to determine labels of unseen instances.
 + constant vs induced from training data + ad hoc specific to certain learning algorithms
 + for Maximising F1-Score: https://arxiv.org/pdf/1402.1892.pdf
@@ -87,25 +68,69 @@ On the other hand, the goal of ML ranking is to find a function $f:X\to G$, wher
 
 $h$ will be referred to as the ML classifier and $f$ as the ML ranker. When ML learner will be a collective term covering both $h$ and $f$. Before different ML learners can be discussed, an understanding of how the output of these algorithms are evaluated is necessary, since fitting $f$ of $h$ envolves optimising an evaluation metric. (always?)
 
-Let $\mathcal{D}=\{(\boldsymbol{x}_{i},\boldsymbol{y}_{i})\}_{i=1}^{n}$ define a multi-label dataset. $\boldsymbol{x}$, is the feature/input/instance vector of an observation and is given by a $p$-dimensional real-valued vector, $\boldsymbol{x}=(x_{1},x_{2},\dots,x_{p})$, *i.e.* $\boldsymbol{x}\in \mathcal{R}^{p}$. Each instance, $\boldsymbol{x}$ is associated with a subset of labels $L\in 2^{\mathcal{L}}$, where $2^{\mathcal{L}}$ represents the powerset of the full set of labels, $\mathcal{L}=\{l_{1},l_{2},\dots,l_{K}\}$. The subset $L$ is represented as an indicator vector $\boldsymbol{y}=(y_{1},y_{2},\dots,y_{K})$, where $y_{k}=1$ if $l_{k}\in L$ or else $y_{k}=0$, for $k=1,2,\dots,K$. We assume examples in $\mathcal{D}$ to be independently and identically distributed (*i.i.d.*) from $P(\boldsymbol{X},\boldsymbol{Y})$. Let $h$ define a multi-label classifier, which is a mapping, 
-$$
-h:\boldsymbol{X}\to \boldsymbol{Y}
-$$
-(not sure about this notation). The risk of $h$ is defined as the expected loss over the joint distribution $P(\boldsymbol{X},\boldsymbol{Y})$:
-$$
-R_{L}(h)=E_{\boldsymbol{X}\boldsymbol{Y}}\left[L\left(\boldsymbol{Y},h(\boldsymbol{X})\right)\right],
-$$
-where $L(.)$ is a multi-label loss function. The MLC task boils down to given training data, $\mathcal{D}$, drawn independently from $P(\boldsymbol{X},\boldsymbol{Y})$, learn a classifier $h$ that minimizes the risk with respect to a specific loss function, *i.e.*
-$$
-h^{*}=\arg\min_{h}E_{\boldsymbol{X}\boldsymbol{Y}}\left[L\left(\boldsymbol{Y},h(\boldsymbol{X})\right)\right]=\arg\min_{h}E_{\boldsymbol{X}}\left[E_{\boldsymbol{Y}|\boldsymbol{X}}\left[L\left(\boldsymbol{Y},h(\boldsymbol{X})\right)\right]\right],
-$$
-where $h^{*}$ is the so-called risk-minimizing model and can be determined in a pointwise way by the risk minimizer,
-$$
-h^{*}(\boldsymbol{x})=\arg\min_{\boldsymbol{y}}E_{\boldsymbol{Y}|\boldsymbol{X}}\left[L(\boldsymbol{Y},\boldsymbol{y}))\right].
-$$
-Note, here we allow $h(\boldsymbol{x})$ to take on real values, *i.e.* $h(\boldsymbol{x})\in\mathcal{R}^{K}$, for the sake of generality. This is to cover multi-label ranking functions and multi-label classifiers that output real real values before thresholding.
+## Label Correlation and other Challenges
 
-## Evaluation Metrics
+The key challenge in MLC is to exploit dependecies amongst labels, *e.g.* using the information on the presence/absence of label $l_{i}$ to predict label $l_{j}$, $i,j \in \{1,2,\dots,K\}$, $i\neq j$. This becomes especially difficult for a multi-label classifier when dealing with large labelset. It is not uncommon for multi-labelled datasets to have hundreds of thousands of labels. Proof of this can be found at The Extreme Classification Repository[^XML] or the dataset of the recent YouTube Video Classification Challenge [@Abu-El-Haija2016]. Algorithms that can accurately and efficiently model label dependence on these datasets are scarce [@Sorower2010]. This is a focus area of recent MLC research, called extreme multi-label learning [@Xu2016]. A more formal definition of label dependence will be given later on. An in-depth discussion on the unique challenges (thorough list by [@Gibaja2014]) that arise from dealing with label dependence and some of the possible strategies to follow will also be covered.
+
+[^XML]: https://manikvarma.github.io/downloads/XC/XMLRepository.html
+
+In [@Zhang2014] the existing strategies for multi-label classification are divided into categories based on the order of label correlations being considered by the algorithms. So-called first-order approaches are those that do not take label correlations into account. Second-order approaches consider the pairwise relationships between labels and high-order approaches allows for all interactions between labels and/or combinations of labels. First-order strategies simply ignore label correlations, but they are usally simpler. The latter two strategies are far more complex but also limited in some cases. Second-order strategies will not generalise well when higher-order dependencies exist amongst the labels and the the high-order strategies may 'overfit' if only subgroups of the labels are correlated [@Zhang2014].
+
+From the Bayesian point of view, the problem of multi-label learning can be reduced to modeling the conditional joint distribution of $P(\boldsymbol{y}|\boldsymbol{x})$. This can be done in various ways. First-order approaches solve the problem by decomposing it into a number of independent task through modelling $P(y_{k}|\boldsymbol{x})$, $k=1,\dots,K$. Second-order approaches solve the problem by considering interactions between a pair of labels through modelling $P((y_{k},y_{k'})|\boldsymbol{x})$, $k\neq k'$. High-order approaches solve the problem by adressing correlations between a subset of labels through modelling $P((y_{k_{1}},y_{k_{2}},\dots,y_{k_{K'}})|\boldsymbol{x})$, $K'\leq K$. Our goal is to find a simple and efficient way to improve the performance of multi-label learning by exploiting the label dependencies [@Zhang2014]. Propose LEAD approach.
+
++ [Tsoumakasf] use the $\phi$ coefficient to estimate label correlations.
+
++ [@Sorower]
++ mention the holy grail comment
++ comment on what 'exploitation' means. Since many authors claim that exploiting label dependence structures is the only way to effectively handle multiple labels, I would assume this means that we can make use of label correlations to spare time and increase accuracy.
++ we need to think about how observations are labelled, when will it be useful to take label dependence into account and how.
++ Such a solution, however, ne- glects the fact that information of one label may be help- ful for the learning of another related label; especially when some labels have insufficient training examples, the label correlations may provide helpful extra information [@Huang]
+
++ minimisation of surrogate loss functions and consistency
++ Consistency [Zhou2011]:
+
+They were the first to do a theoretical study on the consistency of multi-label learning algorithms, focusing on the ranking loss and the hamming loss. A learning algorithm is said to be consistent if its expected risk converges to the Bayes risk as the size of the training data increases. They found that any convex surrogate loss is inconsistent with the ranking loss and therefore proposed a partial ranking loss (which is consistent with some surrogate loss functions) as an alternative. They also show how some recent multi-label algorithms are inconsistent in terms of the hamming loss and provides a discussion on the consistency of approaches which transforms the multi-label problem into a set of binary classification tasks.
+
++ more theoretical work at [@Gasse2015]. Mentions: Finding theoretically correct algorithms for other non label-wise decomposable loss functions is still a great challenge.
+
++ more theory: Optimizing the F-Measure in Multi-Label Classification: Plug-in Rule Approach versus Structured Loss Minimization
+
+Other solutions: exploit correlation of labels from both types conditional and unconditional dependencies, features selection methods that are designed especially to handle multi label datasets, and having new stratification methods that are suitable to the nature of multi label datasets (copied from [@Alazaidah2016])
+
++ Symmetry:
+
++ [@Huang] claims that most of the time the label dependencies are asymmetric and suggest the MAHR algorithm. Also most of the existing methods exploit label correlations globally, which is not necessarily a good assumption if these correlations only exist for some instances [@Huang]. They suggest a ML-LOC algorithm (which seems to do very well).
+
++ Locality
+
++ is local the same as conditional? and global unconditional?
+
++ [@Zhu]
+
+Existing approaches to exploiting label correlations either assume the the label correlations are global and shared by all instances, or that the label correlations are local and shared only by a subset of the data. It may be that some label correlations are globally applicable and some share only in a local group of observations.
+
++ give example
++ mention GLOCAL [@Zhu]
+
++ [@Huang]
+
+Existing approaches typically exploit label correlations globally by assuming that the label correlations are shared by all observations. In the real-world, however, different observations may share different label correlations and few correlations are globally applicable.
+
++ propose ML-LOC approach
++ mentions that by assuming global correlations may be hurtful to the performance [@Huang] in empirical discussion
+
+#### Class Imbalance
+
++ https://www.reddit.com/r/MachineLearning/comments/6iq5i8/d_what_are_your_favorite_ways_for_dealing_with/
++ [@Charte2015]
++ towards class imbalance aware multi label learning
++ way of stratifying batches: https://arxiv.org/pdf/1705.00607.pdf
+
+## Evaluation of Multi-Label Classifiers \label{sec:eval}
+
+There is a plethora of metrics to evaluate the performance of multi-label classifiers. They can be divided into two groups: example-based and label-based measures. Example-based measures compare the actual labels versus the predicted labels for each **observation** and then computes the average across all the observations in the dataset. Label-based measures evaluates the predictions on a per **label** basis and then averages across all labels. @Zhang2014 provides the full taxonomy.
+
+The most common measures in MLIC are the micro and macro precision, recall and $F_{1}$-measure, as well as the mean average precision (mAP). These metrics are more robust to class imbalance. It is useful to report the performance of a multi-label classifier using multiple and contrasting measures. An improvement in one mertric does not guarrantee an improvement in another. For example, the optimal label calibration for the micro $F_{1}$-score will not be the same for the macro $F_{1}$-score.
 
 [@Tsoumakasc] first to categorise into label-based and example-based.
 
@@ -192,471 +217,23 @@ These multi-label metrics are usually non-convex and discontinuous [@Zhang2014].
 
 Other than predictive performance, are there other aspects on which multi-label classifiers can be evaluated, such as efficiency and consistency. Multi-label algorithms should be efficient in the sense that it takes the least amount of computational power for a given level of predictive performance [@Madjarov2012]. These classifiers can take a considerable amount of time to train when complicated ensembles are being implemented on datasets with huge labelsets. In cases where live updating and predictions are needed, this may be a problem [reference]. The other desirable attribute of multi-label classifiers are that they are consistent. This means that the expected loss of the classifier converges to the Bayes loss when the number of observations in the training set tends to infinity. Actually only a very few number of multi-label classifiers satisfy this property [Zhou2011], [@Koyejo2015].
 
-## Label Dependence
+### Partitioning Datasets
 
-With this chapter I want to investigate the need for approaches in multi-label classification which model the dependence structure between labels. For this we need a sound theoretical definition and analysis of label dependence and then we might want to investigate it empirically with synthetic datasets (or real world). The main papers inspiring this chapter are [@Dembcz2012] and [@Reade], and some content will be taken from [@Readd], [@Madjarov2012] (for empirical evidence maybe), [@Readb], [@Dembczyski2010], [@Dembczynski2012]. My main hypothesis is that modelling the input-output pairs individually should have just as good, if not better performance compared to approaches trying to model label dependence, since all the available information of the labels should be contained in $X$ and by the assumption that label $y_{i}$ can be determined with the help of the knowledge of label $y_{j}$, it should also be possible to find $y_{i}$ from $X$ since $y_{j}$ is found from $X$. This argument probably only holds for approaches trying to "correct" binary relevance (BR) with regards to its lack of modelling label dependence, such as classifier chains (CC), stacking like MBR/2BR/BR+, etc. Reformulate hypothesis later.
+### Complexity and Statistical Tests
 
-It is essentially a given in multi-label classification literature that in order to obtain competitive results, a learner should be able to model the dependence structure between labels in some way. Whenever a new MLC algorithm is proposed, it will be compared to independent label learning (BR) and if it has superior empirical performance, it is usually ascribed to its ability of modelling label dependence in some ad-hoc way (examples?). The authors of [@Dembczyski2010], [@Dembczynski] and [@Dembczyski] were the first to point out this lack of understanding of the term *label dependence*  in the literature (later on a comprehensive and extended discussion of the topics covered in the aforementioned papers was given in [@Dembcz2012]). They argued that *label dependence* is only understood and used by most in the literature in a purely intuitive manner, and that in order to build a better understanding of multi-label classifiers, theoretical backing is essential.
+## Methods \label{sec:appr}
 
-Modelling each label independently, *i.e.* using the binary relevance (BR) approach, is one of the simplest and most intuitive approaches to tackling the multi-label problem. But it has been criticized and overlooked by the majority because it does not take into account the possible dependence between labels. However, BR has many advantages. [@Dembcz2012] shows that BR is the risk minimizer of the Hamming Loss and [@Readd] pointed out that it is very rare for 'improved' methods to achieve significantly better results than BR in terms of this measure (also visible in [@Madjarov2012] (make sure)). In addition, BR is highly resistant to overfitting label combinations, since it does not expect samples to be associated with previously-observed combinations of labels [Read2011a]. It can naturally handle data streaming or other dynamic scenarios where the addition and removal of labels are quite common. BR's biggest strength is its low computational complexity compared to other multi-label classification methods. It scales linearly with increasing number of labels and it is easily parallelizable - desirable properties, especially working with large label sets.
+Approaches to MLC can be divided into two groups: Problem Transformation (PT) and Algorithm Adaption (AA). PT algorithms are any method that transforms the MLC problem into one or more binary or multiclass classification problems. The simplest example of such an algorithm is the binary relevance (BR) method. BR transforms the MLC task into $K$ binary classification tasks where $K$ is the number of unique labels in the dataset. By training a classifier for each label separately, the BR approach cannot exploit label correlations. 
 
-Recently, [@Reade] has gone so far as to claim that BR can perform just as well as methods supposedly modelling label dependence, and if it does not, it is usually because of the inadequacy of the base learners used. In other words, if the base learner can extract the right features, BR will be as good as any other multi-label classifier, without the need to model label dependence. Some theoretical justifications were given but the empirical evidence was not convincing. This is what motivated the writing of this chapter - to answer the question, "is it essential for a multi-label classifier to take label correlations into account in order to be optimal?". To investigate this one needs a thorough, theoretical understanding of *label dependence*, how to possibly exploit it and how to evaluate it. This is what this chapter aims to do. Most of the work is based on the papers [@Dembcz2012] and [@Reade]. We will also attempt to back up the theory with empirical results.
+One solution to this may be to sequentially train a classifier to predict a label and then in the next iteration to use that label's predicted values as additional input to the classifiers trained to predict the rest of the labels. Now some interaction between labels are considered in the modelling process. This approach is called Classifier Chains (CC). The challenge here is to determine in which order to predict the labels. For example, if label $i$ "depends" on label $j$, we would first want to train a model to predict label $j$ and then use those predicted values as additional input for the classifier trained to predict label $i$.
 
-### Two types of label dependence
+For both BR and CC we need to train at least[^CC] $K$ classifiers. The greater $K$ becomes the less feasible it is to use DNNs as the base model. The final PT example we will give is the label powerset (LP) algorithm. The LP algorithm transforms the MLIC task to a multiclass classification task by treating each unique combination of labels as a new class. This results in a possible $2^K$ number of classes and the disadvantage here is that some combinations will be extremely rare, making it hard for a classifier to learn. The LP method is capable of exploiting label correlations. Note that the use of ensembling is also common to improve on these methods. Sometimes they are assigned to their own group of multi-label classifiers, Ensemble Methods. The popular algorithms here are the ensemble of CC's (ECC) and the Random $k$ labelsets (Rakel).
 
-As mentioned, most mutli-label learning papers display merely an intuitive understanding of *label dependence*, in the sense that in predicting a specific label, the information on the rest of the labels may be helpful. For example in an image recognition problem, if a picture is labelled with *beach* and *ocean*, *sand* will most likely be a relevant label. Clearly, this understanding is insufficient to gain advances in the multi-label learning literature (later on it will also be pointed out why this may indeed not make intuitive sense). In this section, a formal statistical definition of the two types of label dependence will be given. First, we briefly revisit the task of multi-label classification (MLC), in mathematical(?) terms.
+[^CC]: There is no limit to how long the chain of a CC algorithm should be. After predicting all the labels, one can start from the beginning again, for which we would then have predicted scores for all labels which can be treated as input.
 
-#### Marginal vs. conditional dependence
+The other group of multi-label classifiers are the AA methods. These are any method for which a single label classifier was internally adapted to suit MLC. For example the multi-label $k$-nearest neighbours (ML-kNN) [@Zhang2007] approach is just an adaption of the the conventional kNN algorithm so that it can handle multiple labels per observation. 
 
-First note that we denote the conditional distribution of $\boldsymbol{Y}=\boldsymbol{y}$ given $\boldsymbol{X}=\boldsymbol{x}$ as
-$$
-P(\boldsymbol{Y}=\boldsymbol{y}|\boldsymbol{X}=\boldsymbol{x})=P(\boldsymbol{y}|\boldsymbol{x})
-$$
-and the corresponding conditional marginal distribution of $Y_{k}$ (conditioned on $\boldsymbol{x}$) as
-$$
-P(Y_{k}=b|\boldsymbol{x})=\sum_{y_{i}=b}P(\boldsymbol{y}|\boldsymbol{x}).
-$$
-(can probably also write as $P(Y_{k}|\boldsymbol{x})$ since $b$ is either 0 or 1?)
-
-[@Dembcz2012] defines two types of dependence among lables, namely, conditional dependence and marginal dependence. Their definitions follow:
-
-\newtheorem{thm}{Theorem}
-\newtheorem{defn}{Definition}
-\newtheorem{exmp}{Example}
-
-\begin{defn}
-A random vector of labels $\boldsymbol{Y}=(Y_{1},Y_{2},\dots,Y_{K})$ is called marginally independent if 
-
-\begin{equation}
-\label{eq-mdep}
-P(\boldsymbol{Y})=\prod_{k=1}^{K}P(Y_{k}).
-\end{equation}\\
-\end{defn}
-
-Marginal dependence is also known as unconditional dependence and can be thought of as a measure of the frequency of co-occurrence among labels. Conditional dependence captures the dependence of the labels given a specific observation $\boldsymbol{x}$.  
-  
-\begin{defn}
-A random vector of labels is called conditionally independent, given $\boldsymbol{x}$ if 
-
-\begin{equation}
-\label{eq-cdep}
-P(\boldsymbol{Y}|\boldsymbol{x})=\prod_{k=1}^{K}P(Y_{k}|\boldsymbol{x}).
-\end{equation}\\
-\end{defn}
-
-The conditional joint distribution of a random vector $\boldsymbol{Y}=(Y_{1},Y_{2},\dots,Y_{K})$ can be expressed by the product rule of probability ($P(AB)=P(A|B)P(B)$):
-
-\begin{equation}
-\label{eq-jointdist}
-P(\boldsymbol{Y}|\boldsymbol{x})=P(Y_{1}|\boldsymbol{x})\prod_{k=2}^{K}P(Y_{k}|Y_{1},\dots,Y_{k-1},\boldsymbol{x}).
-\end{equation}
-
-A similar expression can be given for $P(\boldsymbol{Y})$. If $Y_{1},Y_{2},\dots,Y_{K}$ are conditionally independent, then \autoref{eq-jointdist} will simplify to \autoref{eq-cdep}.
-
-Marginal and conditional dependence are closely related - it can be written as:
-
-\begin{equation}
-\label{eq-cdep-mdep}
-P(\boldsymbol{Y})=\int_{\mathcal{X}}P(\boldsymbol{Y}|\boldsymbol{x})d\mu(\boldsymbol{x}),
-\end{equation}
-
-where $\mu$ is the probability measure on the input space $\mathcal{X}$ induced by the joint probability distribution $P$ on $\mathcal{X}\times\mathcal{Y}$. Marginal dependence can roughly be viewed as an 'expected dependence' over all instances. Nevertheless, marginal dependence does not imply conditional independence, or *vice versa*. Two examples from [@Dembcz2012] are given to illustrate this.  
-  
-\begin{exmp}
-Suppose two labels, $Y_{1}$ and $Y_{2}$, are independently generated from $P(Y_{k}|\boldsymbol{x})=\left(1+\exp(-\phi f(\boldsymbol{x})\right)^{-1}$, where $\phi$ controls the Bayes error rate. Thus, by definition, the two labels are conditionally independent with conditional joint distribution, $P(\boldsymbol{Y}|\boldsymbol{x})=P(Y_{1}|\boldsymbol{x})\times P(Y_{2}|\boldsymbol{x})$. However, as $\phi\to\infty$, the Bayes error tends to zero and the marginal dependence increases to an almost deterministic case of $y_{1}=y_{2}$. Showing, conditional independence does not imply marginal independence.\\
-\end{exmp}  
-\begin{exmp}
-Suppose two labels, $Y_{1}$ and $Y_{2}$, are to be predicted by using a single binary feature, $x_{1}$. Let the joint distribution $P(X_{1},Y_{1},Y_{2})$ be given by the following table:
-
-```{r, echo=FALSE, results = "asis", fig.align = 'center'}
-x <- rep(c(0, 1), each = 4)
-y1 <- rep(rep(c(0, 1), each = 2), 2)
-y2 <- rep(c(0, 1), 4)
-P <- c(0.25, 0, 0, 0.25, 0, 0.25, 0.25, 0)
-
-library(xtable)
-options(xtable.floating = TRUE)
-options(xtable.comment = FALSE)
-xtab <- xtable(data.frame(x,y1,y2,P), digits = c(0, 0, 0, 0, 2), align = "ccccc")
-colnames(xtab) <- c("$x_{1}$", "$y_{1}$", "$y_{2}$", "$P$")
-print(xtab, include.rownames = FALSE, sanitize.text.function = function(x) {x})
-
-```
-
-Thus, the labels are not conditionally independent, 
-$$
-P(Y_{1}=0,Y_{2}=0|x_{1}=1)=0\neq P(Y_{1}=0|x_{1}=1)\times P(Y_{2}=0|x_{1}=1)=0.25\times 0.25,
-$$
-but it can be shown that they are indeed marginally independent. For example,
-$$
-P(Y_{1}=0,Y_{2}=0)=0.25=P(Y_{1}=0)\times P(Y_{2}=0)=0.5\times 0.5. 
-$$
-This holds for all the combination of labels, showing that marginal independence does not imply conditional independence.
-\end{exmp}
-
-This distinction between marginal and conditional dependence is crucial in the attempt to model label dependence in multi-label classification. We describe a multi-output model with the following notation, similar to [@Hastie2009]:
-
-\begin{equation}
-\label{eq-multiout}
-Y_{k}=h_{k}(\boldsymbol{X})+\epsilon_{k}(\boldsymbol{X}),
-\end{equation}
-
-for all $k = 1,2,\dots,K$. $h_{k}:\boldsymbol{X}\to\{0,1\}$ will be referred to as the structural part and $\epsilon_{k}(\boldsymbol{x})$ as the stochastic part of the model. Note that a common assumption in multi-variate regression (real-outputs) is that
-
-\begin{equation}
-\label{eq-experr}
-E[\epsilon_{k} (\boldsymbol{x})]=0.
-\end{equation}
-
-for all $\boldsymbol{x}\in\boldsymbol{X}$ and $k=1,2,\dots,K$. This is not a reasonable assumption in mutli-label classification [@Dembcz2012] - the distribution of the noise terms can depend on $\boldsymbol{x}$ and two or more noise terms can depend on each other. Classifier $h_{k}$ might also be very similar to $h_{l}$, $l\neq k;l=1,2,\dots,K$. Thus there are two possible sources of label dependence: the structural part and the stochastic part of the model.
-
-It seems that marginal dependence between labels is caused by the similarity between the structural parts. This assumption is made since it is reasonable to assume that the structural part will dominate the stochastic part. Suppose there exists a function $f(.)$ such that $h_{k}\approx f\circ h_{l}$, *i.e.*
-
-\begin{equation}
-\label{eq-fdep}
-h_{k}(\boldsymbol{x})=f(h_{l}(\boldsymbol{x})) + g(\boldsymbol{x}),
-\end{equation}
-
-with $g(.)$ being negligible in the sense that $g(\boldsymbol{x})=0$ with high probability. Then this $f(.)$-*dependence* between the classifiers is likely to dominate the averaging process in \autoref{eq-cdep-mdep}, compared to $g(.)$ and the stochastic parts. This is what happens in Example 1 when $\phi \to \infty$. Thus we see that even if the dependence between $h_{k}$ and $h_{l}$ is only probable, it can still induce a dependence between the labels $Y_{k}$ and $Y_{l}$ (verstaan nie presies wat hier bedoel word nie). Another example illustrating idea is given from [@Dembcz2012].  
-
-\begin{exmp}
-Consider a problem with a 2-dimensional input $\boldsymbol{x}=(x_{1},x_{2})$, where $x_{i}$ is uniformly distributed in $[-1,1]$ for $i=1,2$, and two labels, $Y_{1},Y_{2}$, determined as follows. $Y_{1}$ is set to 1 for all positve values of $x_{1}$, i.e. $Y_{1}=I(x_{1}>0)$. The second label is generated similarly but with the decision boundary of $Y_{1}$ ($x_{1}=0$) rotated by an angle of $\alpha\in [0, \pi]$ (give illustration). In addition, let the two error terms of the model be independent and both flip the label with a probability of $0.1$. If $\alpha$ is close to zero, the labels will almost be identical and a high correlation will be observed between them. But if $\alpha = \pi$, the decision boundaries of the labels are orthogonal and a low correlation will be observed.\\
-\end{exmp}
-
-With regards to \autoref{eq-fdep}, in Example 3, $f(.)$ is the identity function and $g(.)$ given by the $\pm 1$ in the regions between the decision boundaries. From this point of view, marginal dependence can be seen as a kind of soft constraint that a learning algorithm can exploit for the purpose of regularization [@Dembcz2012]. (verstaan nie wat dit beteken nie)
-
-For the conditional dependence, it seems that the stochastic part of the model is the cause. In Example 3, $Y_{1}$ and $Y_{2}$ is conditionally independent because the error terms are assumed to be independent. However, if there is a close relationship between $\epsilon_{1}$ and $\epsilon_{2}$, this conditional independence will be lost. [@Dembcz2012] proves the proposition that a vector of labels is conditionally dependent given $\boldsymbol{x}$ if and only if the error terms in \autoref{eq-multiout} are conditionally dependent given $\boldsymbol{x}$, *i.e.*
-$$
-E\left[\epsilon_{1}(\boldsymbol{x})\times \dots \times \epsilon_{K}(\boldsymbol{x}) \right]\neq E\left[\epsilon_{1}(\boldsymbol{x})\right]\times\dots\times E\left[\epsilon_{K}(\boldsymbol{x})\right].
-$$
-
-(Include proof?) It should also be noted that conditional independence can also cause marginal dependence because of \autoref{eq-cdep-mdep}. Thus the similarity between models is not the only source of of marginal dependence. 
-
-What we have learned thus far is that there is a difference between marginal and conditional label dependence. The presence of marginal dependence does not imply conditional label dependence and *vice versa*. If label correlations are observed it can only be assumed that marginal dependence between the labels exist. It does not necessarily imply that there are any dependencies among the error terms (although it could be the cause). On the other hand, if conditional dependence is observed, one can safely assume that there are dependencies among the error terms. Next, we see how to exploit both types of label dependence to improve predictive accuracy.  
-
-### Link between label dependence and loss minimization
-
-One can view the MLC task from different persepectives in terms of loss minimizations. [@Dembcz2012] describes three such views, determined by the type of loss function to be minimized, the type of dependence taken into account and the distinction between marginal and joint distribution estimation. The three views and the main questions to consider for each of them are:
-
-1. The individual label view: How can we improve the predictive accuracy of a single label by using information about other labels?
-2. The joint label view: What type of non-decomposable MLC loss functions is suitable for evaluating a multi-label prediction as a whole and how to minimize such loss functions?
-3. The joint distribution view: Under what conditions is it reasonable to estimate the joint conditional probability distribution over all label combinations?
-
-#### The individual label view
-
-With this view, the goal is to minimize a loss function that is label-wise decomposable and we want to determine whether or not it will help taking label relationships into account. The most common and intuitive label-wise decomposable loss function is the Hamming loss, which is defined as the fraction of labels whose relevance is incorrectly predicted:
-
-\begin{equation}
-\label{eq-hloss}
-L_{H}\left(\boldsymbol{y}, \hat{\boldsymbol{y}}\right)=\frac{1}{K}\sum_{k=1}^{K}I\left(y_{k}\neq \hat{y}_{k}\right).
-\end{equation}
-
-\autoref{eq-hloss} is only the Hamming loss for one observation. To compute the Hamming loss over an entire dataset, \autoref{eq-hloss} is averaged over all the observations. 
-
-It is easy to see that the Hamming loss is minimized when
-
-$$
-\hat{\boldsymbol{y}}=(\hat{y}_{1},\dots,\hat{y}_{K}),
-$$
-
-where 
-$$
-\hat{y}_{k}=\arg\max_{y_{k}\in\{0,1\}}p(y_{k}|\boldsymbol{x}),
-$$
-for $k=1,2,\dots,K$. This shows that it is enough to take only the conditional marginal distribution $P(Y_{k}|\boldsymbol{x})$ into account to solve the problem, at least on a population level. Thus the Hamming loss is minimized by BR. [@Dembcz2012] also gives a similar result for label-wise decomposable loss functions in general (thus also relevant for F-measure, AUC, *etc.*). This result implies that the multiple single label predictions problem can be solved on the basis of $P(Y_{k}|\boldsymbol{x})$ alone. Hence, with a proper choice of base classifiers and parameters for estimating the conditional marginal probabilities, there is in principle no need for modelling conditional dependence between the labels. However, in cases where the base classifiers are inadequate, dependence between the errors will exist and BR will give a suboptimal solution (make sure this statement is used correctly). Methods exist to improve BR in these situations and will be discussed shortly.
-
-#### The joint label view
-
-Here we are interested in non-decomposable (label-wise) MLC loss functions such as rank loss and the subset 0/1 loss. We discuss when they are appropriate and how to minimize them. First, consider the rank loss. Suppose the true labels constitute a ranking in which all relevant labels ideally precede all irrelevant ones and $\boldsymbol{h}(\boldsymbol{x})=(h_{1}(\boldsymbol{x}),\dots,h_{K}(\boldsymbol{x}))$ is seen as a ranking function representing a degree of label relevance sorted in a decreasing order. The rank loss simply counts the number of label pairs that disagree in these two rankings:
-
-\begin{equation}
-\label{eq-rloss}
-L_{r}\left(\boldsymbol{y},\boldsymbol{h}(\boldsymbol{x})\right)=\sum_{(k,l);y_{k}>y_{l}}\left(I\left(h_{k}(\boldsymbol{x})<h_{l}(\boldsymbol{x})\right)+\frac{1}{2}I\left(h_{k}(\boldsymbol{x})=h_{j}(\boldsymbol{x})\right)\right).
-\end{equation}
-
-This function is not convex nor differentiable, thus an alternative would be to minimize a convex surrogate like the hinge or exponentional function. However, [@Dembcz2012] proves that it is enough to minimize \autoref{eq-rloss} by sorting the labels by their probability of relevance:
-
-\begin{thm}
-A ranking function that sorts the labels according to their probability of relevance, i.e. using the scoring function $\boldsymbol{h}(.)$ with $h_{k}(\boldsymbol{x})=P(Y_{k}=1|\boldsymbol{x})$, minimizes the expected rank loss.\\
-\end{thm}
-
-(include proof?) This implies again (just like in the case for the label-wise decomposable loss functions) that, in principle, it is not necessary to know the joint label distribution $P(\boldsymbol{Y}|\boldsymbol{x})$ when training a multi-label classifier, *i.e.* risk-minimizing predictions can be made without any knowledge about the conditional dependency between labels. Thus, to minimize the rank loss, one can simply use any approach minimizing the single label losses. Note this results does not hold for the normalized version of rank loss.
-
-Next, we look at the extremely stringent multi-label loss function, the subset 0/1 loss:
-
-\begin{equation}
-\label{eq-s01}
-L_{S}\left(\boldsymbol{y},\hat{\boldsymbol{y}}\right)=I\left(\boldsymbol{y}\neq \hat{\boldsymbol{y}}\right).
-\end{equation}
-
-Although most would agree that this is not a fair measure for MLC performance, since it does not disinguish between almost correct and completely wrong, it is still interesting to study with regards to exploiting label dependence. The risk-minimizing prediction for \autoref{eq-s01} is given by the mode of the distribution: 
-
-\begin{equation}
-\label{eq-smin}
-h_{s}^{*}(\boldsymbol{x})=\arg\max_{\boldsymbol{y}}P(\boldsymbol{Y}|\boldsymbol{x}).
-\end{equation}
-
-This implies that the entire distribution of $\boldsymbol{Y}$ given $\boldsymbol{X}$ is needed to minimize the subset 0/1 loss. Thus a risk minimizing prediction requires the modelling of the joint distribution and hence the modelling of the conditional dependence between labels. Later on we will show an important results that under independent outputs, minimizing the Hamming loss and the subset 0/1 loss is equivalent, implying that BR will indeed also minimize the subset 0/1 loss (consider to show it here).
-
-The cases for F-measure loss and the Jaccard distance is a bit more complicated and will not be discussed here. (give citation of where this can be found)
-
-#### The joint distribution view
-
-We just saw that minimzing the subset 0/1 loss requires the estimation of the entire conditional joint distribution, $P(\boldsymbol{Y}|\boldsymbol{X})$. Generally, if the joint distribution is known, a risk-minimizing prediction can be derived for any loss function in an explicit way:
-
-$$
-h^{*}(\boldsymbol{x})=\arg\min_{\boldsymbol{y}}E_{\boldsymbol{Y}|\boldsymbol{x}}\left[L(\boldsymbol{Y},\boldsymbol{y})\right].
-$$
-
-In some applications modelling the joint distribution may result in using simpler classifiers, potentially leading to a lower cost and a better performance compared to directly estimating marginal probabilities by means of more complex classifiers. Nevertheless, it remains a difficult task. One has to estimate 2^{K} values to estimate for a given $\boldsymbol{x}$.
-
-**Theoretical insights into MLC**
-
-+ proposition (with proof in paper): The hamming loss and subset 0/1 loss have the same risk-minimizer, *i.e.* $\boldsymbol{h}_{H}^{*}(\boldsymbol{x})=\boldsymbol{h}_{s}^{*}(\boldsymbol{x})$, if one of the following conditions holds: (1) Labels $Y_{1},\dots,Y_{K}$ are conditionally independent, *i.e.* $P(\boldsymbol{Y}|\boldsymbol{x})=\prod_{k=1}^{K}P(Y_{k}|\boldsymbol{x})$. (2) The probability of the mode of the joint probability is greater than or equal to 0.5, *i.e.* $P(\boldsymbol{h}_{S}^{*}(\boldsymbol{x})|\boldsymbol{x})\geq 0.5$.
-+ corollary (with proof in paper): In the separable case (*i.e.* the joint conditional distribution is deterministic, $P(\boldsymbol{Y}|\boldsymbol{x})=I(\boldsymbol{Y}=\boldsymbol{y})$), the risk minimizers of the hamming loss and subset 0/1 loss coincide.
-
-**MLC algorithms for exploiting label dependence**
-
-+ in general not able to yield risk-mininizing predictions for multi-label losses but is well suited for loss functions whose risk-minimizer can solely be expressed in terms of marginal (conditional) distributions.
-+ may be sufficient, but exploiting marginal dependencies may still be beneficial especially for small-sized problems.
-+ several methods that exploit similarities between structural parts of the label models.
-+ general scheme: 
-
-\begin{equation}
-\label{eq-sl}
-\boldsymbol{y}=\boldsymbol{b}(\boldsymbol{h}(\boldsymbol{x}), \boldsymbol{x}),
-\end{equation}
-
-where $\boldsymbol{h}(\boldsymbol{x})$ is the binary relevance learner and $\boldsymbol{b}(.)$ is an additional classifier that shrinks or regularizes the solution of BR. Or
-
-\begin{equation}
-\label{eq-sl-inv}
-\boldsymbol{b}^{-1}(\boldsymbol{y},\boldsymbol{x})=\boldsymbol{h}(\boldsymbol{x}),
-\end{equation}
-
-where the output space is first transformed and then the BR classifiers are trained and then transformed back to original.
-+ Stacking follows first scheme. Form of regularization or feature expansion. Not clear which inputs should all be use for second level.
-+ compressive sensing
-
-**Experimental evidence**
-
-+ marginal independence: stacking does improve on BR, CC similar to SBR, LP also bad. Error increases with number of labels. hamming and subset 0/1 coincide.
-+ conditional independence: again loss functions coincide. SBR improves over BR, even higher when structural parts are more similar.Supports theoretical claim that the higher the structural similarties the more prominent effect of stacking. Study rest of results.
-
-Nou opsomming van [@Reade] - sodra klaar, probeer in hoofstuk inkorporeer.
-
-**Introduction**
-
-+ $n$-th feature vector $\boldsymbol{x}^{(n)}=[x_{1}^{(n)},\dots,x_{p}^{(n)}]$, where $x_{j}\in \mathcal{R}$, $j=1,\dots,p$.
-+ in the traditional binary classification task we are intersted in having a model $h$ to provide a prediction for test instances $\tilde{\boldsymbol{x}}$, *i.e.* $\hat{y}=h(\tilde{\boldsymbol{x}})$. In MLC there are $K$ binary output class variables (labels) and thus $\hat{\boldsymbol{y}}=[\hat{y}_{1},\dots,\hat{y}_{K}]=h(\boldsymbol{x})$.
-+ probabilistic speaking $h$ seeks the expecctation $E[\boldsymbol{y}|\boldsymbol{x}]$ of unknown $p(\boldsymbol{y}|\boldsymbol{x})$. This task is typically posed as a MAP estimate of the joint posterior mode
-$$
-\hat{\boldsymbol{y}}=[\hat{y}_{1},\dots,\hat{y}_{K}]=h(\tilde{\boldsymbol{x}})=\arg\max_{\boldsymbol{y}\in \{0,1\}^{p}}p(\boldsymbol{y}|\tilde{\boldsymbol{x}})
-$$
-This corresponds to minimizing the susbet 0/1 loss.
-
-+ $h_{BR}(\tilde{\boldsymbol{x}}):=[h_{1}(\tilde{\boldsymbol{x}}),\dots,h_{K}(\tilde{\boldsymbol{x}})]$
-+ entirety of ML literature point out that BR obtain suboptimal performance because it assumes labels are independent.
-+ several approaches attempt to correct/regularize BR, SBR.
-+ others attempt to learn the labels together, LP. $\hat{\boldsymbol{y}}=h_{LP}(\tilde{\boldsymbol{x}})$
-+ another example is CC done using a greedy search:
-$$
-h_{CC}(\boldsymbol{\tilde{x}}):=[h_{1}(\tilde{\boldsymbol{x}}),h_{2}(\tilde{\boldsymbol{x}},h_{1}(\tilde{\boldsymbol{x}})),\dots,h_{K}(\tilde{\boldsymbol{x}},\dots,h_{K-1}(\tilde{\boldsymbol{x}}))]
-$$
-+ PCC formulates CC as the joint distribution using the chain rule,
-$$
-h_{CC}(\boldsymbol{x}):=\arg\max_{\boldsymbol{y}}p(y_{1}|\boldsymbol{x})\prod_{k=2}^{K}p(y_{k}|\boldsymbol{x},y_{1},\dots,y_{K-1})
-$$
-and show that it is indeed possible to make a Bayes-optimal search with guarantees to the optimal solution for 0/1 loss. Several search techniques exist to make the seach optimal, but greedy is still popular.
-+ order and structure of chains in cc is the main focus point.
-+ although in theory the chain rule holds regardless of the order of variables, each $p(y_{k}|\boldsymbol{x},y_{1},\dots,y_{K-1})$ is only an approximation of the true probability because it is modelled from finite data under a constrainded class of model, and consequently a different indexing of labels can lead to different results in practice.
-+ many approaches try to find the best order and show better empirical results, but the reason why is not quite clear
-+ LP can be viewed as modelling the joint probability directly, 
-$$
-h_{LP}(\boldsymbol{x}):=\arg\max_{\boldsymbol{y}}p(\boldsymbol{y},\boldsymbol{x})
-$$
-+ two main points from previous papers: (1) the best label order is impossible to obtain from observational data only. (2) the high performance of classifier chains is due to leveraging earlier labels in the chain as additional feature attributes.
-
-**The role of label dependence in multi-label classification**
-
-+ marginal dependence: frequency of co-occurence among labels
-+ conditional dependence: after conditioning on the input
-+ modelling complete dependence is intractable
-+ rather attempt pairwise marginal dependence or use of ensemble.
-+ many new methods do not outperform each other over a reasonable amount of datasets.
-+ improvements of prediction on standard multi-label datasets reached a plateau (maybe investigate).
-+ question the logic, if the ground truth label dependence could be known and modelled, multi-label predictive performance would be optimal and therefore as more technique and computational  effort is invested into modelling label dependence, the lead of the new methods over BR and other predecessors will widen.
-+ BR might be underrated
-+ modelling label dependence is a compensation of lack of training data and one could only assume that given infinite data two separate binary models on labels $y_{k}$ and $y_{l}$ could achieve as good performance as one that models them together.
-+ the 'intuitive' understanding actually seems quite flawed: if we take two labels and wish to tag images with them, the assumption that label dependence is key to optimal multi-label accuracy is analogous to assuming that an expert trained for visually recognising one label will make optimum classifications only if having viewed the classiication of an expert trained on the other label.
-+ in reality, modelling label dependence only helps when a base classifier behind one or more labels is inadequate.
-+ depends on the base classifier
-+ there is no guarantee that an ideal structure based on label dependence can be found at all given any amount of training data.
-+ see XOR problem
-+ take the view that BR can perform as well as any other method when there is no dependence among the outputs given the inputs.
-+ not to say that BR should perform as well as other methods if there is no dependence *detected*. Due to noisy data or insufficient model dependence may be missed or even introduced.
-+ if a ML method outperforms BR under the same base classifier then we can say that it using label dependence to compensate for the inadequacy in its base classifiers.
-+ attempt to remove the dependence among the labels
-+ dependence generated by inadequate base classifiers
-
-**Binary relevance as a state-of-the-art classifier**
-
-+ CC and LP are representative of PT problems. Succesful on many fronts and can be builded on. Still has some drawbacks. Discusses them.
-+ BR less parameters to tune.
-+ multi-label classifiers can be comprised of individual binary models that perform equally as well as models explicitly linked together based on label dependence or even a single model that learns labels together (intrinsic label dependence modelling).
-+ claim this is the case for example and label based metrics. (not what the previous paper found)
-+ proposition with proof: given $X=x$, there exists a classifier $h_{2}'(x)\approx \arg\max_{y_{2}\in \{0,1\}}p(Y_{2}|X)$ that achieves at least as small error as classifier $h_{2}(x)\approx \arg\max_{y_{2}\in \{0,1\}}p(Y_{2}|Y_{1},X)$, under loss $L(y_{2},\hat{y}_{2})=I(y_{2}\neq \hat{y}_{2})=I(y_{2}\neq h_{2}(x))$. Instances of $X,Y_{1},Y_{2}$ are given in the training data but only $\tilde{x}$ is given at test time. (see proof in paper)
-+ This means that if we are interested in a model for any particular label, best accuracy can be obtained in ignorance of other labels.
-+ proposition and proof: under observations $X=x$, there exists two individually constructed classifiers $h_{1}'\approx \arg\max_{y_{1}}p(Y_{1}|X)$ and $h_{2}'\approx \arg\max_{y_{2}}p(Y_{2}|X)$ such that under 0/1 loss, $[h_{1}(x),h_{2}(x)]\equiv \hat{\boldsymbol{y}}\equiv \boldsymbol{h}(x)$ are equivalent, where $\boldsymbol{h}\approx \arg\max_{[y_{1},y_{2}]}p(Y_{1},Y_{2}|X)$ models labels together. Instances of $X,Y_{1},Y_{2}$ are given in the training data but only $x$ (tilde) is given at test time. (see proof in paper)
-+ following examples, $X$ represents some document and $Y_{1},Y_{2}$ represent the relevance of two subject categories for it. Latent variable $Z$ represents the unobservable current events which may affect both the observation $X$ and the decisions for labelling it. (illustration of all of the scenarios)
-+ ignore case where input and all labels are independent.
-+ case of conditional independence - a text document is given independently to two human labelers who each independently identify if the document is relevant to their expert domain. 
-$$
-\begin{aligned}
-p(\boldsymbol{y},x)&=p(y_{1},y_{2})\\
-&=p(y_{1}|x)p(y_{2}|y_{1},x)\\
-&=p(y_{1}|x)p(y_{2}|x)
-\end{aligned}
-$$
-  which obviously can be solved with BR, where $h_{k}(\tilde{x}):=\arg\max_{y_{k}}p(y_{k}|\tilde{x})$.
-+ a text document is labelled by the first labeller and afterwards by the second expert - potentially biasing the decision to label relevance or not with this second label. If we do not impose any restriction on any $h_{k}(x)$, it is straightforward to make some latent $z\equiv h_{1}(x)$ such that $h_{2}(x, z)\equiv h_{2}(x, h_{1}(x))$. We speak of equivalence in the sense that given $Z$ we can recover $Y_{2}$ to the same degree of accuracy (probably compared to case without $Z$). In this analogy the second labeller must learn also the first labeller's knowledge and thus makes the first labeller redundant. If we drop $Y_{1}$ we return to the original structure.
-+ two experts label a document $X$ but both are biased by each other and - possibly to alternate degrees - by an external source of information $Z$. Can also introduce latent variables $Z_{1},Z_{2}$ to break the dependence between the labels.
-+ note the dependence between any variable can be broken by introducing hidden variables not just the label variables. Hence we can further break dependence between $X$ and $Y_{1}$ in the same way - if we desire.
-+ universal approximation: with a finite number of neurons, even with even with a linear output layer, a network can approximate any continuous function. Implies for ML - given a large enough but finite feature representation in the form of a middle layer, any of the labels can be learned independently of the others, *i.e.* a linear BR layer can suffice for optimal classification performance.
-+ to summarise: if we find dependence between labels it can be seen as a result of marginalizing out hidden variables that generated them. Also, we can add hidden variables to remove the dependence between labels.
-+ this does not mean we have a method to learn this structure. Which is learning latent variables powerful enough. 
-+ EM and MCMC sampling under energy models to learn latent variables by minimizing the energy and thus maxmimizing the joint probability with observed variables. (iterative procedures). 
-+ unsupervised part more difficult than supervised
-+ **existing methods to obtain conditional independence among labels.**
-+ task: making outputs independent of each other by using a different input space to the original such that a simpler classifier can be employed to predict outputs.
-+ deep learning to learn a powerful higher-level feature representations of the data. (uses multiple hidden layers)
-+ in MLC the labels can be seen as high-level feature representations.
-+ **the equivalence of loss metrics under independent outputs**
-+ if outputs are independent of each other given the input, then minimizing Hamming loss and 0/1 loss is equivalent.
-+ the risk of Hamming loss is minimized by BR
-$$
-\hat{y}_{k}=\arg\max_{y_{k}\in\{0,1\}}p(y_{k}|\boldsymbol{x})
-$$
-  for each label. The 0/1 loss on the other hand, is minimized by taking the mode of the distribution,
-$$
-\hat{\boldsymbol{y}}=\arg\max_{\boldsymbol{y}\in \{0,1\}^{K}}p(\boldsymbol{y}|\boldsymbol{x})
-$$
-  equivalently written as
-$$
-\hat{\boldsymbol{y}}=\arg\max_{\boldsymbol{y}\in \{0,1\}^{K}}p(y_{1}|\boldsymbol{x})\prod_{k=2}^{K}p(y_{k}|\boldsymbol{x},y_{1},\dots ,y_{K-1}).
-$$
-+ Noting that when all outputs are independent of each other given the input ($p(y_{k}|\boldsymbol{x},y_{l})\equiv p(y_{k}|\boldsymbol{x})$), then for all $k,l$ it becomes
-$$
-\begin{aligned}
-\hat{\boldsymbol{y}}&=\arg\max_{\boldsymbol{y}\in\{0,1\}^{K}}\prod_{k=1}^{K} p(y_{k}|\boldsymbol{x})\\
-&=\left[\arg\max_{y_{1}\in \{0,1\}}p(y_{1}|\boldsymbol{x}), \dots ,\arg\max_{y_{K}\in\{0,1\}}p(y_{k}|\boldsymbol{x})\right].
-\end{aligned}
-$$
-+ here input refers to the input into the model and not the original features.
-+ we can replace the input with hidden variables derived from the original feature space in order to make them independent. If this is successful, the above holds, and using BR will achieve the same result as CC on either measure.
-+ suppose only the third of three outputs is successfully made independent, then prediction of independent models is optimizing 
-$$
-\hat{\boldsymbol{y}}=\left[\arg\max_{y_{1},y_{2}\in \{0,1\}^{2}}p(y_{1},y_{2}|\boldsymbol{x}),\arg\max_{y_{3}\in\{0,1\}}p(y_{3}|\boldsymbol{x})\right].
-$$
-+ if this is the case it could be handled elegantly by RAkELd - disjoint labelset segmentations RAkEL. But detecting these mixed dependence sets is difficult.
-+ RAkEL and ECC benefit from the ensemble effect of reducing variance of estimates but it is not clear what loss measure is being optimized.
-
-**Classifier chains augmented with synthetic labels (CCASL)**
-
-+ difficult to search for good order in CC
-+ if 'difficult' label is at start of chain, all other labels may suffer.
-+ present a method that adds synthetic labels to the beginning of the chain and builds up a non-linear representation, which can be leveraged by other classifiers further down the chain. CCASL
-+ create $H$ synthetic labels.
-+ many options - they used threshold linear unit (TLU) to make binary, can also try others like ReLU with continuous output. or sigmoid and radial basis.
-+ the synthetic labels can be interpreted as random cascaed basis functions, except that at prediction time the values are predicted and thus we refer to them as synthetic labels.
-+ synthetic label $z_{k}=I(a_{k}>t_{k})$ with activation values 
-$$
-a_{k}=\left([B* W]^{T}_{k,1:(p+(k-1))}\cdot\boldsymbol{x}_{k}'\right)
-$$
-  where $W$ is a random weight matrix (sampled from multivariate normal) with identically sized masking matrix $B$ where $B_{i,j}\sim Bernoulli(0.9)$, input $\boldsymbol{x}_{k}'=[x_{1},\dots , x_{p}, z_{1},\dots ,z_{k-1}]$ (not the same $k$ as label index), and threshold $t_{k}\sim \mathcal{N}(\mu_{k},\sigma_{k}\cdot0.1)$
-+ want to use synthetic labels at beginning of chain to improve prediction of the real labels.
-+ $\boldsymbol{y}'=[z_{1},\dots ,z_{H},y_{1},\dots , y_{K}]$ and from the predictions $\hat{\boldsymbol{y}}'$ we extract the real labels $\hat{\boldsymbol{y}}=[\hat{y}_{H+1}', \dots , \hat{y}_{H+K}]=[\hat{y}_{1},\dots, \hat{y}_{K}]$.
-+ $\hat{y}_{j}=\arg\max_{y_{j}\in \{0,1\}}p(y_{j}|x_{1},\dots ,x_{p},z_{1},\dots, z_{H},y_{1},\dots,y_{j-1})$
-+ use LR as base classifier
-+ label order less of an issue.
-+ does well on complex non linear synthetic data - overfits on simple linear synthetic data.
-+ lots of tunable parameters
-+ few hidden labels are necessary for CCASL, empirical suggests $H=K$.
-+ **CCASL + BR**
-+ guards against overfitting, removes connections among the output
-+ advantages of BR, stacking and CC
-+ no back prop necessary.
-+ **CCASL+AML**
-+ CCASL strucutre is powerful for modeling non-linearities. CCASL+BR regularizes but otherwise does not offer a more powerful classifier.
-+ whereas we created synthetic labels from feature space, we can do the same from the label space.
-+ layer of binary nodes which are feature functions created from the label space for each subset
-+ see rest in paper.
-+ section on other network based literature
-+ back prop bad
-+ simply using a powerful non-linear base classifier may remove the need for transformations of the feature space altogether.
-
-**Experiments**
-
-+ done in python and sklearn
-+ synthetic dataset and music, scene, yeast, medical, enron, reuters (max K = 103)
-+ 10 iterations for each datset 60/40 split
-+ report parameters
-+ all out-perform BR and CC
-+ BR_{RF} does best under hamming loss! RF are adequately powerful to model each layer
-+ CCASL are quite expensive
-+ the main advantage brought by modelling label dependence via connections among outputs is that of creating a stronger learner.
-+ did not investigate ensembles
-
-
-
-In [@Zhang2014] the existing strategies for multi-label classification are divided into categories based on the order of label correlations being considered by the algorithms. So-called first-order approaches are those that do not take label correlations into account. Second-order approaches consider the pairwise relationships between labels and high-order approaches allows for all interactions between labels and/or combinations of labels. First-order strategies simply ignore label correlations, but they are usally simpler. The latter two strategies are far more complex but also limited in some cases. Second-order strategies will not generalise well when higher-order dependencies exist amongst the labels and the the high-order strategies may 'overfit' if only subgroups of the labels are correlated [@Zhang2014].
-
-From the Bayesian point of view, the problem of multi-label learning can be reduced to modeling the conditional joint distribution of $P(\boldsymbol{y}|\boldsymbol{x})$. This can be done in various ways. First-order approaches solve the problem by decomposing it into a number of independent task through modelling $P(y_{k}|\boldsymbol{x})$, $k=1,\dots,K$. Second-order approaches solve the problem by considering interactions between a pair of labels through modelling $P((y_{k},y_{k'})|\boldsymbol{x})$, $k\neq k'$. High-order approaches solve the problem by adressing correlations between a subset of labels through modelling $P((y_{k_{1}},y_{k_{2}},\dots,y_{k_{K'}})|\boldsymbol{x})$, $K'\leq K$. Our goal is to find a simple and efficient way to improve the performance of multi-label learning by exploiting the label dependencies [@Zhang2014]. Propose LEAD approach.
-
-+ [Tsoumakasf] use the $\phi$ coefficient to estimate label correlations.
-
-+ [@Sorower]
-+ mention the holy grail comment
-+ comment on what 'exploitation' means. Since many authors claim that exploiting label dependence structures is the only way to effectively handle multiple labels, I would assume this means that we can make use of label correlations to spare time and increase accuracy.
-+ we need to think about how observations are labelled, when will it be useful to take label dependence into account and how.
-+ Such a solution, however, ne- glects the fact that information of one label may be help- ful for the learning of another related label; especially when some labels have insufficient training examples, the label correlations may provide helpful extra information [@Huang]
-
-### Theoretical Results
-
-+ minimisation of surrogate loss functions and consistency
-+ Consistency [Zhou2011]:
-
-They were the first to do a theoretical study on the consistency of multi-label learning algorithms, focusing on the ranking loss and the hamming loss. A learning algorithm is said to be consistent if its expected risk converges to the Bayes risk as the size of the training data increases. They found that any convex surrogate loss is inconsistent with the ranking loss and therefore proposed a partial ranking loss (which is consistent with some surrogate loss functions) as an alternative. They also show how some recent multi-label algorithms are inconsistent in terms of the hamming loss and provides a discussion on the consistency of approaches which transforms the multi-label problem into a set of binary classification tasks.
-
-+ more theoretical work at [@Gasse2015]. Mentions: Finding theoretically correct algorithms for other non label-wise decomposable loss functions is still a great challenge.
-
-+ more theory: Optimizing the F-Measure in Multi-Label Classification: Plug-in Rule Approach versus Structured Loss Minimization
-
-Other solutions: exploit correlation of labels from both types conditional and unconditional dependencies, features selection methods that are designed especially to handle multi label datasets, and having new stratification methods that are suitable to the nature of multi label datasets (copied from [@Alazaidah2016])
-
-+ Symmetry:
-
-+ [@Huang] claims that most of the time the label dependencies are asymmetric and suggest the MAHR algorithm. Also most of the existing methods exploit label correlations globally, which is not necessarily a good assumption if these correlations only exist for some instances [@Huang]. They suggest a ML-LOC algorithm (which seems to do very well).
-
-+ Locality
-
-+ is local the same as conditional? and global unconditional?
-
-+ [@Zhu]
-
-Existing approaches to exploiting label correlations either assume the the label correlations are global and shared by all instances, or that the label correlations are local and shared only by a subset of the data. It may be that some label correlations are globally applicable and some share only in a local group of observations.
-
-+ give example
-+ mention GLOCAL [@Zhu]
-
-+ [@Huang]
-
-Existing approaches typically exploit label correlations globally by assuming that the label correlations are shared by all observations. In the real-world, however, different observations may share different label correlations and few correlations are globally applicable.
-
-+ propose ML-LOC approach
-+ mentions that by assuming global correlations may be hurtful to the performance [@Huang] in empirical discussion
-
-## Problem Transformation Approaches
+### Problem Transformation Approaches
 
 There are numerous multi-label learning algorithms. It is difficult to keep up with the all the latest proposed methods. These algorithm can be categorised in a number of ways, *e.g.* the review [@Zhang2014] and the tutorials [@Gibaja2015] and [@CarvalhoAndreCPLFde2009], all have different ways of grouping the algorithms. The categorisation for this thesis is chosen to satisfy the criteria of being common, simple and intuitive. Nevertheless, the characteristics of the algorithms leading to the other grouping variants will still be given in the remarks of the algorithms.
 
@@ -736,7 +313,9 @@ Another extension of BR, similar to 2BR and BR+, is the classifier chains (CC) a
 
 Paper still need to look at for CC [@Sucar2013].
 
-## Algorithm Adaption Approaches
+### Algorithm Adaption Approaches
+
++ NNs?
 
 These are methods tackling the multi-label learning task by adapting, extending and/or customising an existing supervised learning algorithm [@Madjarov2012]. 
 
@@ -801,16 +380,7 @@ Note, with all these ensemble extensions, we can still try different ways of ens
 + LP may gain from the expansion of the feature or hypothesis space.
 + One can easily tailor LP for solving the Hamming loss minimization problem, by marginalization of the joint probability distribution that is a by-product of this classifier.
 
-### Summary
-
-+ more empirical evidence is needed; with with wide range of data sets, algos and measures; compare with statistical tests and consider computation time (training and test)
-+ part on statistical tests in [@Gibaja2015]
-+ trees for efficiency, ensembles for predictive performance, transformation methods for flexibility
-
-+ label correlation understanding is holy grail of ML [@Sorower]
-+ complement of this paper would be a broad empirical study
-
-## Threshold Calibration
+### Thresholding Strategies
 
 The CNN outputs a set of class score which minimises the average of the binary cross-entropy over each labels. Therefore a mapping is needed to transform the class scores to binary outputs, indicating label presence. This is an important facet of MLC, often overlooked, but can make a huge difference in performance for certain metrics. This is similar to the problem in single label classification where the classification threshold can be adjusted to optmise either precision or recall instead of accuracy, which is especially important for imbalanced data.
 
@@ -832,9 +402,21 @@ An alternative to threshold calibration is to decide on the number, say $m$, of 
 
 + see adhoc methods such as calibrated label ranking: [https://pdfs.semanticscholar.org/5918/04251e15cfb571bc90c2fab2344f462e1617.pdf] and 
 
-## Class Imbalance
+## More on Label Dependence
 
-+ https://www.reddit.com/r/MachineLearning/comments/6iq5i8/d_what_are_your_favorite_ways_for_dealing_with/
-+ [@Charte2015]
-+ towards class imbalance aware multi label learning
-+ way of stratifying batches: https://arxiv.org/pdf/1705.00607.pdf
+With this chapter I want to investigate the need for approaches in multi-label classification which model the dependence structure between labels. For this we need a sound theoretical definition and analysis of label dependence and then we might want to investigate it empirically with synthetic datasets (or real world). The main papers inspiring this chapter are [@Dembcz2012] and [@Reade], and some content will be taken from [@Readd], [@Madjarov2012] (for empirical evidence maybe), [@Readb], [@Dembczyski2010], [@Dembczynski2012]. My main hypothesis is that modelling the input-output pairs individually should have just as good, if not better performance compared to approaches trying to model label dependence, since all the available information of the labels should be contained in $X$ and by the assumption that label $y_{i}$ can be determined with the help of the knowledge of label $y_{j}$, it should also be possible to find $y_{i}$ from $X$ since $y_{j}$ is found from $X$. This argument probably only holds for approaches trying to "correct" binary relevance (BR) with regards to its lack of modelling label dependence, such as classifier chains (CC), stacking like MBR/2BR/BR+, etc. Reformulate hypothesis later.
+
+It is essentially a given in multi-label classification literature that in order to obtain competitive results, a learner should be able to model the dependence structure between labels in some way. Whenever a new MLC algorithm is proposed, it will be compared to independent label learning (BR) and if it has superior empirical performance, it is usually ascribed to its ability of modelling label dependence in some ad-hoc way (examples?). The authors of [@Dembczyski2010], [@Dembczynski] and [@Dembczyski] were the first to point out this lack of understanding of the term *label dependence*  in the literature (later on a comprehensive and extended discussion of the topics covered in the aforementioned papers was given in [@Dembcz2012]). They argued that *label dependence* is only understood and used by most in the literature in a purely intuitive manner, and that in order to build a better understanding of multi-label classifiers, theoretical backing is essential.
+
+Modelling each label independently, *i.e.* using the binary relevance (BR) approach, is one of the simplest and most intuitive approaches to tackling the multi-label problem. But it has been criticized and overlooked by the majority because it does not take into account the possible dependence between labels. However, BR has many advantages. [@Dembcz2012] shows that BR is the risk minimizer of the Hamming Loss and [@Readd] pointed out that it is very rare for 'improved' methods to achieve significantly better results than BR in terms of this measure (also visible in [@Madjarov2012] (make sure)). In addition, BR is highly resistant to overfitting label combinations, since it does not expect samples to be associated with previously-observed combinations of labels [Read2011a]. It can naturally handle data streaming or other dynamic scenarios where the addition and removal of labels are quite common. BR's biggest strength is its low computational complexity compared to other multi-label classification methods. It scales linearly with increasing number of labels and it is easily parallelizable - desirable properties, especially working with large label sets.
+
+Recently, [@Reade] has gone so far as to claim that BR can perform just as well as methods supposedly modelling label dependence, and if it does not, it is usually because of the inadequacy of the base learners used. In other words, if the base learner can extract the right features, BR will be as good as any other multi-label classifier, without the need to model label dependence. Some theoretical justifications were given but the empirical evidence was not convincing. This is what motivated the writing of this chapter - to answer the question, "is it essential for a multi-label classifier to take label correlations into account in order to be optimal?". To investigate this one needs a thorough, theoretical understanding of *label dependence*, how to possibly exploit it and how to evaluate it. This is what this chapter aims to do. Most of the work is based on the papers [@Dembcz2012] and [@Reade]. We will also attempt to back up the theory with empirical results.
+
+## Conclusion
+
++ more empirical evidence is needed; with with wide range of data sets, algos and measures; compare with statistical tests and consider computation time (training and test)
++ part on statistical tests in [@Gibaja2015]
++ trees for efficiency, ensembles for predictive performance, transformation methods for flexibility
+
++ label correlation understanding is holy grail of ML [@Sorower]
++ complement of this paper would be a broad empirical study

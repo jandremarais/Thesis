@@ -11,29 +11,19 @@ Take the Spatial Regularisation Network (SRN) in the previous chapter as an exam
 
 For this reason, we want to provide a standardised and robust comparison of the some the most promising approaches in the literature. To standardise the comparisons, we will evaluate the chosen approaches using the same base CNN and optimisation procedure. To ensure robustness, we will evaluate the methods on two very distinct multi-label image datasets (described in Appendix \ref{app:data}), using multiple diverse evaluation metrics and using cross-validation for a better estimate of generalisation ability which will also allow us to report standard deviations of errors.
 
-There are 5 main question we attempt to answer in this chapter. They are:
+There are 4 main question we attempt to answer in this chapter. They are:
 
-1. How do visual features learned from single-label image classification datasets compare to features learned from object detection datasets in terms of their transferability to multi-label image classification tasks?
+1. How do the different loss functions act as a surrogate for the micro and macro F-score? (bce vs weighted bce vs rank loss vs retina loss)
 
-2. How do the different loss functions act as a surrogate for the micro and macro F-score? (bce vs weighted bce vs rank loss vs retina loss)
+2. Does multi-level predictions help to detect small objects?
 
-3. Does multi-level predictions help to detect small objects?
+3. Which extension works best to explicitly model label correlations? CG vs chaining vs SE-module
 
-4. Which extension works best to explicitly model label correlations? CG vs chaining vs SE-module
-
-5. How does learnable label calibration modules compare to brute force search?
+4. How does learnable label calibration modules compare to brute force search?
 
 After getting closer to the answers of these questions we will train a final model taking into considerations the empirical findings to see how accurate we can get on both datasets.
 
-- what am I going to do with SRN?
-
-## Transfer Learning for Multi-Label Image Classification
-
-### Method
-
-### Results
-
-### Discussion
++ what am I going to do with SRN?
 
 ## Loss Functions for Multi-Label Image Classification
 

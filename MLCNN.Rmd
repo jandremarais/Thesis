@@ -3,6 +3,8 @@
 
 ```{r, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+
+library(tidyverse)
 ```
 
 ## Introduction
@@ -135,31 +137,9 @@ There are some interesting proposals in the literature which we will have a look
 
 ### How do we evaluate MLIC models?
 
-There is a plethora of metrics to evaluate the performance of multi-label classifiers. They can be divided into two groups: example-based and label-based measures. Example-based measures compare the actual labels versus the predicted labels for each **observation** and then computes the average across all the observations in the dataset. Label-based measures evaluates the predictions on a per **label** basis and then averages across all labels. @Zhang2014 provides the full taxonomy.
-
-The most common measures in MLIC are the micro and macro precision, recall and $F_{1}$-measure, as well as the mean average precision (mAP). These metrics are more robust to class imbalance. It is useful to report the performance of a multi-label classifier using multiple and contrasting measures. An improvement in one mertric does not guarrantee an improvement in another. For example, the optimal label calibration for the micro $F_{1}$-score will not be the same for the macro $F_{1}$-score.
-
 We can't directly optimse a DNN for these multi-label metrics using stochastic gradient descent (SGD), therefore we will need an appropriate (approximately) differentialble surrogate loss function. The standard choice is to use the binary cross-entropy averaged over all labels, but some other suggestions have been made which will be discussed in the next section.
 
-The goal of the discussion up to now was to give the reader a clear understanding of the following:
-
-+ The general task of MLIC,
-+ The differences compared to single label classification in terms of the input, output and evaluation, and
-+ How these differences present new challenges for DNNs.
-
-Now we can move on to the existing approaches for DNNs for MLIC.
-
 ## Overview of Existing Approaches
-
-Approaches to MLC can be divided into two groups: Problem Transformation (PT) and Algorithm Adaption (AA). PT algorithms are any method that transforms the MLC problem into one or more binary or multiclass classification problems. The simplest example of such an algorithm is the binary relevance (BR) method. BR transforms the MLC task into $K$ binary classification tasks where $K$ is the number of unique labels in the dataset. By training a classifier for each label separately, the BR approach cannot exploit label correlations. 
-
-One solution to this may be to sequentially train a classifier to predict a label and then in the next iteration to use that label's predicted values as additional input to the classifiers trained to predict the rest of the labels. Now some interaction between labels are considered in the modelling process. This approach is called Classifier Chains (CC). The challenge here is to determine in which order to predict the labels. For example, if label $i$ "depends" on label $j$, we would first want to train a model to predict label $j$ and then use those predicted values as additional input for the classifier trained to predict label $i$.
-
-For both BR and CC we need to train at least[^CC] $K$ classifiers. The greater $K$ becomes the less feasible it is to use DNNs as the base model. The final PT example we will give is the label powerset (LP) algorithm. The LP algorithm transforms the MLIC task to a multiclass classification task by treating each unique combination of labels as a new class. This results in a possible $2^K$ number of classes and the disadvantage here is that some combinations will be extremely rare, making it hard for a classifier to learn. The LP method is capable of exploiting label correlations. Note that the use of ensembling is also common to improve on these methods. Sometimes they are assigned to their own group of multi-label classifiers, Ensemble Methods. The popular algorithms here are the ensemble of CC's (ECC) and the Random $k$ labelsets (Rakel).
-
-[^CC]: There is no limit to how long the chain of a CC algorithm should be. After predicting all the labels, one can start from the beginning again, for which we would then have predicted scores for all labels which can be treated as input.
-
-The other group of multi-label classifiers are the AA methods. These are any method for which a single label classifier was internally adapted to suit MLC. For example the multi-label $k$-nearest neighbours (ML-kNN) [@Zhang2007] approach is just an adaption of the the conventional kNN algorithm so that it can handle multiple labels per observation. 
 
 It is very simple to adapt a DNN to suit a MLC problem. Recall that in a multiclass classification problem we would use a softmax layer activation on the final layer of a DNN. The softmax transforms the output so that the class scores are squeezed into the range of 0-1 and so that the class scores sum to 1. This is done so that the class scores better imitate class probabilities. However, when an observation can be associated with more than one label, we wouldn't expect the class probabilities to sum to 1. Therefore, a sigmoid activation is used on the output layer of a DNN for MLC. The sigmoid squeezes the class scores in the range of 0-1 without the constraint that the values should sum to 1. See Figure \@ref(fig:sigsof) for an illustration of the differences between sigmoid and softmax.
 
@@ -177,6 +157,109 @@ data.frame(x, y = c(sig_x, sof_x), transform = c(rep("sigmoid", length(sig_x)),
 ```
 
 It turns out that a DNN with a sigmoid output layer is a very good baseline model for MLIC. It is only necessary to train one network to predict all labels and the network implicitly takes label correlations into account since the weights were trained to optimise all labels. For a MLIC problem, one can use a pretrained single-label classification network, say on ImageNet, swap out its softmax layer with a sigmoid layer and then fine-tune the network (with binary cross-entropy) on your specific data and achieve very good results. Although this method may be sufficient in some cases, there are ways to improve on this architecture. They are discussed below, sorted in order of publishing date. Remember, we are only considering end-to-end network approaches.
+
+## Multi-Label Loss functions
+
+One of the main considerations when switching from single-label to multi-label CNNs is the choice of loss function to minimise, *i.e.* how the network penalises the deviation between the predicted and true labels. The loss function needs to suit the multi-label output. We divide the loss functions used for training multi-label CNNs into two classes: cross-entropy based and ranking based.
+
+### Cross-Entropy Based
+
+The simplest and standard choice is to use the binary cross-entropy (BCE) loss calculated over each predicted-true label pair. Suppose the output from the network given the $i$-th input is $K$-dimensional vector $\boldsymbol{p}_{i}=(p_{i1}, p_{i2},\dots,p_{iK})$, each element corresponding to the network's confidence that a certain label is associated with the input image. Assume that the final layer of the network is a sigmoid activation and therefore $p_{ij}\in(0,1)$. Let the true labels for that image be represented by the $K$-dimensional vector $\boldsymbol{y}_{i}=(y_{i1}, y_{i2},\dots,y_{iK})$ where $y_{ij}=1$ if label $j$ is associate with image $i$ and $y_{ij}=0$ if not. Then the cross-entropy for binary output $j$ can be given as
+
+$$
+\text{CE}(p_{ij},y_{ij})=-\left(y_{ij}\log(p_{ij})+(1-y_{ij})\log(1-p_{ij})\right),
+$$
+which can also be given by
+$$
+\text{CE}(p_{ij},y_{ij})=
+\begin{cases}
+-\log(p_{ij}) & \quad\text{if } y_{ij}=1\\
+-\log(1-p_{ij}) & \quad\text{if } y_{ij}=0.\\
+\end{cases}
+$$
+Thus the cross-entropy penalises $p_{ij}$ close to zero when $y_{ij}=1$ (label $j$ is present) and $p_{ij}$ near 1 when $y_{ij}=0$. When training the network the cross-entropy is summed over all labels and averaged over the data points in a batch to get the loss for that batch:
+
+$$
+L=\frac{1}{n}\sum_{i=1}^{n}\sum_{j=1}^{K}\text{CE}(p_{ij},y_{ij})
+$$
+This is what is referred to when reading "trained with binary cross-entropy", for example in [@Rajpurkar2017].
+
+The authors of [@Wang2017] found that their network had trouble learning positive labels *i.e.* the network had a low recall. They argued that it was because of the small proportion of positive labels per image. To counter this imbalance, they proposed a balancing factor to give more weight to missclassified positive labels. Let $\beta_{i}$ be the proportion of positive labels for image $i$, *i.e* $\beta_{i}=\frac{\sum_{j=1}^{K}y_{ij}}{K}$. They then reweighted the cross-entropy loss as follows:
+
+$$
+\text{W-CE}(p_{ij},y_{ij})
+=
+\begin{cases}
+-\frac{1}{\beta_{i}}\log(p_{ij}) & \quad\text{if } y_{ij}=1\\
+-\frac{1}{1-\beta_{i}}\log(1-p_{ij}) & \quad\text{if } y_{ij}=0\\
+\end{cases}
+$$
+This formulation gives a larger penalty to a missclassified positive label if the proportion of positive labels for the corresponding output is small. For example, if an input image is labeled with only 1 out 10 possible labels, the loss contributed if it was missclassified will be scaled by a factor of 10 (from $\frac{1}{0.1}$), whereas the loss contributed by the missclassified negative labels will only be scaled by a factor of 1.1111 (from $\frac{1}{1-0.1}$). The reverse would be true if for example 9 out the 10 possible labels are associated with an image. In [@Wang2017] they found that the $\text{W-CE}$ loss gave the best results in terms of the area under the ROC curve (AUC) for each label.
+
+Of course there are other ways of defining the balancing factor. Another common convention to deal with class imbalance is to weight the contribution made by each label separately according to their proportions of positive instances, instead of a per observation weighting as was done previously.
+
+Although these weighting schemes can give rare classes greater weight in the loss calculcation, it cannot differentiate between easy and hard examples, *i.e.* the weights are independent of how wrong or right the network is. We refer to the correctly predicted labels with high confidence as easy examples and those incorrectly predicted with high confidence as hard examples. 
+
+Observe the negative log function of values between 0 and 1 in \autoref{fig:focal}. Notice that for values greater than 0.5 the negative log function still produces a relatively large non-zero value. This means that correctly classified examples ($p>0.5$) will still make a significant contribution to the overall loss incurred. We actually want a curve that is relatively flatter for values greater than roughly 0.6 and steeper for values less than say 0.4. This will ensure that the loss focusses more on the so-called hard examples. 
+
+One such loss function is proposed in the field of object detection, called the *Focal loss* [@Lin2017]. The focal loss is defined as
+
+$$
+\text{FL}(p_{ij},y_{ij})=
+\begin{cases}
+-(1-p_{ij})^{\gamma}\log(p_{ij}) & \quad\text{if } y_{ij}=1\\
+-p_{ij}^{\gamma}\log(1-p_{ij}) & \quad\text{if } y_{ij}=0,\\
+\end{cases}
+$$
+where $\gamma$ is tunable focussing parameter $\gamma\ge 0$. This can be regarded as another form of the weighted cross-entropy, only this time, the weight is dependent on the confidence the network has in each label, $p_{ij}$. Consider the case where image $i$ is tagged with label $j$ ($y_{ij}=1$). If the network incorrecly has a low confidence that label $j$ is relevant ($p_{ij}$ close to zero), the scaling factor of the cross-entropy will be close to 1 and will have virtually no reduction in the cross-entropy. However, as the label confidence grows and the network becomes more certain that label $j$ is relevant to image $i$ ($p_{ij}\to 1$), the scaling factor reduces the cross-entropy by a greater amount. Therefore, when $p_{ij}>0.6$, the loss contribution will have a relatively much smaller contribution to the overall loss. A similar interpretation can be given for the case when $y_{ij}=0$. 
+
+```{r, fig.cap="The loss contributions made by the focal loss.\\label{fig:focal}", echo=FALSE}
+
+fl <- function(p, v=0) {
+  -(1-p)^v * log(p)
+}
+
+p <- seq(0.0001, 0.9999, length.out = 100)
+
+data.frame(p, a0 = fl(p), a1 = fl(p, 1), a2 = fl(p, 2), a5 = fl(p, 5)) %>%
+  gather(weight, loss, -p) %>% 
+  ggplot(aes(p, loss)) + geom_line(aes(color = weight)) +
+  theme_minimal() +
+  scale_y_continuous(limits = c(0, 5)) +
+  scale_color_discrete(name = expression(gamma), labels = c("0", "1", "2", "5")) +
+  ylab(expression((1-p)^gamma*log(p)))
+
+```
+
+\autoref{fig:focal} shows how the focal loss has a flatter penalty for correctly classified labels with high confidence. The effect of this down weighting is controlled by $\gamma$. If $\gamma=0$ the focal loss equivalent to the cross-entropy loss. The greater $\gamma$ the greater the down weighting. The creators of the focal loss found that $\gamma=2$ gave satifying results but that the focal loss is not that sensitive to this choice. The metric of interest was the average precision.
+
+To the best of our knowledge, the focal loss has never before been used for multi-label classification, only for object detection. We report some of our findings in the next chapter along with experiments using a combination of the weighted cross-entropy and the focal loss.
+
+### Ranking Based
+
+While in multi-label image classification we care most about correctly classifying positive labels, it is equally important for the classifier to make sensible mistaktes, *i.e.* even if it fails to classify any positive labels it should still give higher scores to the positive labels compared to the negative labels. Thus it is desired for $p_{iu}>p_{iv}$, $\forall u \in L_{i}$, $v\notin Y_{i}$, where $Y_{i}$ is the labelset associated with the $i$-th image. To help ensure this we can choose to train the CNN using a rank based loss function. These may also act as better surrogates for some rank based multi-label evaluation metrics like AUC.
+
+The first use of a ranking based loss in the context of multi-label image classification using CNNs can be found in [@Gong2013]. The *pairwise-ranking loss* can be given as
+
+$$
+L_{rank}=\sum_{i=1}^{n}\sum_{v\notin Y_{i}}\sum_{u\in Y_{i}}\max(0, 1-p_{iu}+p_{iv}))
+$$
+Thus a non-zero loss will be contributed by a positve label, $p_{iu}$, and negative label, $p_{iv}$, if $p_{iu}-p_{iv}<1$. This condition will always be true if the final layer of the newtork is a sigmoid activation. Then we would want $p_{iu}$ to be as close as possible to 1 and $p_{iv}$ as close as possible to zero. This is calculated for each positive and negative label pair of an image and for each image in a batch to determine the final pairwise rank loss. However, here it is not necessary for sigmoid activation at the output. It is also possible to swap the constant 1 with any other constant to change the margin. 
+
+The authors of [@Gong2013] found that $L_{rank}$ does not optimise top-$k$ accuracy and therefore proposed the use of the *Weighted Approximate Ranking* (WARP) loss, defined as:
+
+$$
+L_{WARP}=\sum_{i=1}^{n}\sum_{v\notin Y_{i}}\sum_{u\in Y_{i}}w(r_{i}^{u})\max(0, 1-p_{iu}+p_{iv}))
+$$
+where $w(\cdot)$ is a weighting function and $r_{i}^{u}$ the estimated rank for positive label $u$. They used the following weighting function:
+
+$$
+w(r)=\sum_{j=1}^{r}\frac{1}{j}
+$$
+
+The idea is that the loss contribution for a label pair should have a greater weight if the 
+
++ LSEP (very similar to BP-MLL but with a bias term and negative sampling)
 
 ### [Deep Convolutional Ranking for Multilabel Image Annotation](https://arxiv.org/pdf/1312.4894.pdf)
 
@@ -449,7 +532,9 @@ Focal loss @Lin2017 as a way to do hard example mining and to overcome class imb
 
 ### Multi-scale features
 
-A challenge in MLIC not receiving nearly enough attention is the challenge of recognising objects of vastly different scales. Although the CNN-RNN architecture can do this. Fortunately in object detection this issue ...
+A challenge in MLIC not receiving nearly enough attention is the challenge of recognising objects of vastly different scales. Although the CNN-RNN architecture can do this. Fortunately in object detection this issue has been attended to.
+
+See also: https://arxiv.org/pdf/1712.00433.pdf
 
 In brief, FPN augments a standard convolutional network with a top-down pathway and lateral connections so the network efficiently constructs a rich, multi-scale feature pyramid from a single resolution input image. Each level of the pyramid can be used for detecting objects at a different scale.
 
@@ -461,10 +546,6 @@ knitr::include_graphics('figures/fpn.png')
 
 + glove/ word2vec embeddings
 + not sure if already done
-
-## Future Directions
-
-+ want to compare all these methods empirically in a standardised way.
 
 + Meta Analysis:
 

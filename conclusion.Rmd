@@ -1,6 +1,21 @@
 # Conclusion
 \label{chp:conc}
 
+## Contributions
+
+Novel contributions made to the literature by this thesis:
+
++ First review of multi-label DNNs - there are a few papers on ML-CNN. They are usually compared to only a limited number of other approaches, on limited number of datasets and limited number of metrics. To the best of our knowledge, at the time of completing this thesis, no other work provides such an extensive review of the literature.
+
++ Some of the proposed algorithms empirical evaluations are lacking completeness. Usually they lack combinations of either or all of the following:
+
+    + evaluated on multiple benchmark datasets
+    + evaluated in terms of a representative set of multi-label evaluation metrics
+    + estimated errors provided with standard errors
+    + compared with a wide range of state-of-the-art algortihms
+
++ improvements on existing approaches?
+
 + summary
 + contributions
 + reccomendations
