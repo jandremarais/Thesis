@@ -160,11 +160,16 @@ It turns out that a DNN with a sigmoid output layer is a very good baseline mode
 
 ## Multi-Label Loss functions
 
-One of the main considerations when switching from single-label to multi-label CNNs is the choice of loss function to minimise, *i.e.* how the network penalises the deviation between the predicted and true labels. The loss function needs to suit the multi-label output. We divide the loss functions used for training multi-label CNNs into two classes: cross-entropy based and ranking based.
+One of the main considerations when switching from single-label to multi-label CNNs is the choice of loss function to minimise, *i.e.* how the network penalises the deviation between the predicted and true labels. Recall that when training a CNN, $f(x,\theta)\in \mathbb{R}^{K}$, we solve the optimisation problem
+
+$$
+\min_{\theta}\frac{1}{N}\sum_{i=1}^{N}l(f(x_{i},\theta), y_{i})+\mathcal{R}(\theta),
+$$
+where $l(f(x_{i},\theta), y_{i})$ is the loss for observation $i$ and $\mathcal{R}(\theta)$ is a regularisation term. The loss function needs to suit the multi-label output. We divide the loss functions used for training multi-label CNNs into two classes: cross-entropy based and ranking based.
 
 ### Cross-Entropy Based
 
-The simplest and standard choice is to use the binary cross-entropy (BCE) loss calculated over each predicted-true label pair. Suppose the output from the network given the $i$-th input is $K$-dimensional vector $\boldsymbol{p}_{i}=(p_{i1}, p_{i2},\dots,p_{iK})$, each element corresponding to the network's confidence that a certain label is associated with the input image. Assume that the final layer of the network is a sigmoid activation and therefore $p_{ij}\in(0,1)$. Let the true labels for that image be represented by the $K$-dimensional vector $\boldsymbol{y}_{i}=(y_{i1}, y_{i2},\dots,y_{iK})$ where $y_{ij}=1$ if label $j$ is associate with image $i$ and $y_{ij}=0$ if not. Then the cross-entropy for binary output $j$ can be given as
+The simplest and standard choice is to use the *binary cross-entropy loss*. This is simple the binary cross-entropy calculated for each label separately and then summed over all labels. Suppose the output from the network given the $i$-th input is the $K$-dimensional vector $\boldsymbol{p}_{i}=(p_{i1}, p_{i2},\dots,p_{iK})$, each element corresponding to the network's confidence that a certain label is associated with the input image. Assume that the final layer of the network is a sigmoid activation and therefore $p_{ij}\in(0,1)$. Let the true labels for that image be represented by the $K$-dimensional vector $\boldsymbol{y}_{i}=(y_{i1}, y_{i2},\dots,y_{iK})$ where $y_{ij}=1$ if label $j$ is associate with image $i$ and $y_{ij}=0$ if not. Then the cross-entropy for binary output $j$ can be given as
 
 $$
 \text{CE}(p_{ij},y_{ij})=-\left(y_{ij}\log(p_{ij})+(1-y_{ij})\log(1-p_{ij})\right),
@@ -177,10 +182,10 @@ $$
 -\log(1-p_{ij}) & \quad\text{if } y_{ij}=0.\\
 \end{cases}
 $$
-Thus the cross-entropy penalises $p_{ij}$ close to zero when $y_{ij}=1$ (label $j$ is present) and $p_{ij}$ near 1 when $y_{ij}=0$. When training the network the cross-entropy is summed over all labels and averaged over the data points in a batch to get the loss for that batch:
+Thus the cross-entropy penalises $p_{ij}$ close to zero when $y_{ij}=1$ (label $j$ is present) and $p_{ij}$ near 1 when $y_{ij}=0$. The loss for a single observation can then be given by:
 
 $$
-L=\frac{1}{n}\sum_{i=1}^{n}\sum_{j=1}^{K}\text{CE}(p_{ij},y_{ij})
+l_{CE}(\boldsymbol{p_{i}},\boldsymbol{y_{i}})=\sum_{j=1}^{K}\text{CE}(p_{ij},y_{ij})
 $$
 This is what is referred to when reading "trained with binary cross-entropy", for example in [@Rajpurkar2017].
 
@@ -242,14 +247,14 @@ While in multi-label image classification we care most about correctly classifyi
 The first use of a ranking based loss in the context of multi-label image classification using CNNs can be found in [@Gong2013]. The *pairwise-ranking loss* can be given as
 
 $$
-L_{rank}=\sum_{i=1}^{n}\sum_{v\notin Y_{i}}\sum_{u\in Y_{i}}\max(0, 1-p_{iu}+p_{iv}))
+l_{rank}(\boldsymbol{p_{i}},\boldsymbol{y_{i}})=\sum_{v\notin Y_{i}}\sum_{u\in Y_{i}}\max(0, 1-p_{iu}+p_{iv}))
 $$
 Thus a non-zero loss will be contributed by a positve label, $p_{iu}$, and negative label, $p_{iv}$, if $p_{iu}-p_{iv}<1$. This condition will always be true if the final layer of the newtork is a sigmoid activation. Then we would want $p_{iu}$ to be as close as possible to 1 and $p_{iv}$ as close as possible to zero. This is calculated for each positive and negative label pair of an image and for each image in a batch to determine the final pairwise rank loss. However, here it is not necessary for sigmoid activation at the output. It is also possible to swap the constant 1 with any other constant to change the margin. 
 
-The authors of [@Gong2013] found that $L_{rank}$ does not optimise top-$k$ accuracy and therefore proposed the use of the *Weighted Approximate Ranking* (WARP) loss, defined as:
+The authors of [@Gong2013] found that $l_{rank}$ does not optimise top-$k$ accuracy and therefore proposed the use of the *Weighted Approximate Ranking* (WARP) loss, defined as:
 
 $$
-L_{WARP}=\sum_{i=1}^{n}\sum_{v\notin Y_{i}}\sum_{u\in Y_{i}}w(r_{i}^{u})\max(0, 1-p_{iu}+p_{iv}))
+l_{WARP}(\boldsymbol{p_{i}},\boldsymbol{y_{i}})=\sum_{v\notin Y_{i}}\sum_{u\in Y_{i}}w(r_{i}^{u})\max(0, 1-p_{iu}+p_{iv}))
 $$
 where $w(\cdot)$ is a weighting function and $r_{i}^{u}$ the estimated rank for positive label $u$. They used the following weighting function:
 
@@ -257,9 +262,45 @@ $$
 w(r)=\sum_{j=1}^{r}\frac{1}{j}
 $$
 
-The idea is that the loss contribution for a label pair should have a greater weight if the 
+The idea is that the loss contribution for a label pair should have a greater weight if the positive label is not ranked near the top of the label list, *i.e.* when $r$ is large. $r_{i}^{u}$ is an estimation of the label $u$'s rank for image $i$. This estimation is based on the output of the network, $\boldsymbol{p_{i}}$. [@Gong2013] used a sampling approach to estimate the rank, based on the number of trials it took to sample a negative label given a positive label for which $p_{iu}-p_{iv}<1$. This adds extra computation to the loss calculation and gets very expensive as the number of labels become larger. In addition, the hinge function used inside the ranking loss is not smooth everywhere and is therefore difficult to optimise.
 
-+ LSEP (very similar to BP-MLL but with a bias term and negative sampling)
+Recently, [@Li2017] proposed a smooth approximation of $l_{rank}$, which also does not require a rank estimation stage. This approximation uses the log-sum-exp pairwise function and therefore they called it the LSEP loss:
+
+$$
+l_{LSEP}(\boldsymbol{p_{i}},\boldsymbol{y_{i}})=\log\left(1+\sum_{v\notin Y_{i}}\sum_{u\in Y_{i}}\exp(p_{iv}-p_{iu})\right)
+$$
+
+```{r, fig.cap="The hinge function compared to the log-sum-exp function for different margins.\\label{fig:rankloss}", echo=FALSE}
+
+m <- seq(-2, 1, length.out = 100)
+
+hinge <- sapply(m, function(a) max(c(0, 1 + a)))
+lsep <- exp(m)
+
+data.frame(m, hinge, lsep) %>%
+  gather(f, loss, -m) %>% 
+  ggplot(aes(m, loss)) + geom_line(aes(color = f)) +
+  theme_minimal() +
+  xlab(expression(p[iv]-p[iu])) +
+  scale_color_discrete(name = "", 
+                       labels = c(expression(max() (0, 1 - p[iu] + p[iv])),
+                                  expression(exp(p[iv]-p[iu])))) +
+  theme(legend.text.align = 0)
+```
+
+See \autoref{fig:rankloss} how the contribution made by each pair of labels differ between the pairwise ranking loss and the LSEP loss. Note, that $\exp{(p_{iv}-p_{iu})}$ will give a much higher loss for large values of $p_{iv}-p_{iu}$ compared to $\max (1-p_{iu}+p_{iv})$. However, this difference is reduced by the log function in $l_{LSEP}$.
+
+The authors of [@Li2017] argue that it is not necessary to add a weighting mechanism as in $l_{WARP}$ since weighting is done implicity by $l_{LSEP}$. $l_{LSEP}$ is also quite similar to the *BP-MLL* loss proposed in [@Nam2013] for text classification and genomics:
+
+$$
+l_{BP-MLL}=\sum_{v\notin Y_{i}}\sum_{u\in Y_{i}}\exp(p_{iv}-p_{iu})
+$$
+
+According to [@Li2017] $l_{LSEP}$ is numerically more stable and focuses more on the violating cases ($p_{iv}>p_{iu}$), whereas $l_{BP-MLL}$ keeps pushing $p_{iu}-p_{iv}$ to $\infty$, because it lacks the $\log(1+\text{pairwise-loss})$ form of $l_{LSEP}$.
+
+Computing the loss contributed by each pair of labels can become computationaly infeasible if $K$ is large. Therefore [@Li2017] also introduced a sampling trick to let the loss function scale linearly with increase in $K$. Instead of calculating the loss for each positive-negative label pair, they only sample a maximum of $t$ pairs from the Cartesian product, where they set $t=1000$.
+
+In their results they found that $l_{LSEP}$ performed better than $l_{rank}$, $l_{WARP}$ and $l_{BP-MLL}$ in terms of the macro $F_{1}$-score and exact match measures, evaluated on 3 multi-label image benchmark datasets. It will be interesting to see how it compared to the cross-entopy based loss functions. We will investigate this in the next chapter.
 
 ### [Deep Convolutional Ranking for Multilabel Image Annotation](https://arxiv.org/pdf/1312.4894.pdf)
 
