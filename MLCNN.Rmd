@@ -244,7 +244,7 @@ To the best of our knowledge, the focal loss has never before been used for mult
 
 While in multi-label image classification we care most about correctly classifying positive labels, it is equally important for the classifier to make sensible mistaktes, *i.e.* even if it fails to classify any positive labels it should still give higher scores to the positive labels compared to the negative labels. Thus it is desired for $p_{iu}>p_{iv}$, $\forall u \in L_{i}$, $v\notin Y_{i}$, where $Y_{i}$ is the labelset associated with the $i$-th image. To help ensure this we can choose to train the CNN using a rank based loss function. These may also act as better surrogates for some rank based multi-label evaluation metrics like AUC.
 
-The first use of a ranking based loss in the context of multi-label image classification using CNNs can be found in [@Gong2013]. The *pairwise-ranking loss* can be given as
+The first use of a ranking based loss in the context of multi-label image classification using CNNs can be found in [@Gong2013], which is also the first published work on multi-label image classification with CNNs. The *pairwise-ranking loss* can be given as
 
 $$
 l_{rank}(\boldsymbol{p_{i}},\boldsymbol{y_{i}})=\sum_{v\notin Y_{i}}\sum_{u\in Y_{i}}\max(0, 1-p_{iu}+p_{iv}))
@@ -293,7 +293,7 @@ See \autoref{fig:rankloss} how the contribution made by each pair of labels diff
 The authors of [@Li2017] argue that it is not necessary to add a weighting mechanism as in $l_{WARP}$ since weighting is done implicity by $l_{LSEP}$. $l_{LSEP}$ is also quite similar to the *BP-MLL* loss proposed in [@Nam2013] for text classification and genomics:
 
 $$
-l_{BP-MLL}=\sum_{v\notin Y_{i}}\sum_{u\in Y_{i}}\exp(p_{iv}-p_{iu})
+l_{BP-MLL}(\boldsymbol{p_{i}},\boldsymbol{y_{i}})=\sum_{v\notin Y_{i}}\sum_{u\in Y_{i}}\exp(p_{iv}-p_{iu})
 $$
 
 According to [@Li2017] $l_{LSEP}$ is numerically more stable and focuses more on the violating cases ($p_{iv}>p_{iu}$), whereas $l_{BP-MLL}$ keeps pushing $p_{iu}-p_{iv}$ to $\infty$, because it lacks the $\log(1+\text{pairwise-loss})$ form of $l_{LSEP}$.
@@ -302,38 +302,6 @@ Computing the loss contributed by each pair of labels can become computationaly 
 
 In their results they found that $l_{LSEP}$ performed better than $l_{rank}$, $l_{WARP}$ and $l_{BP-MLL}$ in terms of the macro $F_{1}$-score and exact match measures, evaluated on 3 multi-label image benchmark datasets. It will be interesting to see how it compared to the cross-entopy based loss functions. We will investigate this in the next chapter.
 
-### [Deep Convolutional Ranking for Multilabel Image Annotation](https://arxiv.org/pdf/1312.4894.pdf)
-
-To the best of my knowledge, this is the first work on using Convolutional Neural Networks (CNNs) for the problem of MLIC. Their main focus was to find a loss function more suitable for MLIC. They used a standard VGG-like CNN architecture and tested the KL-divergence, pairwise-ranking loss and the weighted approximate ranking (WARP) loss. They tested it on the [NUS-WIDE](ftp://vista.eng.tau.ac.il/dropbox/Litman/NUS-WIDE%20Homepage/NUS-WIDE%20Homepage.html) dataset and found the WARP loss to give the best results. They also compared it to conventional image feature extraction used with classical classifiers to show that the representation learning approach of CNNs outperforms these methods.
-
-The WARP loss is just a weighted version of the pairwise-ranking loss, weighted by a function of the estimated rank of the labels, hence the name. The pairwise ranking loss is given as
-
-$$
-J_{rank}=\sum_{i=1}^{n}\sum_{j=1}^{c+}\sum_{k=1}^{c-}\max(0, 1-f_{j}(\boldsymbol{x}_{i})+f_{k}(\boldsymbol{x}_{i}))
-$$
-where $j$ is the index for the positive labels of observation $i$ (of which there are $c+$) and $k$ the index of the negative labels (of which there are $c-$). A non-zero loss is incurred if $f_{j}(\boldsymbol{x}_{i})+f_{k}(\boldsymbol{x}_{i})<1$, *i.e* when the predicted score of a positive label is not by an offset of 1 bigger than the predicted score of a negative label. This we will call a violation. Therefore we want for any pair (positive label, negative label) the predicted score of the positive label to be much higher than the predicited score for the negative label. Note, if the output of the model, $f(\boldsymbol{x}_{i})$ is between 0-1, a non-zero loss will always occur.
-
-+ is this actually the hinge loss?
-
-The authors found that this loss function optimises the area under the ROC curve. However, they were more interested in optimising top-$k$ accuracy. Therefore they incorporated a weighting function, $L(.)$, into the pairwise-ranking loss to weight the loss contribution by the estimate rank of the positive label. This resulted in the WARP loss:
-
-$$
-J_{WARP}=\sum_{i=1}^{n}\sum_{j=1}^{c+}\sum_{k=1}^{c-}L(r_{j})\max(0, 1-f_{j}(\boldsymbol{x}_{i})+f_{k}(\boldsymbol{x}_{i})),
-$$
-
-where $r_{j}$ is the estimated rank of the $j$-th class for image $i$. They defined $L(.)$ as:
-
-$$
-L(r)=\sum_{j=1}^{r}\alpha_{j},
-$$
-with $\alpha_{1}\ge \alpha_{2}\ge\dots \ge 0$. In the paper the authors used $\alpha_{j}=\frac{1}{j}$. $L(.)$ assigns a higher weight to the loss when a positive label has higher estimated rank (lower $r_{j}$). The rank of a positive label is estimated through a sampling trick. For each positive label, a negative label is randomly selected until a violation occurs. The estimated rank of a positive label $j$ is given by
-
-$$
-r_{j}=\lfloor \frac{K-1}{s}\rfloor
-$$
-where $s$ is the number of trials it took for a violation to occur. $\lfloor . \rfloor$ denotes the *floor* function. Thus, the longer it takes to randomly find a negative label such that $f_{j}(\boldsymbol{x}_{i})+f_{k}(\boldsymbol{x}_{i})<1$, the smaller $r_{j}$ will be.
-
-Note, the experiments were only done on a single dataset and that their metrics were based on a fixed selection of predicted labels, for example $k=5$. Unfortunately, the WARP loss was not compared to the binary cross-entropy loss in this paper.
 
 ### [CNN-RNN: A Unified Framework for Multi-label Image Classification](https://arxiv.org/pdf/1604.04573.pdf)
 
