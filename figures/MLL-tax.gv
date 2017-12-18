@@ -1,6 +1,0 @@
-digraph G {
-  
-  'MLL Algorithms' [shape = box, style = filled, fillcolor = red, alpha = 0.5];
-  'MLL Algorithms' -> {'Problem Transformation' 'Algorithm Adaption'};
-
-}
