@@ -121,7 +121,6 @@ Existing approaches typically exploit label correlations globally by assuming th
 
 #### Class Imbalance
 
-+ https://www.reddit.com/r/MachineLearning/comments/6iq5i8/d_what_are_your_favorite_ways_for_dealing_with/
 + [@Charte2015]
 + towards class imbalance aware multi label learning
 + way of stratifying batches: https://arxiv.org/pdf/1705.00607.pdf
@@ -417,6 +416,3 @@ Recently, [@Reade] has gone so far as to claim that BR can perform just as well 
 + more empirical evidence is needed; with with wide range of data sets, algos and measures; compare with statistical tests and consider computation time (training and test)
 + part on statistical tests in [@Gibaja2015]
 + trees for efficiency, ensembles for predictive performance, transformation methods for flexibility
-
-+ label correlation understanding is holy grail of ML [@Sorower]
-+ complement of this paper would be a broad empirical study

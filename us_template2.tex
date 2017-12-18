@@ -132,6 +132,7 @@ $endfor$
 \fi
 $endif$
 \usepackage{usnomencl}
+\usepackage{acronym}
 $if(natbib)$
 %\usepackage{natbib}
 %\bibliographystyle{$if(biblio-style)$$biblio-style$$else$plainnat$endif$}
@@ -279,6 +280,10 @@ $endif$
 %\maxsecnumdepth{subsubsection}
 %\maxtocdepth{section}
 
+%\renewcommand{\baselinestretch}{1.5}
+%\onehalfspacing
+\linespread{1.213}
+
 \begin{document}
  \frontmatter
  \WaterMark{UScrest-WM}
@@ -321,10 +326,13 @@ $if(lot)$
 \clearpage
 $endif$
 
+$if(loa)$
+\input{$loa$}
+$endif$
+
 $if(nomenclature)$
 \input{$nomenclature$}
 $endif$
-
 
 \mainmatter
    \setsecnumdepth{subsubsection}

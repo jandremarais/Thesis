@@ -1,0 +1,14 @@
+\chapter{List of Abbreviations and/or Acronyms}
+
+\begin{acronym}[SOTA]
+
+\acro{ANN}{Artificial Neural Network}
+\acro{CAD}{Computer Aided Diagnosis}
+\acro{CNN}{Convolutional Neural Network}
+\acro{CV}{Computer Vision}
+\acro{mAP}{Mean Average Precision}
+\acro{MLC}{Multi-Label Classification}
+\acro{SGD}{Stochastic Gradient Descent}
+\acro{SOTA}{State-of-the-Art}
+
+\end{acronym}

@@ -1,0 +1,175 @@
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, echo=FALSE)
+library(tidyverse)
+library(knitr)
+library(kableExtra)
+```
+
+# Multi-Label Classification
+\label{chp:mlc}
+
+## Introduction
+
++ what the rest of the chapter is about
+
+*Multi-label Classification* (MLC) can be viewed as a generalisation of the conventional single-label classification task (binary or multiclass). In a MLC problem, each observation in the dataset may be associated with more than one label and the task is to predict a label set, whose size is unknown  *a priori*, for each unseen observation. There are plenty of real-world applications that fit into this framework: an image annotation problem where each image contains more than one semantic object [@Zhu2017], a text classification task where each document has multiple topics [@Liu2017] or an acoustic classification task where the recordings contain the sounds of multiple bird species [@Zhang2016], to name a few. The realisation of the field's applicability to real-world problems is probably what drives the increasing research interest (see \autoref{pubsperyear}).
+
+```{r pubsperyear, include=FALSE, eval = FALSE}
+library(tidyverse)
+library(ggthemes)
+pubsperyear_data <- read_csv("data/Scopus-2251-Analyze-Year.csv")
+p <- pubsperyear_data %>% gather(database, No, -YEAR) %>% 
+  #mutate(ind2017 = YEAR >= 2017) %>% 
+  filter(YEAR < 2017) %>% 
+  ggplot(aes(YEAR, No)) +
+  geom_line() +
+  theme_minimal() +
+  labs(x = "Year", y = "# Documents") +
+  facet_wrap(~database, labeller = function(variable, value) {
+    dnames <- list(Scopus = "(a) Scopus", SemSchol = "(b) Semantic Scholar")
+    return(dnames[value])}) 
+
+ggsave("pubsperyear.png", plot = p, device = "png", path = "figures", width = 7, height = 4)
+```
+
+![Line graphs illustrating the rise in multi-label learning publications per year for two databases. The database searches were done on 24-03-2017. The searches were not identical since they were limited to the search features of the databases. (a) The search on Scopus (cite) was for all documents (conference papers, articles, conference, articles in press, reviews, book chapters and books) in any subject area with either the words *multi-label* or *multilabel* and either the words *learning* or *classification* found in either their titles, abstracts or keywords. (b) The search on Semantic Scholar was based on machine learning principles and thus automatically decides which research documents are relevant to a specific search query. The query used was *multilabel multi-label learning classification*. The search only returns research in the computer science and neuroscience fields of study. More technical details can be found on the respective engine's websites (probably put details in appendix). \label{pubsperyear}](figures/pubsperyear.png)
+
+The generality of MLC naturally introduces more complexity to the classification task. Questions with non-trivial answers arise, such as: How do we evaluate multi-label models? or; How do we deal with correlated labels? Ideally, these solutions should also take computational power into consideration. The answers to these questions and more will be discussed in this chapter. This will only serve as a general overview, whereas in the later chapters we will zoom in on the problem where the inputs are images.
+
+In \Cref{sec:mlc_def} we give a formal definition of MLC and introduce the major notations that will be used throughout the thesis. In, \Cref{sec:mlc_chal}, \Cref{sec:}, \Cref{sec:}, \Cref{sec:}
+
+## Formal Definition \label{sec:mlc_def} 
+
+Let $\mathcal{L}=\{\lambda_{1},\lambda_{2},\dots,\lambda_{K}\}$ denote the complete set of possible labels that can be assigned to an observation, with $K\ge 3$. Whereas a single-label classifier aims to find which single label $\lambda_{k}$, $k=1,2,\dots,K$, belongs to a given observation, a multi-label classifier is capable of assigning a set of labels $L \subseteq \mathcal{L}$ to any observation. When defining statistical learning algorithms it is usually useful to denote the inputs and outputs in vector or matrix form. Thus we define the output of the $i$-observation as 
+$$
+\boldsymbol{y}_{i}=
+\begin{bmatrix}
+y_{i1} \\ y_{i2} \\ \dots \\ y_{iK}
+\end{bmatrix},
+$$
+where $y_{ik}=1$ if $\lambda_{k}\in L_{i}$ (the $k$-th label is associated with the $i$-the observation) and $y_{ik}=0$ otherwise, for $i=1,2,\dots,N$ and $k=1,2,\dots ,K$. See \autoref{tab:mlc_def} for some examples.
+
+```{r}
+df <- data.frame(
+  i = 1:3,
+  L = c("$\\{\\lambda_{1},\\lambda_{4}\\}$", "$\\{\\emptyset\\}$", "$\\{\\lambda_{2},\\lambda_{3},\\lambda_{4},\\lambda_{5}\\}$"),
+  y1 = c(1,0,0),
+  y2 = c(0,0,1),
+  y3 = c(0,0,1),
+  y4 = c(1,0,1),
+  y5 = c(0,0,1)
+)
+
+colnames(df) <- c("$i$", "$L_{i}$", "$y_{i1}$", "$y_{i2}$", "$y_{i3}$", "$y_{i4}$", "$y_{i5}$")
+
+library(kableExtra)
+library(knitr)
+kable(df, format = "latex", booktabs = TRUE, escape = FALSE,
+      caption = "Multi-label output notation for an example with $K=5$ and $N=3$.\\label{tab:mlc_def}")
+```
+
+Thus the complete definition a multi-label dataset can be given by
+
+$$
+(\boldsymbol{x}_{i},\boldsymbol{y}_{i})_{i=1}^{N},\qquad \boldsymbol{x}_{i}\in\mathbb{R}^{p},\qquad \boldsymbol{y}\in\{0,1\}^{K},\quad K\ge 2.
+$$
+Note that multi-label datasets can come in very different shapes and sizes, mostly characterised by the properties of its outputs. For example, the number of possible labels, $K$, can be anywhere in the range of 3 to 3 million. These properties have a significant impact on how a model performs on the data [@Chekina2011]. Some of these properties are defined and discussed in \Cref{app:data}.
+
+In MLC, we seek a function, $h(\cdot)$, that can take a new observation $\boldsymbol{x}_{0}$ as input and produce a class indicator vector, $\boldsymbol{y}_{0}$. It is often not possible for a classifier to directly output a vector of 0's and 1's and it instead returns a vector of real values, each associated with a specific label. Thus we will also need some thresholding function to map the real values given for each label to binary values. Hence, we can define a multi-label classifier as:
+
+$$
+h(\boldsymbol{x})=t\left((f(\boldsymbol{x})\right),
+$$
+where $f(\boldsymbol{x})\in\mathbb{R}^{K}$ is the label prediction module and $t(\cdot)$ the *thresholding function* or label decision module that takes the real-values for each label and outputs a binary value.
+
+The output of the label prediction module are referred to as class scores and $f(\cdot)$ is usually designed in such a way that the class scores are real-values between zero and one. These scores can loosely be interpreted as posterior class probabilities, $P(\boldsymbol{y}|\boldsymbol{x})$. Suppose we can write 
+
+$$
+f(\boldsymbol{x})=\begin{bmatrix}f(\boldsymbol{x})_{1} \\ 
+f(\boldsymbol{x})_{2} \\ 
+\dots \\
+f(\boldsymbol{x})_{K}\end{bmatrix},
+$$
+then we expect $f(\boldsymbol{x})_{k}$ to be large if the classifier is confident that $\lambda_{k}$ is associated with $\boldsymbol{x}$ and small otherwise. The absolute values of these scores are less important, but we at least want $f(\boldsymbol{x})_{u}>f(\boldsymbol{x})_{v}$ for any $\lambda_{u}\in L,\quad\lambda_{v} \notin L$. From this output we can then obtain a ranking of the labels according to the classifiers confidence in each label's relevance, from high to low.
+
+However, in MLC, we unltimately want to know which labels are associated with each input and thus the need for $t(\cdot)$. A typical choice for $t(\cdot)$ is
+
+$$
+t(a)=\begin{cases}
+1 & \text{if }\quad a>0.5\\
+0 & \text{otherwise}
+\end{cases}
+$$
+but in some cases it may be beneficial to estimate $t(\cdot)$ from the data or find the optimal thresholds using cross-validation. These more complicated approaches are discussed in \Cref{sec:mlc_app}. An example multi-label classifier pipeline may look something in the lines of:
+
+$$
+\boldsymbol{x}\to\begin{bmatrix}0.7 \\ 0.1 \\ 0.2 \\ 0.9 \\ 0.4\end{bmatrix}\to\begin{bmatrix}1 \\ 0 \\ 0 \\ 1 \\ 0\end{bmatrix}
+$$
+
+Just like any supervised learning approach, $h(\cdot)$ is learned from the data. We discuss how this is done in \Cref{sec:mlc_app}. But first, we look at some of the challenges in analysing multi-labeled data.
+
+## Label Correlation and Other Challenges \label{sec:mlc_chal}
+
+There is a positive relationship (?think of better term?) between the number of labels in the data, $K$, and the complexity of a MLC problem [@Read2011]. As $K$ increases, a number of modeling challenges arise. Besides the additional computational power needed for large $K$, it also becomes more likely that the data will suffer from sparse outputs [@Chzhen2017] and class imbalance [@Charte2015], which are notoriously tricky problems to solve in many statistical learning paradigms. One way to possibly alleviate these problems is to exploit the *label dependence* structures in the data. For example, using the information on $\lambda_{k}$ to predict $\lambda_{j}$. This may prove to be helpful when the number of positive training examples for $\lambda_{j}$ is insufficient [@Huang]. Exploiting label dependence in itself is another challenge and finding approaches that can effectively and efficiently do so is the main theme of MLC.
+
+The question is whether or not harnessing label dependencies will improve predictive accuracy. Unfortunately this question cannot be answered in a blanket way since it is totally dependent on the problem, influenced by factors such as the properties of the data and the loss function to be minimised [@Dembszynski2010]. If we inappropriately model label dependence it can add unecessary complexity and additional noise to the problem.
+
+It is important to distinguish between two types of label dependence, *unconditional* and *conditional* dependence. Two labels, $\lambda_{u},\lambda_{v}$, are said to be unconditionaly dependent if
+
+$$
+P(Y_{u},Y_{v})\neq P(Y_{u})\times P(Y_{v}).
+$$
+The unconditional dependence can be seen as the "average" dependence among the labels over all observations. This dependence can be estimated from the data using any type of statistical correlation measure such as Pearson correlation. Despite being beneficial on average, modeling unconditional label dependence may not be optimal for a single point $\boldsymbol{x}$ since labels can also be conditionaly dependent, such that
+
+$$
+P(Y_{u},Y_{v}|\boldsymbol{X} = \boldsymbol{x})\neq P(Y_{u}|\boldsymbol{x})\times P(Y_{v}|\boldsymbol{x}).
+$$
+This type of dependence is much harder to detect and model since it requires the conditioning on a typically large input space. Conditional dependence does not imply unconditional independence, nor the other way around [@Dembszynski2010]. In \Cref{sec:mlcnn_corr} we look at the types of label dependence to be exploited in an image classification problem.
+
+In [@Zhang2014] the existing strategies for multi-label classification are divided into categories based on the order of label correlations being considered by the algorithms. So-called first-order approaches are those that do not take label correlations into account. Second-order approaches consider the pairwise relationships between labels and high-order approaches allows for all interactions between labels and/or combinations of labels. First-order strategies are beneficial in terms of its simplicitybut they ignore label correlations. The latter two strategies are far more complex but also limited in some cases. Second-order strategies will not generalise well when higher-order dependencies exist amongst the labels and the the high-order strategies may 'overfit' if only subgroups of the labels are correlated.
+
+The main message from this section is that we need to think carefully about how observations are labeled and how this process can be modeled by the classifier. We need to decide what type of label dependence our model is going to exploit, if at all, and be aware that it may either introduce bias if it is too restrictive or introduce more noise if it is too complex. The benefits of modelling label dependence is also very dependent on the multi-label loss chosen to be optimised. The different approaches of evaluating multi-label classifiers are discussed next.
+
++ maybe this section needs an example
+
+## Evaluating Multi-Label Classifiers
+
+### Example Based
+
++ ranking vs classification
++ exact match
+
+### Label Based
+
++ ranking vs classification
++ micro vs macro averaging
++ p,r,f, auc
+
+### Validation
+
++ data splitting
+
+
+## Approaches to Multi-Label Classification \label{sec:mlc_app}
+
+### Problem Transformation
+
++ BR, CC, LP
+
+### Algorithm Adaption
+
++ ml-knn
++ nn
+
+### Ensemble Methods
+
++ RAKEL and ECC
+
+### Thresholding Strategies
+
+## Summary
+
+
+
+

@@ -9,9 +9,12 @@ library(tidyverse)
 
 ## Introduction
 
-This post is about using deep neural networks (DNNs) to perform multi-label image classification (MLIC). MLIC is a generalisation of the single-label image classification task. It allows for an input image to be annotated with more than one label (*i.e.* classes are not mutually exclusive) which is often required in real-world applications. DNNs have showed its superiority over other methods when it comes to single-label image classification and other Computer Vision tasks. Here we investigate how it can be used to solve the lesser researched problem of MLIC.
+This post is about using convolutional neural networks (CNNs) to perform multi-label image classification (MLIC). MLIC is a generalisation of the single-label image classification task. It allows for an input image to be annotated with more than one label (*i.e.* classes are not mutually exclusive) which is often required in real-world applications. CNNs have showed its superiority over other methods when it comes to single-label image classification and other Computer Vision tasks. Here we investigate how it can be used to solve the lesser researched problem of MLIC.
 
-To motivate the importance of MLIC, we will give examples of some of its useful applications. Thereafter we will discuss the main challenges of MLIC. The majority of this post covers existing deep learning approaches to MLIC in chronological order of publishing and how they attempt to overcome the above mentioned challenges. Note that we restrict our study space to methods that can be described as end-to-end or unified learning approaches. We will conclude with suggestions for future research.
++ compared to object detection (or in intro chapter)
++ say something on applications (many)
++ objective of chapter
++ outline of chapter
 
 ## Applications
 
@@ -76,7 +79,7 @@ One approach to make better use of single-label feature representations is to tr
 knitr::include_graphics('figures/hcp.png')
 ```
 
-### How does the mutli-labeledness influence learning?
+### How does the multi-labeledness influence learning? \label{mlcnn_corr}
 
 The output space of a MLIC problem can get really big. The number of possible label combinations increases exponentialy with the increase in the number of unique labels in the dataset. This is said to be the key challenge in learning from multi-labeled data - handling such large label spaces. Not only does it require a large amount of computational power (which is not necessarily such a big problem anymore, thanks to DL + GPUs) but it also introduces other problems that needs to be considered in the modeling process, such as extreme class imbalance and label sparsity.
 
@@ -135,11 +138,8 @@ range(apply(chest_Y, 1, sum))
 
 There are some interesting proposals in the literature which we will have a look at soon. Note that the solution to the above mentioned challenges are highly dependent on the chosen evaluation metric for the problem. The evaluation metric or loss function of an MLIC problem is again more complex than for the single-label case - we discuss it next.
 
-### How do we evaluate MLIC models?
 
-We can't directly optimse a DNN for these multi-label metrics using stochastic gradient descent (SGD), therefore we will need an appropriate (approximately) differentialble surrogate loss function. The standard choice is to use the binary cross-entropy averaged over all labels, but some other suggestions have been made which will be discussed in the next section.
-
-## Overview of Existing Approaches
+## From Single-Label to Multi-Label CNNs
 
 It is very simple to adapt a DNN to suit a MLC problem. Recall that in a multiclass classification problem we would use a softmax layer activation on the final layer of a DNN. The softmax transforms the output so that the class scores are squeezed into the range of 0-1 and so that the class scores sum to 1. This is done so that the class scores better imitate class probabilities. However, when an observation can be associated with more than one label, we wouldn't expect the class probabilities to sum to 1. Therefore, a sigmoid activation is used on the output layer of a DNN for MLC. The sigmoid squeezes the class scores in the range of 0-1 without the constraint that the values should sum to 1. See Figure \@ref(fig:sigsof) for an illustration of the differences between sigmoid and softmax.
 
@@ -302,6 +302,112 @@ Computing the loss contributed by each pair of labels can become computationaly 
 
 In their results they found that $l_{LSEP}$ performed better than $l_{rank}$, $l_{WARP}$ and $l_{BP-MLL}$ in terms of the macro $F_{1}$-score and exact match measures, evaluated on 3 multi-label image benchmark datasets. It will be interesting to see how it compared to the cross-entopy based loss functions. We will investigate this in the next chapter.
 
+## Modelling Label Correlations
+
+As mentioned in \Cref{chp:mlc} exploiting label correlations is a key challenge in multi-label classificaiton. The standard way of adapting a CNN for multi-label classification does not explicitly model label correlation, however we can think of it as implicitly dealing with it. 
+
++ chaining
++ context gating
++ SE-Net
++ mention RNN: (https://nurture.ai/nips-challenge/p/c074cc00-3f61-476b-8f0c-83795f0229ed)
+
+The winning solutions to the YouTube video classification challenge proposed interesting and ways to model label dependence for a MLC task. I identified two approaches worth exploring to see how well it works on MLIC.
+
+The first approach is called **context gating** (CG) by [@Miech2017]. The idea of the CG module is to capture nonn-linear interedependencies between labels as well as among features. It does this by transforming an input representation $X$ into a new representation $Y$, by
+
+$$
+Y=\sigma(WX+b)\circ X,
+$$
+where $\circ$ is the elementwise multiplication operation. $WX+b$ is the linear transformation of $X$ and thus $W$ and $b$ are arrays of learnable parameter. The sigmoid activation, $\sigma(.)$, transforms the linear transform of $X$ to values between 0 and 1 and thus act as weights (or gates) which are then multplied with $X$.
+
+The motivation behind this is to introduce non-linear interactions among activations of the input representation and to recalibrate the strengths of different activations of the input representation through a self-gating mechanism. The authors used CG first to transform an intermediate feature vector before passing it to the classification module. Secondly, they applied it after the classification layer to capture the prior structure of the output label space.
+
+By sending a feature vector through the context gate, dependencies among features can be captured. For example, the context gating unit can learn to suppress features likely to be in the background and emphasise the foreground objects. For instance, if features corresponding to ‘Trees’, ‘Skier’ and ‘Snow’ have high co-occurring activations in a skiing video, context gating could learn to suppress the background features
+such as ‘Trees’ and ‘Snow’, which are less important for the classification. By applying the CG unit after the initial classification layer it can learn to downweight unlikely combinations of labels. For example we saw previously that 'Male' and 'Skirt' does not appear often in the WIDER-attribute images. If this was predicted by the initial classificaiton layer, CG would then be able to tweak these predictions.
+
+The authors saw a significant performance increase in their model after incorporating CG.
+
+The other approach from the YouTube challenge is called **chaining** by @Wang2017. The idea is based on CC to model label correlations (although I think it resembles BR+ and stacked BRs more). A chaining unit accepts one feature vector and multiple model predictions as input and the produces a new model prediction. The model predictions are embedded into a lower dimensional space if $K$ is large. These units can be stacked on top of each other and then at each step the model can learn from its previous mistakes. See Figure \@ref(fig:chaining) for an illustration of the chaining approach.
+
+```{r chaining, fig.cap="An illustration of the chaining layers.", echo=FALSE}
+knitr::include_graphics('figures/chaining.png')
+```
+
+To accelarate the training process, auxiliary losses were given to the intermediate predictions after each chaining unit. The auxiliary losses only contributed 10-20% of the total loss when training. The number of chaining units to stack needs to be decided. The authors show that the addition of the chaining units increased the network's performance significantly.
+
+Chaining has some similarities with recurrent nets, but where at each iteration all labels are predicted and no memory mechanism is involved and with a fixed number of iterations.
+
+## Learning from Complex Images
+
++ using RNN attention
+
+uses RL to train (https://nurture.ai/nips-challenge/p/2e855b9a-2e78-4788-98b2-6634301f35ab)
+
+### Spatial Relations
+
+The Spatial Regularisation Network (SRN) is the first network to propose to model spatial relations between labels. They achieve this by training a subnet to learn attention maps representing the image regions for each label, from which a series of convolutional layers can then learn the label spatial relations. 
+
+As the backbone network, they first train a ResNet 101 on the relevant data. Then they use a set of lower level features from the backbone network to give as input to the SRN subnet. From these lower level visual features, the SRN subnet first learns a attention map for each label in a fully convolutional fashion, after which a series of convolutional layers take the attention maps as input and output the relevant labels for an image. This output is then added to the backbone net's predicted probabilities to obtain a final prediction. Figure \@ref(fig:srn) provides an illustration.
+
+```{r srn, echo=FALSE, fig.cap="An illustration of the SRN framework."}
+knitr::include_graphics('figures/srn.png')
+```
+
+They tested the network on MSCOCO, NUS-WIDE and WIDER-Attribute datasets and achieved very good results, far better that any other method. They also evaluated without first selecting a fixed number of labels. Although the authors attribute the SRN's success to its ability to model spatial relation, there are other reasons why this network performs so well.
+
+Firstly, the ResNet is a more advanced network than VGG which was used by CNN-RNN and WARP. Secondly, when training, the authors of SRN used a more sophisticated form of data augmentation. They used a random scale augmentation amongst others, which allows the network to "see" an image at different sizes, usually help to recognise objects of different scales. Lastly, the fact that the SRN is built on top of a lower level visual feature map which is of higher resolution, also makes the detection of smaller objects easier. Thus it might be valuable to compare the SRN with the CNN-RNN on equal footing, where in addition the CNN part of CNN-RNN is allowed to be fine-tunend.
+
+The SRN is trained using binary cross-entropy loss. One inconvenience is that the network is trained in multiple steps. We still consider this an unified network, since the steps only consist of freezing and unfreezing weights during training.
+
+A bonus is that the SRN's attention maps can be visualised, giving localisation information on each image.
+
+A challenge in MLIC not receiving nearly enough attention is the challenge of recognising objects of vastly different scales. Although the CNN-RNN architecture can do this. Fortunately in object detection this issue has been attended to.
+
+See also: https://arxiv.org/pdf/1712.00433.pdf
+
+### Multi-Level Predictions
+
+In brief, FPN augments a standard convolutional network with a top-down pathway and lateral connections so the network efficiently constructs a rich, multi-scale feature pyramid from a single resolution input image. Each level of the pyramid can be used for detecting objects at a different scale.
+
+```{r FPN, fig.cap="An illustration of the FPN concept in @Lin2016.", echo=FALSE}
+knitr::include_graphics('figures/fpn.png')
+```
+
+## Automatic Thresholding
+
++ multi-task learning
++ top-$k$
++ threshold
+
+This contribution made in this work is two-fold: providing a novel loss function for MLC and introducing the idea of a learnable label decision module. 
+
+Recall, that a standard CNN returns scores for each class and that we are ultimately interested in the binary output. Usually we would use a thresholding function or select the top-$k$ labels to determine which labels to include in the final predicted set. This approach does not take the input into account.
+
+The learnable decision module proposed in this work takes the image into account when determining which labels to include in the final set. The decision module is a multi-layer perceptron (MLP) built on top of the penultimate layer of the classification network, which can either output the label count of the input image or the threshold to select the labels by. See Figure \@ref(fig:imprank) for an illustration. If we want the label decision module to output the label count we can treat it as a $n$-way classification problem, where $n$ is the maximum number of labels an image can have. The reason we choose to model it as a classification task is so that integers are returned. Since it is a multiclass classification problem, the module is trained using a categorical cross-entropy loss.
+
+```{r imprank, echo=FALSE, fig.cap="An illustration of the label decision module concept."}
+knitr::include_graphics("figures/improve_rank.png")
+```
+
+If we want the label decision module to return optimal thresholds for each label, we can treat it as a $K$ dimensional regression task. The loss function then becomes more complicated and can be given by:
+
+$$
+L_{thresh}=-\sum_{K=1}^{K}Y_{i,k}\log(\delta_{\theta}^{k})+(1-Y_{i,k})\log(1-\delta_{\theta}^{k}),
+$$
+where $\delta_{\theta}^{k}=\sigma(f_{k}(\boldsymbol{x}_{i})-\theta_{k})$, with $\sigma(.)$ the sigmoid function and $\theta_{k}$ the predicted threshold for label $k$. Thus if the $k$-th label of observation $i$ is positive, then we want $\delta_{\theta}^{k}>0$ and therefore $f_{k}(\boldsymbol{x}_{i})>\theta_{k}$, *i.e.* the score of class $k$ to be higher than the threshold. A similar explanation can give for the negative label case. 
+
+The authors trained the classification network first and then trained the label decision module with the classification network weights frozen. The authors mention the full network can be trained in a multi-task learning manner (*i.e.* both networks simulataneously) but they observed better results doing it sequentially. They used a VGG pretrained on ImageNet as the classification CNN.
+
+Their evaluations were done on all the major MLIC benchmark datasets (NUS-WIDE, MSCOCO, PASCAL VOC 2007) and reported the performance using the standard MLIC metrics along with the exact match. They compared their approach to using WARP and CNN-RNN, but not SRN. One of the other baselines they used as a comparison is a multi-label adaption of the categorical cross-entropy loss which does not make sense to me. They found that the thresholding decision module combined with LSEP loss got the best results of all (even better that cross-validated select thresholds or top-$k$'s). Although it does not seem to do better than SRN.
+
+## Weakly-Supervised Object Detection
+
++ class activation maps
++ fully convolutional networks
+
+## Conclusion
+
+
 
 ### [CNN-RNN: A Unified Framework for Multi-label Image Classification](https://arxiv.org/pdf/1604.04573.pdf)
 
@@ -346,57 +452,7 @@ knitr::include_graphics('figures/RIA.png')
 + Adam opt.
 + rare-first did the best
 
-### [Learning Spatial Regularization with Image-level Supervisions for Multi-label Image Classification](https://arxiv.org/pdf/1702.05891.pdf)
-
-The Spatial Regularisation Network (SRN) is the first network to propose to model spatial relations between labels. They achieve this by training a subnet to learn attention maps representing the image regions for each label, from which a series of convolutional layers can then learn the label spatial relations. 
-
-As the backbone network, they first train a ResNet 101 on the relevant data. Then they use a set of lower level features from the backbone network to give as input to the SRN subnet. From these lower level visual features, the SRN subnet first learns a attention map for each label in a fully convolutional fashion, after which a series of convolutional layers take the attention maps as input and output the relevant labels for an image. This output is then added to the backbone net's predicted probabilities to obtain a final prediction. Figure \@ref(fig:srn) provides an illustration.
-
-```{r srn, echo=FALSE, fig.cap="An illustration of the SRN framework."}
-knitr::include_graphics('figures/srn.png')
-```
-
-They tested the network on MSCOCO, NUS-WIDE and WIDER-Attribute datasets and achieved very good results, far better that any other method. They also evaluated without first selecting a fixed number of labels. Although the authors attribute the SRN's success to its ability to model spatial relation, there are other reasons why this network performs so well.
-
-Firstly, the ResNet is a more advanced network than VGG which was used by CNN-RNN and WARP. Secondly, when training, the authors of SRN used a more sophisticated form of data augmentation. They used a random scale augmentation amongst others, which allows the network to "see" an image at different sizes, usually help to recognise objects of different scales. Lastly, the fact that the SRN is built on top of a lower level visual feature map which is of higher resolution, also makes the detection of smaller objects easier. Thus it might be valuable to compare the SRN with the CNN-RNN on equal footing, where in addition the CNN part of CNN-RNN is allowed to be fine-tunend.
-
-The SRN is trained using binary cross-entropy loss. One inconvenience is that the network is trained in multiple steps. We still consider this an unified network, since the steps only consist of freezing and unfreezing weights during training.
-
-A bonus is that the SRN's attention maps can be visualised, giving localisation information on each image.
     
-### [Improving Pairwise Ranking for Multi-label Image Classification](https://arxiv.org/pdf/1704.03135.pdf)
-
-This contribution made in this work is two-fold: providing a novel loss function for MLC and introducing the idea of a learnable label decision module. The proposed loss function is called the Log-sum-exp pairwise (LSEP) function,
-
-$$
-J_{LSEP}=\log\left(1+\sum_{v\notin Y_{i}}\sum_{v\in Y_{i}}\exp(f_{v}(\boldsymbol{x}_{i}-f_{u}(\boldsymbol{x}_{i}))\right)
-$$
-This is a smooth approximation of the $J_{rank}$ loss defined above (note, I prefer this notation so I should change the above loss function's notations). $J_{rank}$ is not smooth everywhere and is thus difficult to optimse. They also suggest to use a negative sampling trick if the number of label pairs is large. Specifically, sampling at most $t$ pairs from the cartesian product denoted as $\phi(Y_{i};t)\subseteq Y_{i}\bigotimes\mathcal{Y}-Y_{i}$. This gives us,
-
-$$
-J_{LSEP}=\log\left(1+\sum_{\phi(Y_{i};t)}\exp(f_{v}(\boldsymbol{x}_{i}-f_{u}(\boldsymbol{x}_{i}))\right)
-$$
-Note, that this does not have the weighting function of the WARP loss. It is possible to incorporate it here as well, however the authors found it unecessary. They believe weighting is done implicitly by LSEP.
-
-Recall, that a standard CNN returns scores for each class and that we are ultimately interested in the binary output. Usually we would use a thresholding function or select the top-$k$ labels to determine which labels to include in the final predicted set. This approach does not take the input into account.
-
-The learnable decision module proposed in this work takes the image into account when determining which labels to include in the final set. The decision module is a multi-layer perceptron (MLP) built on top of the penultimate layer of the classification network, which can either output the label count of the input image or the threshold to select the labels by. See Figure \@ref(fig:imprank) for an illustration. If we want the label decision module to output the label count we can treat it as a $n$-way classification problem, where $n$ is the maximum number of labels an image can have. The reason we choose to model it as a classification task is so that integers are returned. Since it is a multiclass classification problem, the module is trained using a categorical cross-entropy loss.
-
-```{r imprank, echo=FALSE, fig.cap="An illustration of the label decision module concept."}
-knitr::include_graphics("figures/improve_rank.png")
-```
-
-If we want the label decision module to return optimal thresholds for each label, we can treat it as a $K$ dimensional regression task. The loss function then becomes more complicated and can be given by:
-
-$$
-L_{thresh}=-\sum_{K=1}^{K}Y_{i,k}\log(\delta_{\theta}^{k})+(1-Y_{i,k})\log(1-\delta_{\theta}^{k}),
-$$
-where $\delta_{\theta}^{k}=\sigma(f_{k}(\boldsymbol{x}_{i})-\theta_{k})$, with $\sigma(.)$ the sigmoid function and $\theta_{k}$ the predicted threshold for label $k$. Thus if the $k$-th label of observation $i$ is positive, then we want $\delta_{\theta}^{k}>0$ and therefore $f_{k}(\boldsymbol{x}_{i})>\theta_{k}$, *i.e.* the score of class $k$ to be higher than the threshold. A similar explanation can give for the negative label case. 
-
-The authors trained the classification network first and then trained the label decision module with the classification network weights frozen. The authors mention the full network can be trained in a multi-task learning manner (*i.e.* both networks simulataneously) but they observed better results doing it sequentially. They used a VGG pretrained on ImageNet as the classification CNN.
-
-Their evaluations were done on all the major MLIC benchmark datasets (NUS-WIDE, MSCOCO, PASCAL VOC 2007) and reported the performance using the standard MLIC metrics along with the exact match. They compared their approach to using WARP and CNN-RNN, but not SRN. One of the other baselines they used as a comparison is a multi-label adaption of the categorical cross-entropy loss which does not make sense to me. They found that the thresholding decision module combined with LSEP loss got the best results of all (even better that cross-validated select thresholds or top-$k$'s). Although it does not seem to do better than SRN.
-
 ### [ChestX-ray8: Hospital-scale Chest X-ray Database and Benchmarks on Weakly-Supervised Classification and Localization of Common Thorax Diseases](https://arxiv.org/pdf/1705.02315.pdf)
 
 This works introduce the Chest X-ray dataset mentioned earlier. Along with the dataset, they published a few benchmark results on the data. They took the transfer learning approach of using a pretrained CNN and swapping out the top layers for a specific purpose. Here they experimented with 4 differenct CNN architecutres pretrained on ImageNet: AlexNet, GoogleLeNet, VGG and ResNet 50 (which gave the best results). For their top layers they chose a transition layer, Global pooling layer and prediction layer (see Figure \@ref(fig:chestnet8)).
@@ -502,67 +558,9 @@ No novel MLC technique was used in CheXNet. The boost in performance came from u
 
 This is a good example of how the base CNN influences the performance of a network and why it is unfair to compare MLIC techniques when the base networks are different.
 
-### Proposals from video classification
-
-The winning solutions to the YouTube video classification challenge proposed interesting and ways to model label dependence for a MLC task. I identified two approaches worth exploring to see how well it works on MLIC.
-
-The first approach is called **context gating** (CG) by @Miech2017. The idea of the CG module is to capture nonn-linear interedependencies between labels as well as among features. It does this by transforming an input representation $X$ into a new representation $Y$, by
-
-$$
-Y=\sigma(WX+b)\circ X,
-$$
-where $\circ$ is the elementwise multiplication operation. $WX+b$ is the linear transformation of $X$ and thus $W$ and $b$ are arrays of learnable parameter. The sigmoid activation, $\sigma(.)$, transforms the linear transform of $X$ to values between 0 and 1 and thus act as weights (or gates) which are then multplied with $X$.
-
-The motivation behind this is to introduce non-linear interactions among activations of the input representation and to recalibrate the strengths of different activations of the input representation through a self-gating mechanism. The authors used CG first to transform an intermediate feature vector before passing it to the classification module. Secondly, they applied it after the classification layer to capture the prior structure of the output label space.
-
-By sending a feature vector through the context gate, dependencies among features can be captured. For example, the context gating unit can learn to suppress features likely to be in the background and emphasise the foreground objects. For instance, if features corresponding to ‘Trees’, ‘Skier’ and ‘Snow’ have high co-occurring activations in a skiing video, context gating could learn to suppress the background features
-such as ‘Trees’ and ‘Snow’, which are less important for the classification. By applying the CG unit after the initial classification layer it can learn to downweight unlikely combinations of labels. For example we saw previously that 'Male' and 'Skirt' does not appear often in the WIDER-attribute images. If this was predicted by the initial classificaiton layer, CG would then be able to tweak these predictions.
-
-The authors saw a significant performance increase in their model after incorporating CG.
-
-The other approach from the YouTube challenge is called **chaining** by @Wang2017. The idea is based on CC to model label correlations (although I think it resembles BR+ and stacked BRs more). A chaining unit accepts one feature vector and multiple model predictions as input and the produces a new model prediction. The model predictions are embedded into a lower dimensional space if $K$ is large. These units can be stacked on top of each other and then at each step the model can learn from its previous mistakes. See Figure \@ref(fig:chaining) for an illustration of the chaining approach.
-
-```{r chaining, fig.cap="An illustration of the chaining layers.", echo=FALSE}
-knitr::include_graphics('figures/chaining.png')
-```
-
-To accelarate the training process, auxiliary losses were given to the intermediate predictions after each chaining unit. The auxiliary losses only contributed 10-20% of the total loss when training. The number of chaining units to stack needs to be decided. The authors show that the addition of the chaining units increased the network's performance significantly.
-
-Chaining has some similarities with recurrent nets, but where at each iteration all labels are predicted and no memory mechanism is involved and with a fixed number of iterations.
-
-## Latest Developments in CNN
-
-+ dilated convolutions
-+ se-resnet
-
-## Suggestions from object decection
-
-Focal loss @Lin2017 as a way to do hard example mining and to overcome class imbalance. Work very well in object detection. Worth a try for a MLIC problem.
-
-### Multi-scale features
-
-A challenge in MLIC not receiving nearly enough attention is the challenge of recognising objects of vastly different scales. Although the CNN-RNN architecture can do this. Fortunately in object detection this issue has been attended to.
-
-See also: https://arxiv.org/pdf/1712.00433.pdf
-
-In brief, FPN augments a standard convolutional network with a top-down pathway and lateral connections so the network efficiently constructs a rich, multi-scale feature pyramid from a single resolution input image. Each level of the pyramid can be used for detecting objects at a different scale.
-
-```{r FPN, fig.cap="An illustration of the FPN concept in @Lin2016.", echo=FALSE}
-knitr::include_graphics('figures/fpn.png')
-```
-
-## Sugesstions from image captioning
-
-+ glove/ word2vec embeddings
-+ not sure if already done
 
 + Meta Analysis:
 
     - unsure if this is necessary
     - maybe can come earlier to show why a overview/ comparision is valuable
     - want to compare things like what datasets were tested on, way of evaluation, base networks, results, etc.
-
-## Conclusion
-
-- what we discussed 
-- Future directions and open questions?

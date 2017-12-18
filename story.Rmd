@@ -1,0 +1,201 @@
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(knitr)
+library(kableExtra)
+```
+
+# Multi-Label Classification Methods and Neural Networks
+
+Multi-label Classification can be viewed as a generalisation of the conventional single-label classification task (binary or multiclass). In a MLC problem, each observation in the dataset may be associated with more than one label and the task is to predict a label set, whose size is unknown  *a priori*, for each unseen observation. There are plenty of real-world applications that fit into this framework: an image annotation problem where each image contains more than one semantic object [@Zhu2017], a text classification task where each document has multiple topics [@Liu2017] or an acoustic classification task where the recordings contain the sounds of multiple bird species [@Zhang2016], to name a few. The realisation of the field's applicability to real-world problems is probably what drives the increasing research interest (see \autoref{pubsperyear}).
+
+```{r pubsperyear, include=FALSE, eval = FALSE}
+library(tidyverse)
+library(ggthemes)
+pubsperyear_data <- read_csv("data/Scopus-2251-Analyze-Year.csv")
+p <- pubsperyear_data %>% gather(database, No, -YEAR) %>% 
+  #mutate(ind2017 = YEAR >= 2017) %>% 
+  filter(YEAR < 2017) %>% 
+  ggplot(aes(YEAR, No)) +
+  geom_line() +
+  theme_minimal() +
+  labs(x = "Year", y = "# Documents") +
+  facet_wrap(~database, labeller = function(variable, value) {
+    dnames <- list(Scopus = "(a) Scopus", SemSchol = "(b) Semantic Scholar")
+    return(dnames[value])}) 
+
+ggsave("pubsperyear.png", plot = p, device = "png", path = "figures", width = 7, height = 4)
+```
+
+![Line graphs illustrating the rise in multi-label learning publications per year for two databases. The database searches were done on 24-03-2017. The searches were not identical since they were limited to the search features of the databases. (a) The search on Scopus (cite) was for all documents (conference papers, articles, conference, articles in press, reviews, book chapters and books) in any subject area with either the words *multi-label* or *multilabel* and either the words *learning* or *classification* found in either their titles, abstracts or keywords. (b) The search on Semantic Scholar was based on machine learning principles and thus automatically decides which research documents are relevant to a specific search query. The query used was *multilabel multi-label learning classification*. The search only returns research in the computer science and neuroscience fields of study. More technical details can be found on the respective engine's websites (probably put details in appendix). \label{pubsperyear}](figures/pubsperyear.png)
+
+The generality of MLC naturally introduces more complexity to the classification task. We have already seen some of the challenges in \Cref{chp:dataeval} such as: evaluating multi-label models, dealing with label correlation, label imbalance, etc. In the first half of this chapter we investigate some of the representative approaches to solving the MLC problem. In the second half we zoom in on neural networks and how they are adapted predict multiple outputs.
+
+
+
++ The question is whether or not harnessing label dependencies will improve predictive accuracy. Unfortunately this question cannot be answered in a blanket way since it is totally dependent on the problem, influenced by factors such as the properties of the data and the loss function to be minimised [@Dembszynski2010]. If we inappropriately model label dependence it can add unecessary complexity and additional noise to the problem.
+
+
+
+
+Approaches to MLC can be divided into two groups: Problem Transformation (PT) and Algorithm Adaption (AA). PT algorithms are any method that transforms the MLC problem into one or more binary or multiclass classification problems. The simplest example of such an algorithm is the binary relevance (BR) method. BR transforms the MLC task into $K$ binary classification tasks where $K$ is the number of unique labels in the dataset. By training a classifier for each label separately, the BR approach cannot exploit label correlations. 
+
+One solution to this may be to sequentially train a classifier to predict a label and then in the next iteration to use that label's predicted values as additional input to the classifiers trained to predict the rest of the labels. Now some interaction between labels are considered in the modelling process. This approach is called Classifier Chains (CC). The challenge here is to determine in which order to predict the labels. For example, if label $i$ "depends" on label $j$, we would first want to train a model to predict label $j$ and then use those predicted values as additional input for the classifier trained to predict label $i$.
+
+For both BR and CC we need to train at least[^CC] $K$ classifiers. The greater $K$ becomes the less feasible it is to use DNNs as the base model. The final PT example we will give is the label powerset (LP) algorithm. The LP algorithm transforms the MLIC task to a multiclass classification task by treating each unique combination of labels as a new class. This results in a possible $2^K$ number of classes and the disadvantage here is that some combinations will be extremely rare, making it hard for a classifier to learn. The LP method is capable of exploiting label correlations. Note that the use of ensembling is also common to improve on these methods. Sometimes they are assigned to their own group of multi-label classifiers, Ensemble Methods. The popular algorithms here are the ensemble of CC's (ECC) and the Random $k$ labelsets (Rakel).
+
+[^CC]: There is no limit to how long the chain of a CC algorithm should be. After predicting all the labels, one can start from the beginning again, for which we would then have predicted scores for all labels which can be treated as input.
+
+The other group of multi-label classifiers are the AA methods. These are any method for which a single label classifier was internally adapted to suit MLC. For example the multi-label $k$-nearest neighbours (ML-kNN) [@Zhang2007] approach is just an adaption of the the conventional kNN algorithm so that it can handle multiple labels per observation. 
+
+## Problem Transformation
+
+There are numerous multi-label learning algorithms. It is difficult to keep up with the all the latest proposed methods. These algorithm can be categorised in a number of ways, *e.g.* the review [@Zhang2014] and the tutorials [@Gibaja2015] and [@CarvalhoAndreCPLFde2009], all have different ways of grouping the algorithms. The categorisation for this thesis is chosen to satisfy the criteria of being common, simple and intuitive. Nevertheless, the characteristics of the algorithms leading to the other grouping variants will still be given in the remarks of the algorithms.
+
+```{r mll-tax, eval=FALSE, include=FALSE}
+library(data.tree)
+
+
+
+```
+
+![Categorisation of multi-label learning taxonomy (this is just an example) \label{fig:mll-tax}](figures/mll-tax.png)
+
+Problem transformation methods consist of first transforming the multi-label problem into one or more single-label problem(s) and then fitting any standard supervised learning algorithm(s) to the single-label data. For that reason, problem transformation methods are called algorithm independent, i.e. once the data is transformed, any single-label classifier can be used [@Tsoumakasc].
+
+The two main problem transformation algorithms are the binray relevance and label powerset transformations. Both methods suffer from several limitations but they form the basis of arguably any problem transformation method. The state-of-the-art problem transformations algorithms are most of the times extensions of either the standard binary relevance or label powerset algorithms [@Alazaidah2016]. Therefore the understanding of these two basic methods are crucial in dealing with the more complex, modern problem transformation methods.
+
+### Binary Relevance
+
+The most common transformation method is binary relevance (BR). BR transforms the mutli-label into $K$ single-label problems by modelling the presence of the labels separately. Typically $K$ single-label binary data sets, $D_{k}=(X,\boldsymbol{Y}_{k})$ for $k=1,...,K$, would be constructed from the multi-label data set, $D=(X,Y)$. To each $D_{k}$ any single-label classifier can be applied. In the end, predictions $\hat{\boldsymbol{Y}}_{1},...,\hat{\boldsymbol{Y}}_{K}$ are obtained separately which can then be combined to allocate all the predicted relevant variables to each instance. Note, that it may occur that all of the single-label learners produces zeroes, which would imply that the instance belongs to an empty set. To avoid this [@Zhang2014] suggests following the T-criterion rule. The rule states, briefly, that in such a case the labels associated with the greatest output should be assigned to the instance. Clearly, this will only work if the base learners used gives continuous outputs and it will only make sense if all the base learners are of the same type. I suppose these rules are ad-hoc and I can think of alternatives.
+
+The biggest drawback for this approach is that it models each label separately and ignores the possible correlations between labels. Thus BR assumes that there are no correlations between the labels. However, these correlations can be very helpful in predicting the labels present. This is a first-order strategy. Also it can be time consuming since data sets with hundreds of labels is not rare. This would mean more than a hundred models should be fit and tuned separately. But this complexity scales linearly with increasing $K$, which is actually not so bad when comparing to other multi-label algorithms. Grouping the labels in a hierachical tree fashion may become useful when $K$ is very large [Cherman2011] (see also Incorporating label dependency into the binary relevance framework for multi-label classification by the same authors).
+
+Another argument against BR from [@Readb]: The argument is that, due to this information loss, BR's predicted label sets are likely to contain either too many or too few labels, or labels that would never co-occur in practice.
+
+Advantage of BR by [@Readb]:
+Its assumption of label independence makes it suited to contexts where new examples may not necessarily be relevant to any known labels or where label relationships may change over the test data; even the label set $L$ may be altered dynamically - making BR ideal for active learning and data stream scenarios.
+
+Nevertheless, BR remains a competitive ML algorithm in terms of efficiency and efficacy, especially when minimising a macro-average loss function is the goal [@Luaces]. The most important advantage of BR is that it is able to optimise several loss functions [@Luaces] also see small proof. They also show empirically that BR tends to outperform ECC when there are many labels, high label dependency and high cardinality, i.e. when the multi-label data becomes more complicated.
+
+Compared to label powerset (LP) which will be discussed later, BR is able to predict arbitrary combinations of labels [@Tsoumakasb] not restricted only to those in the training set.
+
+[Cherman2011] also proposes a variation of BR called BR+. Its aim is to keep the simplicity of BR but also to consider the possible label correlations. It does so by also creating $K$ binary data sets but this time each of these data sets treat all the label columns not to be predicted by the current single-label classifier as features to the classifier. Thus each sinlge-label classifier will have $p + K - 1$ inputs. So now when predicting label $l$, all of the original features in $X$ and the remaining variables $\boldsymbol{Y}_{k}$, $k\neq l$, are used as inputs for classifier $l$. (second order strategy?)
+
+The problem arises when predicting unseen instances for which the labels are unknown. Thus the input needed for each binary classifier is not available. One workaround is to obtain an initial prediction of the labels using an ordinary BR approach and then using these predictions as inputs to the BR+ algorithm. The BR+ algortihm will most likely produce different predictions to the initial predicitons or BR which can then also be used in a next round of BR+. These steps can be continued until convergence but this seems like the classifier chains approach. (to be investigated).
+
+[@Tsoumakasb] mentions the 2BR strategy that seems very similar/identical to BR+. They describe the 2BR method as follows: first train a binary classifier on each of the $K$ binary data sets and then use their predictions (and or probabilities) as so called meta-features for a second round of BR. They mention that it might be better to train the base and meta learners on separate parts of the training data to avoid biased predictions. They suggest using a cross-validation approach for both learners to also avoid size constraints of the training data. They describe this approach as a stacked generalisation, also mentioned in [@Tsoumakasa], [@Godbole], [@Pachet2009] calls it classifier fusion.
+
+The adding of all the base learner predicitions as meta-feature to the meta-learners is not necessarily desirable. Some label pairs might have no correlation and adding predictions for those labels as inputs to the meta-learner will add noise to the model and waste computation time. [@Tsoumakasb] suggests a solution called corerlation-based pruning. They calculate the pairwise correlations between labels, $\phi$, and only add base learner prediction of label $i$ as a meta-feature to meta-learner $j$ if $\phi_{ij}$ is greater than some threshold. In this way only label-pairs that are highly correlated will be used in the final prediction of each other.
+
++ BR performs well for Hamming loss, but fails for subset 0/1 loss.
++  It is not clear, in general, whether the meta-classifier b should be trained on the BR predictions h(x) alone or use the original features x as additional inputs. Another question concerns the type of information provided by the BR predictions. One can use binary predictions, but also values of scoring functions or probabilities, if such outputs are delivered by the classifier [@Dembcz2012].
+
+### Label Powerset
+
+The other widely known problem transformation approach is the label powerset (LP) algorithm. Each combination of the labels is seen as a distinct class and then a standard multiclass classification learner can be applied. More formally, the transformation $h:L\to P(L)$ is applied [@Tsoumakasc]. Thus label correlations are taken into account but LP has other limitations. The number of possible classes increase exponentially with the increase in $K$ and some of the classes/combinations are under-represented (if represented at all) in the training set. This leads to the difficult problem of learning from unbalanced classes and also restricts the algortihm to only predict combinations of labels present in the training set. Labels (or labelsets) that only occur a limited number of times are called tail labels. These are generally the ones difficult to model and a classifier can easily neglect their importance [@Xu2016].
+
+One way to reduce the number of resulting classes after a label powerset transformation is to create meta-labels (not to be confused with meta in the stacking sense) [@Read]. Meta-labels represent partitions of the label set, but I still do not fully understand the concept. Seems like after the transformation we still end up with a multi-label problem. Investigate further.
+
+Another option is to throw away the combinations that appear infrequently in the training set. This obviously limits the possible output of the mutli-label algorithm even more. Sounds like PPT [@Reada].
+
+LP takes conditional dependence into account but usually fails for losses like Hamming [@Dembcz2012]. Can improve with RAKEL, but it is still not well understood from a theoretical point of view.
+
+### Classifier Chains
+
+Another extension of BR, similar to 2BR and BR+, is the classifier chains (CC) approach introduced by [@Readb]. It also consists of transforming the mutli-label data set $D$ to $K$ single-label data sets but the transformations are done sequentially in the sense that the label previously treated as a response will be added as a feature for predicting the next label. This will give data sets similar to $D_{1}=(X,\boldsymbol{Y}_{1}),D_{2}=(X,\boldsymbol{Y}_{1},\boldsymbol{Y}_{2}),...D_{K}=(X,\boldsymbol{Y}_{1},\boldsymbol{Y}_{2},...,\boldsymbol{Y}_{K})$, where the last column of each is the response that needs to be predicted. To each of these single-label data sets a classifier can be trained and then their predictions are combined in the same fashion as BR. CC keeps the simplicity of BR but has that additional capacity to model label dependencies by passing label information between classifiers. This should raise the question of what order of labels should the chain consist of and should it stop after one cycle?
+
+Paper still need to look at for CC [@Sucar2013].
+
+## Algorithm Adaption
+
++ NNs
+
+These are methods tackling the multi-label learning task by adapting, extending and/or customising an existing supervised learning algorithm [@Madjarov2012]. 
+
+The main weakness of algorithm adaption methods is that they are mosty tailored to suit a specific model, whereas problem transformation methods are more general and allows for the use of many well-known and effective single-label models [@Systems2014] (algorithm independent).
+
+### Multi-Label k-Nearest Neighbour (ML-kNN)
+
++ basic idea
++ procedure
++ psuedo-code
++ remarks: first-order; merits of lazy learning and Bayesian reasoning; mitigate class-imbalance; extensions/variations; computational complexity
+
+### Multi-Label Decision Tree (ML-DT)
+
++ basic idea
++ procedure
++ psuedo-code
++ remarks: first-oders; efficient; improve with pruning and or ensembling; computational complexity
+
+## Ensemble Approaches
+
++ Ensembles are well known for their effect of increasing overall accuracy and overcoming over-fitting, as well as allowing parallelism. The main idea behind ensembles is to exploit the fact that different classifiers may do well in different aspects of the learning task so combining them could improve overall performance. Ensembles have been extensively used in literature [13] with stacking [14], bagging [15] and boosting [16] being the main methods employed. In the context of multi-label problems, [17] proposes a fusion method where the probabilistic outputs of heterogeneous classifiers are averaged and the labels above a threshold are chosen. Copied from [Papanikolaou] (can maybe use to explain why these methods perform better and not because of label dependence)
++ evidence of stacking working [Tsoumakase]. Read conclusions chapter. Ensembling effective. Linear models good for text classification. Thresholding important.
+
+### Ensemble of Classifier Chains
+
+In a response to this (referring to CC), the ensembles of classifier chains (ECC) was suggested by [@Readb]. Here the term ensemble refers to an ensemble of multi-label classifiers instead of an ensemble of binary classifiers already mentioned before. ECC trains $m$ classifier chains, each with a random chain ordering and a random subset of instances. These parameters of ECC contributes to the uniqueness of each classifier chain which helps with variance reduction when their predictions are combined. These predictions are summed by label so that each label receives a number of votes. A threshold is used to select the most popular labels which form the final predicted multi-label set [@Readb] (copied from). More details still to cover in article.
+
+CC and ECC has an advantage over the ensemble methods of BR, that it is not necessary for an initial step of training to obtain predictions of labels that can later be used as features, it does this simultaneously.
+
+### Random $k$-Labelsets
+
+As mentioned before, the LP method has the advantage of taking label correlations into account but typically suffers from a huge class imbalance problem. [@Tsoumakasc] suggested the Random $k$-labelsets (RAKEL) algorithm to overcome the drawbacks of LP while still being able to model label dependencies. RAKEL is simply an ensemble of LP classifiers, but the LP classifiers are trained on different subsets of the labelset. The author defined a $k$-labelset as a set $Y \subseteq L$ with $k=|Y|$, where $L$ is the complete labelset and $|Y|$ the size of the set, $Y$. Let $L^{k}$ denote the set of all distinct $k$-labelsets on $L$. The size of $L^{k}$ can thus be given by $|L^{k}|= {{|L|}\choose{k}}$. 
+
+First, the RAKEL algorithm iteratively constructs $m$ LP classifiers. At each iteration, $j=1,2,\dots,m$, it randomly selects a $k$-labelset, $Y_{j}$, from $L^{k}$ without replacement, and then learns the classifier $h_{j}:X\to P(Y_{j})$ (review notation). For classifying an instance, $x$, each model, $h_{j}$, provides binary decisions, $h_{j}(x, \lambda_{l})$ for each label $\lambda_{l}$ in $k$-labelset $Y_{j}$. The average of these binary decisions are then computed and a final prediction for a label is given if its corresponding average is bigger than some threshold $t$. Note, the average for label $\lambda_{l}$ is not calculated by the sum of $h_{j}(x, \lambda_{l})$ divided by $m$, but by instead dividing by the number of times $\lambda_{l}$ was in $Y_{j}$ for $j=1,\dots, m$. 
+
+The values $m$, $k$ and $t$, are all parameters to be specified by the user. Clearly, $k$ can only lie between $1$ and $|L|$, where if $k=1$, the algorithm is equivalent to the BR approach, and if $k=|Y|$, the algorithm is equivalent to the LP approach. In the original paper, the author showed empirically that by using small labelsets and an adequate number of iterations, RAKEL will manage to model label correlations effectively. An intuitive value for $t$ would be 0.5, however, in the same paper, it is shown that RAKEL performs well over a wide range of values for $t$.
+
+A concern might be the number of classes, $2^{k}$ that each LP classifiers must deal with. In practice, each LP classifier deals with a much smaller subset of label combinations, since it can only model combinations that exist in the training set. Also, RAKEL is preferred to LP when there are a large number of labels. In this case, RAKEL would only need to model a subset of $2^{k}$ possible label combinations compared to LP that needs to model a much larger subset of $2^{|Y|}$ possible label combinations.
+
+In [@Tsoumakasc] it is shown that RAKEL outperforms LP and BR on 3 benchmark datasets with numerous configurations. The author concluded that the randomness of the RAKEL algorithm might not be the best ensemble selection approach since it may lead to the inclusion of models that affect the ensemble's performance in a negative way. Continue with papers that improve on this idea.
+
+There are other ways of choosing subsets of the labelset, references in [@System2014].
+
+Note, with all these ensemble extensions, we can still try different ways of ensembling/stacking, especially with RA$k$EL. Not only taking the average but also by assigning weights to each model or by fitting a model to the predictions. Think [@Lo2013] is an example of this with generalised $k$-labelsets ensemble.
+
++ LP takes the label dependence into account, but the conditional one: it is well-tailored for the subset 0/1 loss, but fails for the Hamming loss. 
++ LP may gain from the expansion of the feature or hypothesis space.
++ One can easily tailor LP for solving the Hamming loss minimization problem, by marginalization of the joint probability distribution that is a by-product of this classifier.
+
+## Thresholding Strategies
+
+The CNN outputs a set of class score which minimises the average of the binary cross-entropy over each labels. Therefore a mapping is needed to transform the class scores to binary outputs, indicating label presence. This is an important facet of MLC, often overlooked, but can make a huge difference in performance for certain metrics. This is similar to the problem in single label classification where the classification threshold can be adjusted to optmise either precision or recall instead of accuracy, which is especially important for imbalanced data.
+
+In MLC threshold calibration is also a common technique to go from the class score to binary outputs. If the class scores mimics class probabilities, a threshold of 0.5 is a common and intuitive choice, *i.e.* all labels with scores higher than 0.5 are labeled with a 1 and the rest as zero. However, this may not be the optimial threshold for certain metrics. For example, a lower threshold (lower than 0.5) will most likely result in a better recall score. Determining this optimal threshold for certain metrics can become quite complicated.
+
+A relatively simple method is to test multiple thresholds and evaluate the selection's performance on a left out validation set. Naturally this method also extends to a cross-validation approach. This becomes more complicated when label dependent thresholds are used, *i.e.* a different threshold for each label. Jointly determining these multiple thresholds through the validation approach is hard since there are many possible combinations to be tested in which case users normally resort to optimising each label threshold separately. This becomes less accurate for example based metrics.
+
+[http://www.cs.waikato.ac.nz/~eibe/pubs/chains.pdf] suggests an alternative approach to determining thresholds, which is to choose a single threshold such that the label cardinality of the test set is as close as possible to that of the training set. Obviously this is only possible when a complete test set is available at test time. There is no need for heavy validation testing with this approach. This supposedly works well for optimising accuracy and the F-measure, given the assumption that the class distribution of the test set is similar to that of the training set. Of course other multi-label data characteristics can be used instead of cardinality, depending on the problem. 
+
+Another approach is to view the threshold selection as a learning problem [http://machinelearning.wustl.edu/mlpapers/paper_files/nips02-AA45.pdf]. For example using a linear model taking the class scores as input and outputs a threshold minimising the number of misclassifications. Thus the threshold depends on the class scores and is not fixed over all points.
+
+This is similar to [http://digibuo.uniovi.es/dspace/bitstream/10651/6203/1/multilabel-pr.pdf] where the authors referred to this method as probabilistic thresholds (PT). They found this approach takes very little computation but can cause drastic improvements to metrics such as the F_{1}-score or accuracy. This approach, however, does not improve metrics such as hamming loss. In the paper they compared it to *one threshold* and *meta threshold* from [http://s3.amazonaws.com/academia.edu.documents/39820887/Obtaining_Bipartitions_from_Score_Vector20151109-30004-mdv7br.pdf?AWSAccessKeyId=AKIAIWOWYYGZ2Y53UL3A&Expires=1499607607&Signature=JkJHB%2BqK2QyYGE9xzDUKnuCAsaM%3D&response-content-disposition=inline%3B%20filename%3DObtaining_Bipartitions_from_Score_Vector.pdf] to show that PT is on average the best for accuracy and F_{1}-score. Used 10-fold cv.
+
++ see also [https://cs.nju.edu.cn/_upload/tpl/01/0b/267/template267/zhouzh.files/publication/tkde06a.pdf]
+
+The threshold calibration strategies described thus far are mostly general purpose approaches that could be applied as a post-processsing step to any MLC algorithm that outputs class scores.
+
+An alternative to threshold calibration is to decide on the number, say $m$, of labels to be present for each instance. Then the labels with the $m$ highest class scores will be assigned a 1 and the rest zero. Most of the strategies described above for selecting the best threshold can also be applied to selecting the best $m$. (also described in the bipartition paper.) Nice paper about it here [http://www2009.eprints.org/22/1/p211.pdf], think it is the same as the Meta threshold mentioned above.
+
++ see adhoc methods such as calibrated label ranking: [https://pdfs.semanticscholar.org/5918/04251e15cfb571bc90c2fab2344f462e1617.pdf] and 
+
+## Neural Networks
+
+### Multilayer Perceptron
+
+### Optimisation \label{sec:optim}
+
+# Convolutional Neural Networks \label{chp:cnn}
+
+# Convolutional Neural Networks for Multi-Label Image Classification \label{chp:mlcnn}
+
+One potential concern with this approach is the risk of learning biased interdependencies from a limited training set which does not accurately represent a realistic distribution of pathologies – if every example of cardiomegaly is also one of cardiac failure, the model may learn to depend too much on the presence of other patterns such as edemas which do not always accompany enlarge-ent of the cardiac silhouette ([@Yao2017] on modeling label correlations).
+
+## Baseline \label{sec:mlcnn_basic}
+
+# Results \label{chp:results}
+
+\chapterprecishere{"For us, the most important part of rigor is better empiricism, not more mathematical theories."\par\raggedleft--- \textup{Ali Rahimi and Ben Recht}, NIPS 2017}
+

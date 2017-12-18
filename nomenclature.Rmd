@@ -1,21 +1,23 @@
 \chapter{Nomenclature}
 
-\begin{Nomencl}
- \NomGroup{Constants}
-   \item[$\mathrm{g} = $] $\mathrm{9.81\,m/s^2}$
+\begin{Nomencl}[0.7in]
 
- \NomGroup{Variables}
-   \item[$\mathit{Re}_\mathrm{\,D}$]
-                      \UnitLine{Reynolds number (diameter)}{~}
-   \item[$x$]         \UnitLine{Coordinate                }{m}
-   \item[$\ddot{x}$]  \UnitLine{Acceleration              }{m/s^2}\\
-   \item[$\theta$]    \UnitLine{Rotation angle            }{rad}
-   \item[$\tau$]      \UnitLine{Moment                    }{N{\cdot}m}
+\item[$N$] number of observations in a dataset
+\item[$p$] input dimension or the number of features for an observation
+\item[$K$] number of labels in a dataset
+\item[$\boldsymbol{x}$] $p$-dimensional input vector $(x_{1},x_{2},\dots,x_{p})^{\intercal}$
+\item[$\lambda$] label
+\item[$\mathcal{L}$] complete set of labels in a dataset $\mathcal{L}=\{\lambda_{1},\lambda_{2},\dots,\lambda_{K}\}$
+\item[$Y$] labelset associated with $\boldsymbol{x}$, $Y\subseteq \mathcal{L}$
+\item[$\hat{Y}$] predicted labelset associated with $\boldsymbol{x}$, $\hat{Y}\subseteq \mathcal{L}$, produced by $h(\cdot)$
+\item[$\boldsymbol{y}$] $K$-dimensional label indicator vector, $(y_{1},y_{2},\dots,y_{K})^{\intercal}$, associated with observation $\boldsymbol{x}$
+\item[$(\boldsymbol{x}_{i},Y_{i})_{i=1}^{N}$] multi-label dataset with $N$ observations
+\item[$D$] dataset
+\item[$h(\cdot)$] multi-label classifier $h:\mathbb{R}^{p}\to 2^{\mathcal{L}}$, where $h(\boldsymbol{x})$ returns the set of labels for $\boldsymbol{x}$
+\item[$\theta$] set of parameters for $h(\cdot)$
+\item[$\hat{\theta}$] set of parameters for $h(\cdot)$ that optimise the loss function
+\item[$L(\cdot,\cdot)$] loss function between predicted and true labels
+\item[$f(\cdot)$] label prediction module, $f:\mathbb{R}^{p}\to\mathbb{R}^{K}$
+\item[$t(\cdot)$] thresholding function, $t:\mathbb{R}^{K}\to\{0,1\}^{K}$
 
- \NomGroup{Vectors and Tensors}
-   \item[$\overrightarrow{\bm{v}}$] Physical vector, see equation ...
-
- \NomGroup{Subscripts}
-   \item[$\mathrm{a}$] Adiabatic
-   \item[$a$]          Coordinate
 \end{Nomencl}
