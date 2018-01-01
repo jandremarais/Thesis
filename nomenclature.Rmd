@@ -19,5 +19,6 @@
 \item[$L(\cdot,\cdot)$] loss function between predicted and true labels
 \item[$f(\cdot)$] label prediction module, $f:\mathbb{R}^{p}\to\mathbb{R}^{K}$
 \item[$t(\cdot)$] thresholding function, $t:\mathbb{R}^{K}\to\{0,1\}^{K}$
+\item[$\mathcal{N}(\boldsymbol{x})$] points in the input space neighbourhood of $\boldsymbol{x}$
 
 \end{Nomencl}

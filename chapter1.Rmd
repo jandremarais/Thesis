@@ -26,12 +26,12 @@ h:\mathbb{R}^{p}\to2^{\mathcal{L}}.
 $$
 We also refer to $h(\cdot)$ as the classifier or the model.
 
-How do we model such an $h(\cdot)$ that produces accurate mappings? Following the *supervised learning* framework [see @Hastie2009, Ch. 2] for classification, $h(\cdot)$ is learned by example, *i.e.* from the data. The dataset consist of $N$ input-output pairs (also known as an example) and is denoted by 
+How do we model such an $h(\cdot)$ that produces accurate mappings? Following the *supervised learning* framework [see @Hastie2009, Ch. 2] for classification, $h(\cdot)$ is learned by example, *i.e.* from the data. The dataset consist of $N$ input-output pairs (also known as examples) and is denoted by 
 $$
 (\boldsymbol{x}_{i},Y_{i})_{i=1}^{N}.
 $$
 
-To learn $h(\cdot)$ from the data, we first need to assume its functional form (or its shape). Suppose the mapping performed by $h(\cdot)$ is defined by a set of parameters $\theta$ such that the configuration of $\theta$ determines how $h(\cdot)$ processes $\boldsymbol{x}$ to produce $Y$, however limited to the form we assumed for $h(\cdot)$ initially. Suppose a specific paramater configuration $\hat{\theta}$ produces an output $\hat{Y}_{i}$ for $\boldsymbol{x}_{i}$, *i.e.*
+To learn $h(\cdot)$ from the data, we first need to assume its functional form (or its shape). Suppose the mapping performed by $h(\cdot)$ is defined by a set of parameters $\theta$ such that the configuration of $\theta$ determines how $h(\cdot)$ processes $\boldsymbol{x}$ to produce $Y$, however limited to the form we initially assumed for $h(\cdot)$. Suppose a specific paramater configuration $\hat{\theta}$ produces an output $\hat{Y}_{i}$ for $\boldsymbol{x}_{i}$, *i.e.*
 
 $$
 h_{\hat{\theta}}(\boldsymbol{x}_{i})\to\hat{Y}_{i},
@@ -66,7 +66,7 @@ An effective exploration and implementation concerning the above components shou
 
 ## Objectives
 
-The main target for this work is to achieve competive results with the state-of-the-art (SOTA) approach on the ChestX-ray14 dataset reported in [@Rajpurkar2017]. However, along the way we also aim to to accomplish the following sub-objectives:
+The main target for this work is to achieve competive results with the state-of-the-art (SotA) approach on the ChestX-ray14 dataset reported in [@Rajpurkar2017]. However, along the way we also aim to to accomplish the following sub-objectives:
 
 + Develop a thorough understanding of CNNs and how they are applied to an image classification problem.
 + Collect and review all the latest research on CNNs applied to multi-label image classification and develop a thorough understanding of how these methods compare to each other in addition to how they should perform in certain scenarios.
@@ -85,7 +85,7 @@ Multi-label image classification is not restricted to the application to the dia
 
 [^amazon]: https://www.kaggle.com/c/planet-understanding-the-amazon-from-space
 
-Although the original proposal for CNNs dates back to some time ago [based on a series of work done by @Hubel1962, @Fukushima1980 & @LeCun1999] the first publication of a sucessful large-scale implementation was fairly recently [@Krizhevsky2012]. Ever since, the SOTA in most *computer vision* (CV) tasks are dominated by CNNs. Its success is attributed to its remarkable ability to learn useful representations from raw inputs [@Lecun2015] such as images in its pixel value form. However, up to now, the main focus of CNN research was on problems concerning the simpler scenario of multiclass image classification, where each image is only associated with a single label. See the annual large scale image classifcation competition known as ImageNet [@Russakovsky2015] as an example of such a problem. \autoref{fig:IN_err} plots the misclassification error rate of the winning model for each year. Note the large drop in the error rate from 2011 to 2012 where a CNN was used for the first time in this competition.
+Although the original proposal for CNNs dates back to some time ago [based on a series of work done by @Hubel1962, @Fukushima1980 & @LeCun1999] the first publication of a sucessful large-scale implementation was fairly recently [@Krizhevsky2012]. Ever since, the SotA in most *computer vision* (CV) tasks are dominated by CNNs. Its success is attributed to its remarkable ability to learn useful representations from raw inputs [@Lecun2015] such as images in its pixel value form. However, up to now, the main focus of CNN research was on problems concerning the simpler scenario of multiclass image classification, where each image is only associated with a single label. See the annual large scale image classifcation competition known as ImageNet [@Russakovsky2015] as an example of such a problem. \autoref{fig:IN_err} plots the misclassification error rate of the winning model for each year. Note the large drop in the error rate from 2011 to 2012 where a CNN was used for the first time in this competition.
 
 ```{r, echo=FALSE, fig.cap="The misclassification error rate for the winning ImageNet model per year.\\label{fig:IN_err}", cache=TRUE}
 library(tidyverse)
@@ -99,7 +99,9 @@ data.frame(Year = 2010:2017, Error = c(0.28191, 0.25770, 0.16422, 0.1174, 0.0666
   annotate("text", x = 2010, y = 0.06, label = "Human performance", hjust = 0)
 ```
 
-Far less attention is given to the application of CNNs on a multi-label image classification problem. Which is arguebly a more relevant task since most of real-world images can be associated with more than one class. Although a fairly trivial adaption can be made to a single-label CNN to apply it to a multi-label case (see \Cref{sec:mlcnn_basic}), it does not explicitly deal with some of the unique challenges of modeling images with multiple labels like exploiting label correlation and detecting objects of different scales. Only a handful of publications address some of these issues [see for example @Gong2013, @Wei2014, @Wang2016, @Zhu2017, @Chen2017]. This is still a developing research direction and many of the publications are made in isolation, which warrants further study and comparisons of approaches in this area.
+Far less attention is given to the application of CNNs on a multi-label image classification problem. Which is arguebly a more relevant task since most of real-world images can be associated with more than one class. Although a fairly trivial adaption can be made to a single-label[^sl] CNN to apply it to a multi-label case (see \Cref{sec:mlcnn_basic}), it does not explicitly deal with some of the unique challenges of modeling images with multiple labels like exploiting label correlation and detecting objects of different scales. Only a handful of publications address some of these issues [see for example @Gong2013, @Wei2014, @Wang2016, @Zhu2017, @Chen2017]. This is still a developing research direction and many of the publications are made in isolation, which warrants further study and comparisons of approaches in this area.
+
+[^sl]: Referring to binary or multiclass classification tasks.
 
 Since theory and practice does not always go hand-in-hand, it is usually advantageous to complement a theoretical study with empirical results. Another motivation for empirical study is that we regard the ability to implement an approach equally as important as understanding the theory behind it. We characterise a good empirical experiment as one that is *rigorous* and *reproducible*. Recently the field of *Deep Learning*, which is the class of statistical learning models multi-layer ANNs, including CNNs, belong to, has been criticised for the growing gap between the understanding of its techniques and its practical successes[^talk] where most of the recent focus was on the latter. The speakers urged the deep learning community to be more rigorous in their experiments where, for them, the most important part of rigor is better empiricism, not more mathematical theories. Better empiricism in classification may include for example practices such as using cross-validation to estimate the generalisation ability of a model and reporting standard errors. Empirical studies should be more than just trying to beat the benchmark and should also consist of simple experiments that aid in the understanding of how the techniques work. 
 

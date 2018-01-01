@@ -14,11 +14,11 @@ The performance evaluation of a multi-label learning system is much more complic
 
 ### Description \label{sec:chx14}
 
-This ChestX-ray14 dataset [@Wang2017] consists of 112,120 X-ray images with disease labels from 30,805 unique patients ($N=112120$). To put it into perspective, the second largest publicly available chest X-ray dataset[^openi] to date has only 4143 frontal view data points. The large number of X-rays in ChestX-ray14 better facilitates the data hungry process of deep neural network training. All X-rays were resized to $1024\times 1024$, meaning the total number of raw features (the pixels) for each X-ray is $p=1048576$, since X-rays only have one color channel compared to color RGB images with 3 channels. This is quite a large size for a typical image classification problem, for example the images in ImageNet are only of size $224\times 224$.
+This ChestX-ray14 dataset [@Wang2017] consists of 112,120 X-ray images with disease labels from 30,805 unique patients ($N=112120$). To put it into perspective, the second largest publicly available chest X-ray dataset[^openi] to date has only 4,143 frontal view data points. The large number of X-rays in ChestX-ray14 better facilitates the data hungry process of deep neural network training. All X-rays were resized to $1024\times 1024$, meaning the total number of raw features (the pixels) for each X-ray is $p=1048576$, since X-rays only have one color channel compared to color RGB images with 3 channels (see \autoref{sec:imgasdata}). This is quite a large size for a typical image classification problem, for example the images in ImageNet are only of size $224\times 224$.
 
 [^openi]: https://openi.nlm.nih.gov
 
-The labels for each X-ray were obtained by using *Natural Languape Processing* techniques to text-mine disease classifications from the corresponding radiological reports. The authors expect the labels to be >90% accurate. The original publication of ChestX-ray14 had a total of eight possible disease labels but the latest version is labeled with up to 14 possible diseases ($K=14$), they include: *Atelectasis*, *Consolidation*, *Infiltration*, *Pneumothorax*, *Edema*, *Emphysema*, *Fibrosis*, *Effusion*, *Pneumonia*, *Pleural_thickening*, *Cardiomegaly*, *Nodule*, *Mass* and *Hernia*. Note, that some X-rays are associated with no labels. This is not a large labelset compared to some of the other benchmark multi-label datasets (see *extreme multi-label learning* [@Zhang2017, @Prabhu] where $K$ sometimes reach into the millions).
+The labels for each X-ray were obtained by using *Natural Languape Processing* techniques to text-mine disease classifications from the corresponding radiological reports. The authors expect the labels to be >90% accurate. The original publication of ChestX-ray14 had a total of eight possible disease labels but the latest version is labeled with up to 14 possible diseases ($K=14$), they include: *Atelectasis*, *Consolidation*, *Infiltration*, *Pneumothorax*, *Edema*, *Emphysema*, *Fibrosis*, *Effusion*, *Pneumonia*, *Pleural_thickening*, *Cardiomegaly*, *Nodule*, *Mass* and *Hernia*. Note, that some X-rays are associated with no labels. This is not a large labelset compared to some of the other benchmark multi-label datasets (see *extreme multi-label learning* [@Zhang2017, @Prabhu2014] where $K$ sometimes reach into the millions).
 
 Examples of the input-output pairs are given in \autoref{fig:examp}. An untrained eye will find it extremely difficult to detect the patterns that defines the relationship between the X-rays and their corresponding diseases. The beauty (and sometimes the danger) of CNNs for image classification, as we will see in \Cref{chp:cnn}, is that in ideal conditions, no prior knowledge of the application domain is necessary for the algorithm to learn the relationships between the inputs and the outputs. Current ideal conditions for deep learning has mostly to do with having enough examples. When the number of training examples are limited, an inspection of the data may provide clues to how a model can be adapted to get the most out of the data. 
 
@@ -49,7 +49,7 @@ image_append(c(image_append(c(temp[[1]], temp[[2]], temp[[3]])),
 
 ![Examples of the X-rays and their disease labels contained in ChestX-ray14.\label{fig:examp}](figures/examples.png)
 
-### Images as Data
+### Images as Data \label{sec:imgasdata}
 
 To understand how an algorithm can process an image, we need to know how an image is stored and how it is represented as a set of numbers, interpretable by a machine. An image is made up of a grid of many tiny squares (or cells) with different colors. These cells are known as pixels and one pixel represents one color. A grayscale image, 32 pixels wide and 32 pixels long, can be represented by a $32\times 32$ matrix of integers, where each integer represents the 'brightness' (or intensity) of each pixel. These integers usually lie within $[0,255]$, such that the greater the integer, the brighter the pixel. For example, a pixel with an intensity of 0 is totally black, and a pixel with an intensity of 255 is totally white. \autoref{fig:imgzoom} illustrates this representation by showing the pixel values from a zoomed in patch of a chest X-ray. 
 
@@ -96,15 +96,15 @@ img %>% image_write('figures/img_zoom.png')
 
 In summary, for each X-ray we have $1024\times 1024=1048576$ values between 0 and 255 representing the brightness of a specific pixel in the image. This matrix can now be given to a learning algorithm. We refer to this representation of an image as its raw representation. Conventional classifiers struggle to make sense of images in its raw form and usually require some visual feature extraction process before classification [@Sanchez2013]. We will see in \Cref{chp:cnn} why this is not necessary for CNNs and how they effectively model images in their raw form.
 
-Some of the reasons why it may be hard to distinguish the signal from the noise in the X-ray images as their raw form is as follows (adapted from [@Karpathy2015]):
+Some of the reasons why it may be hard to distinguish the signal from the noise in the X-ray images in their raw form is as follows (adapted from [@Karpathy2015]):
 
 + **Scale variation**. The disease labels exhibit variation in their size. For example, the *Nodule* class is usually a very small part of the X-ray, whereas *Pleural_thickening* typically take up a much larger proportion.
-+ **Deformation**. One disease label can appear as many different shapes accross different X-rays. This is the case for the *Mass* label [Yao2017].
++ **Deformation**. One disease label can appear as many different shapes accross different X-rays. This is the case for the *Mass* label [@Yao2017].
 + **Occlusion**. Some disease labels may only be partially visible, hidden behind other objects in the X-ray image.
 + **Brightness and Contrast**. The X-rays were not all taken in the exact same lighting conditions and therefore vary in their brightness and contrast (see also \autoref{fig:xcomp}).
 + **Background clutter**. The largest part of an X-ray in our dataset is background and totally irrelevant to the classification of disease labels. The background contains clutter such as markings and medical apparatus.
 
-All of these factors may contribute to a relatively high intra-class variance and low inter-class variance. Diseases such as *Atelectasis*, *Consolidation*, *Pneumonia* and *Infiltration* are extremely difficult to distinguish between from X-ray images [oakdenrayner2017]. Therefore it helps a classifier if the images in its raw form can be mapped to a space with more discriminative features between classes. Next, we explore more of the data in terms of its labels.
+All of these factors may contribute to a relatively high intra-class variance and low inter-class variance. Diseases such as *Atelectasis*, *Consolidation*, *Pneumonia* and *Infiltration* are extremely difficult to distinguish between from X-ray images [@oakdenrayner2017]. Therefore it helps a classifier if the images in its raw form can be mapped to a space with more discriminative features between classes. Next, we explore more of the data in terms of its labels.
 
 ### Label Distribution
 
@@ -156,7 +156,7 @@ kable(df, format = "latex", booktabs = TRUE, escape = FALSE,
   kable_styling(latex_options = "scale_down")
 ```
 
-There are multiple properties of the label distribution that can be investigated. First, we can look at how the label count varies over each label in \autoref{fig:labelcount} (a). The dataset has a fairly imbalanced label distribution, this is quite common in multi-label data. Only three of the labels (*Infiltration*, *Effusion*, *Atelectasis*) are present in more that 10% of the X-rays. Then there are labels such as *Pneumonia* and *Hernia* which occur very rarely, in 1.2% and 0.2% of the data, respectively. 
+There are multiple properties of the label distribution that can be investigated. First, we can look at how the label count varies over each label in \autoref{fig:labelcount} (a). The dataset has a fairly imbalanced label distribution, this is quite common in multi-label data. Only three of the labels (*Infiltration*, *Effusion*, *Atelectasis*) are present in more than 10% of the X-rays. Then there are labels such as *Pneumonia* and *Hernia* which occur very rarely, in 1.2% and 0.2% of the data, respectively. 
 
 Another insightful plot is the distribution of the number of labels per observation as in \autoref{fig:labelcount} (b). We see that a large proportion (~54%) of the observations are associated with zero labels and roughly 27% of the observations with exactly one label. Thus only ~19% of the X-rays have multiple labels. The maximum number of labels observed is 9, occuring only twice in the dataset. This shows that the output for each observations is *sparse*, another type of imbalance where only a small proportion of the labels per observation is positive. We refer to all labels for which $y_{ik}=0$ as negative labels.
 
@@ -199,7 +199,7 @@ $$
 This measure can be normalised to be independent of the label set size, which results in the label density indicator:
 
 $$
-\text{LDens}(D)=\frac{1}{K}\text{LCard}(D)=\frac{1}{NK}\sum_{i=1}^{N}\sum_{k=1}^{K}y_{ik}.
+\text{LDens}(D)=\frac{1}{K}\cdot\text{LCard}(D)=\frac{1}{NK}\sum_{i=1}^{N}\sum_{k=1}^{K}y_{ik}.
 $$
 According to [@Tsoumakas2007] it is important to distinguish between these two measures, since two data sets with the same label cardinality but with a great difference in the number of labels might not exhibit the same properties and cause different behaviour to the *multi-label classification* (MLC) methods. These two measures give a good indication of the label frequency of a data set, but we are also interested in the uniformity and regularity of the labeling scheme. The authors of [@Read2011] suggested measuring the proportion of unique label combinations in the data and the proportion of observations in the data associated with the most frequently occuring label combination. Consider the number of unqiue label combinations, also referred to as the label diversity [@Zhang2014], which can be defined as:
 
@@ -209,7 +209,7 @@ $$
 The proportion of unique label combinations in $D$ is then
 
 $$
-\text{PLDiv}(D)=\frac{1}{N}\text{LDiv}(D).
+\text{PLDiv}(D)=\frac{1}{N}\cdot\text{LDiv}(D).
 $$
 The proportion of observations associated with the most frequently occuring label combination is defined by [@Read2011] as:
 
@@ -389,7 +389,7 @@ Recall that the multi-label classifier is of the following form:
 $$
 h_{\theta}(\boldsymbol{x}_{i})\to Y_{i}
 $$
-and that the set of labels for observation $\boldsymbol{x}_{i}$, $Y_{i}$, can also be denoted as an indicator vector $\boldsymbol{y}_{i}$. Although a multi-label classifier is trained against the binary ground truth output, it is often not possible for it to directly output a vector of 0's and 1's and returns a real value for each label instead. In the exact same way that, for example, the $k$-*nearest neighbour* algorithm for classification returns the proportions of the classes associated with the observations in a neighbourhood of the input space and the *linear model* returns a weighted average (real) of the input features. Most of the time the algorithm is designed in such a way that the real outputs lie in $(0,1)$, so that it looks like posterior class probabilities, $P(\boldsymbol{y}|\boldsymbol{x})$. Thus we will need some thresholding function to map the real values for each label to binary output. This is similar to binary classification where it is common to map all outputs larger than a threshold of say 0.5 to 1 and the rest to 0, and multiclass classification where the largest output for a given observation is mapped to 1 and the rest to 0.
+and that the set of labels for observation $\boldsymbol{x}_{i}$, $Y_{i}$, can also be denoted as an indicator vector $\boldsymbol{y}_{i}$. Although a multi-label classifier is trained against the binary ground truth output, it is often not possible for it to directly output a vector of 0's and 1's and returns a real value for each label instead. In the exact same way that, for example, the $k$-*nearest neighbour* algorithm for classification returns the proportions of the classes associated with the observations in a neighbourhood of the input space and the *linear model* returns a weighted average (real) of the input features. Most of the time the algorithm is designed in such a way that the real outputs lie in $[0,1]$, so that it looks like posterior class probabilities, $P(\boldsymbol{y}|\boldsymbol{x})$. Thus we will need some thresholding function to map the real values for each label to binary output. This is similar to binary classification where it is common to map all outputs larger than a threshold of say 0.5 to 1 and the rest to 0, and multiclass classification where the largest output for a given observation is mapped to 1 and the rest to 0.
 
 Thus a multi-label classifier can also be given by:
 
@@ -406,7 +406,7 @@ f(\boldsymbol{x})_{2} \\
 \dots \\
 f(\boldsymbol{x})_{K}\end{bmatrix},
 $$
-then we expect $f(\boldsymbol{x})_{k}$ to be large if the classifier is confident that $\lambda_{k}$ is associated with $\boldsymbol{x}$ and small otherwise, since it is trained to match the ground truth of binary outputs. The absolute values of these scores are less important, but we at least want $f(\boldsymbol{x})_{u}>f(\boldsymbol{x})_{v}$ for any $\lambda_{u}\in Y$ and $\lambda_{v} \notin Y$. From this output we can then obtain a ranking of the labels from high to low according to how confident the classifier is that each label is present. This is done by a ranking function, $rank(\cdot)_{k}$, which maps the outputs of $f$, $\{f(\boldsymbol{x})_{1},f(\boldsymbol{x})_{2},\dots,f(\boldsymbol{x})_{K}\}$, to $\{1,2,\dots, K\}$ such that if $f(\boldsymbol{x})_{u}>f(\boldsymbol{x})_{v}$ then $rank(\boldsymbol{x})_{u}<rank(\boldsymbol{x})_{v}$.
+then we expect $f(\boldsymbol{x})_{k}$ to be large if the classifier is confident that $\lambda_{k}$ is associated with $\boldsymbol{x}$ and small otherwise, since it is trained to match the binary ground truth outputs. The absolute values of these scores are less important, but we at least want $f(\boldsymbol{x})_{u}>f(\boldsymbol{x})_{v}$ for any $\lambda_{u}\in Y$ and $\lambda_{v} \notin Y$. From this output we can then obtain a ranking of the labels from high to low according to how confident the classifier is that each label is present. This is done by a ranking function, $rank(\cdot)_{k}$, which maps the outputs of $f$, $\{f(\boldsymbol{x})_{1},f(\boldsymbol{x})_{2},\dots,f(\boldsymbol{x})_{K}\}$, to $\{1,2,\dots, K\}$ such that if $f(\boldsymbol{x})_{u}>f(\boldsymbol{x})_{v}$ then $rank(\boldsymbol{x})_{u}<rank(\boldsymbol{x})_{v}$.
 
 However, in MLC, we ultimately want to know which labels are associated with each input and thus the need for $t(\cdot)$. A typical choice for $t(\cdot)$ is
 
@@ -479,9 +479,9 @@ which calculates the proportion of correctly ordered positive-negative label pai
 
 Since the output of a MLC problem is also just a set of binary outcomes, binary classification evaluation metrics can be harnessed to evaluate multi-label classifiers. It just needs to be decided how the binary measures are aggregated over the entire dataset.
 
-There are three possible aggregation schemes: per *example*, *micro*- and *macro*-averaging. In some literature [@Zhang2014], micro- and macro-averaging are grouped into *label*-based averaging, however we find the example-micro-macro grouping more intuitive.
+There are three possible aggregation schemes: per *example*, *micro*- and *macro*-averaging. In some literature [@Zhang2014], micro- and macro-averaging are grouped into *label*-based averaging, however we find the example-micro-macro grouping more descriptive.
 
-Suppose a binary performance metric comparing (dis)similarity between two binary vectors is denoted as $B$, *i.e.* $B\in\{\text{accuracy},\text{precision},\text{recall},F_{1},\text{AUC}\}$. Example-based multi-label evaluation metrics can then be given as:
+Suppose a binary performance metric comparing (dis)similarity between two binary vectors is denoted as $B$, *i.e.* $B\in\{\text{err},F_{1},\text{AUC},\dots\}$. Example-based multi-label evaluation metrics can then be given as:
 
 $$
 \frac{1}{N}\sum_{i=1}^{N}B(\boldsymbol{y}_{i},\hat{\boldsymbol{y}}_{i}),
@@ -491,7 +491,7 @@ which is the metric computed for each observation (or example) and then averaged
 $$
 \text{hloss}(\hat{h})=\frac{1}{N}\sum_{i=1}^{N}\text{err}(\boldsymbol{y}_{i},\hat{\boldsymbol{y}}_{i})=\frac{1}{N}\sum_{i=1}^{N}\frac{1}{K}\sum_{k=1}^{K}I(y_{ik}\neq\hat{y}_{ik}).
 $$
-Thus the Hamming loss computes the average number of incorrectly predicted labels for each observation and takes the average over all observations. The Hamming loss is not very informative when the ratio of positive to negative labels is imabalanced. For example, if we predict all zero's for ChestX-ray14, the Hamming loss is overly confident at 0.0516 (the same as the label density). For cases like these it may be more suitable to use $B=F_{1} $ which is known to be less sensitive to class imbalance.
+Thus the Hamming loss computes the average number of incorrectly predicted labels for each observation and takes the average over all observations. The Hamming loss is not very informative when the ratio of positive to negative labels is imabalanced. For example, if we predict all zero's for ChestX-ray14, the Hamming loss is overly confident at 0.0516 (the same as the label density). For cases like these it may be more suitable to use $B=F_{1}$ which is known to be less sensitive to class imbalance.
 
 A much stricter example-based metric is the *Subset Accuracy* which is defined as:
 $$
