@@ -1,0 +1,84 @@
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(knitr)
+library(kableExtra)
+```
+
+# Convolutional Neural Networks \label{chp:cnn}
+
+## Introduction
+
+Representation learning is a set of methods that can take raw unstructured data as input and automatically learn the optimal representations from the data for the specific task, *e.g.* classification. Deep learning methods are representation learning methods, explaining their superiority in image classification and related tasks. The 'deep' of deep learning refers to the multiple layers of a deep learning network stacked on top of each other. Each layer transforms a representation at one level (starting at the input) to a slightly higher level of abstraction, until a level is reached sufficient for classification (or any other task). These layers are a combination of simple linear and non-linear functions and together (if the network is deep enough) it can approximate any function, no matter how complex [@Hornik1991].
+
+For many years, dating back to the late 1950s, researches have tried to find ways to replace hand-crafted feautres with multilayer networks [@Selfridge1959; @Rosenblatt1957]. The first real progress was made when they found that the networks can be trained by simple gradient descent and the backpropogation algorithm [@Rumelhart1988]. Until the early 2000s, research communities related to statistics and artificial intelligence did not have much hope for neural networks. They believed training the network by gradient descent will result in solutions stuck in a poor local minima. In practice this is not true and it has actually been shown that the solutions tend to get stuck in saddle points, which are not that problematic [@Dauphin2014; @Choromanska2014].
+
+Hope was restored when unsupervised methods were developed to pretrain networks on unlabelled data to obtain a weight initialisation for the supervised learning training process [@Hinton2006; @Bengio2006]. This helped the backpropogation algorithm to find good solutions especially when the number of labelled data points were limited. More efficient ways of training the networks were developed by making use of GPUs, decreasing the average training time of networks by at least a factor of 10. Finally, a general consensus on the power of deep learning methods were reached when a CNN was trained on a large-scale image classification data set to beat previous state-of-the-art by a large margin.
+
+This chapter discusses deep neural networks (DNNs) focussing on image classification. Convolutional Neural Networks (CNNs), a specific type of DNN, is the state-of-the-art model in single label image classification. Therefore the aim of this chapter is to gain an understanding of CNNs such that we can later extend it to handle multi-label image classification. First, \Cref{sec:dnn} introduces Neural Networks. It looks at its structure and the various strategies regarding its optimisation. \Cref{sec:cnn} is on CNNs, which are especially useful for image classification. The section focusses on the unique components of a CNN and why it works so well. Then in \Cref{sec:rnn} we will briefly discuss Recurrent Neural Networks (RNNs). These type of networks are especially well suited for sequential input, but they have also been used for multi-label classification and therefore it is included in this chapter. \Cref{sec:over} discusses the important problem of reducing overfitting of DNNs. It reviews the most important strategies for improving the generalisation ability of DNNs. \Cref{sec:transfer} on transfer learning. Maybe also something on attention and then a conclusion.
+
+As mentioned before, Deep Neural Networks are extensions of Neural Networks. The extensions consist of adding more hidden layers and the use of more advanced layers. The type of DNN best suited for image classification is called a Convolutional Neural Network (CNN). The identifying feature of a CNN is its convolutional layer.
+
+## Convolutional Layer
+
+## Reducing Overfitting \label{sec:over}
+
+The relationship between the input and the true output in an image classification problem is usually complicated. CNNs generally have millions of trainable paramaters and therefore there will typically be many different settings of these parameters that allow the model to fit the training data almost perfectly, especially if the amount of training data is limited. However, a network with weights tuned to fit the training data perfectly is very likely to perform much worse on test data not used for training, since the weights are specifically suited for the examples in the training set. This is what we call overfitting.
+
+The bigger the network the more prone it becomes to overfitting. Luckily there are several ways to combat overfitting. Some of the more important strategies are introduced here.
+
+### Data Augmentation
+
+The simplest way to reduce overfitting is to get more labelled data. But in many cases this is not possible for several reasons including time and budget constraints. The next best approach is to artificially enlarge the dataset using label-preserving transformations. This is called data augmentation [@Krizhevsky2012] and can naturally be applied to image classification datasets.
+
+There are many possible transformations (or augmentations) that can be applied to images including: rotating, mirroring, cropping, zooming, *etc.* A combination of these transformations can be performed randomly on images each time its shown to the network when training. Therefore every time a different version of the same image is shown to the network, which has a similar effect to showing it a new labelled image.
+
+> poorly written. give more resources
+
+### Dropout
+
+Overfitting can be reduced by using dropout [@Hinton2012] to prevent complex co-adaptions on the training data. Dropout consists of setting the output of a hidden unit to zero with a probability $p$ (in the original paper they used $p=0.5$). The units which are set to zero do not contribute to the forward pass and do not participate in backpropogation. Every time an input is presented, the neural network samples a different set of units to be dropped out. 
+
+This technique ensures that a unit does not rely on the presence of a particular set of other units. It is therefore forced to learn more robust features that are useful in conjunction with many different random subsets of the other units [@Krizhevsky2012].
+
+At test time, no units are dropped out and their output is multiplied by $1-p$ (make sure) to compensate for the fact that all of the units are now active. Dropout does tremendously well to combat overfitting, but it slows down the covergence time of training.
+
++ in the original paper they also compare the technique to ensebmling
+
+### Batch Normalisation
+
+One of the things that complicate the training of neural networks is the fact that hidden layers have to adapt to the continuously changing distribution of its inputs. The inputs to each layer are affected by the paramaters of all its preceding layers and a small change in a preceding layer can lead to a much bigger difference in output as the network becomes deeper. When the input distribution to a learning system changes, it is said to experience covariate shift [@Shimodaira2000].
+
+Using ReLUs, carefull weight initialisation and small learning rates can help a network to deal with the internal covariate shift. However, a more effective way would be to ensure that the distribution of non-linearity inputs remains more stable while training the network. [@Ioffe2015] proposed *batch normalisation* to do just that.
+
+A batch normalisation layer normalises its inputs to a fixed mean and variance (similar to how the inputs of the network is normalised) and therefore it can be applied before any hidden layer in a network to prevent internal covariate shift. The addition of this layer dramatically accelerates the training of DNNs, also because it can be used with higher learning rates. It also helps with regularisation [@Ioffe2015], therefore in some cases dropout is not necessary.
+
+The batch normalising transform over a batch of univariate inputs, $x_{1}, \dots,x_{n}$ is done by the following steps:
+
+1. Calculate the mini-batch mean, $\mu$, and variance, $\sigma^{2}$:
+
+    $$
+    \begin{aligned}
+    \mu &= \frac{1}{n}\sum_{i=1}^{n}x_{i}\\
+    \sigma^{2}&=\frac{1}{n}\sum_{i=1}^{n}(x_{i}-u)^{2}
+    \end{aligned}
+    $$
+
+2. Normalise the inputs, 
+
+    $$
+    \hat{x}_{i} = \frac{x_{i}-\mu}{\sqrt{\sigma^{2}+\epsilon}},
+    $$
+    where $\epsilon$ is a constant to ensure numerical stability.
+
+3. Scale and shift the values,
+
+    $$
+    y_{i}=\gamma\hat{x}_{i}+\beta,
+    $$
+    where $\gamma$ and $\beta$ are the only two learnable paramaters of a batch normalisation layer.
+
+The reason for the scale and shift step is to allow the layer to represent the identity transform if the normalised inputs are not suitable for the following layer, *i.e.* the scale and shift step will reverse the normalisation step if $\gamma=\sqrt{\sigma^{2}+\epsilon}$ and $\beta=\mu$.
+
+## Transfer Learning \label{sec:transfer}
+
+The major critique against DNNs are that they require a huge amount of training data and that they take extremely long to train. This is somewhat true, however, *transfer learning* provides an effective solution to these problems. Recall that DNNs are examples of representation learning algorithms. Consider the case where a CNN was sucessfully trained on ImageNet. For any input image, each layer of the CNN produces some feature representation of the input image. (Not sure where Zeiler paper is going to be discussed). 
