@@ -42,30 +42,32 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE, echo=FALSE)
 ```
 
 
-```{r child = 'intro_new.Rmd'}
+```{r child = 'chapter1.Rmd'}
 ```
 
-```{r child = 'dnn.Rmd'}
+```{r child = 'chapter2.Rmd'}
 ```
 
-```{r child = 'mlc.Rmd'}
+```{r child = 'chapter3.Rmd'}
 ```
 
-```{r child = 'MLCNN.Rmd'}
+```{r child = 'chapter4.Rmd'}
 ```
 
-```{r child = 'results.Rmd'}
+```{r child = 'chapter5.Rmd'}
 ```
 
-```{r child = 'conclusion.Rmd'}
+```{r child = 'chapter6.Rmd'}
 ```
 
+```{r child = 'chapter7.Rmd'}
+```
 
 \appendix
 \appendixpage\relax
 
-```{r child = 'appendixA.Rmd'}
-```
+<!-- ```{r child = 'appendixA.Rmd'} -->
+<!-- ``` -->
 
 ```{r child = 'appendixB.Rmd'}
 ```
