@@ -370,8 +370,8 @@ From the analysis of the data we highlight the following factor which might make
 + **Dealing with label Correlation**. It is difficult to determine the exact label relationships from the data. We need to design a classifier that is able to take information from other labels into account when it is necessay, but at the same time ignore them when it is not.
 
 ```{r, include=FALSE, eval=FALSE}
-good_img <- image_read('~/Documents/ChestXray8/data/00000900_001.png')
-bad_img <- image_read('~/Documents/ChestXray8/data/00001200_009.png')
+good_img <- image_read('00000900_001.png')
+bad_img <- image_read('00001200_009.png')
 
 image_append(c(good_img, bad_img)) %>% image_write('figures/xcomp.png')
 ```
@@ -578,27 +578,28 @@ f3 <- matrix(c(0.1, 0.4, 0.1, 0.7, 0.2,
                0.9, 0.8, 0.1, 0.2, 0.6), nrow = 3, byrow = TRUE)
 
 
-perf1 <- mldr_evaluate(D, f1)[c("HammingLoss", "SubsetAccuracy", "AveragePrecision",
-                       "MicroFMeasure", "MacroFMeasure")] %>% unlist %>% round(4)
-perf2 <- mldr_evaluate(D, f2)[c("HammingLoss", "SubsetAccuracy", "AveragePrecision",
-                       "MicroFMeasure", "MacroFMeasure")] %>% unlist %>% round(4)
-perf3 <- mldr_evaluate(D, f3)[c("HammingLoss", "SubsetAccuracy", "AveragePrecision",
-                       "MicroFMeasure", "MacroFMeasure")] %>% unlist %>% round(4)
+perf1 <- mldr_evaluate(D, f1)[c("hamming_loss", "subset_accuracy", "average_precision",
+                       "micro_fmeasure", "macro_fmeasure")] %>% unlist %>% round(4)
+perf2 <- mldr_evaluate(D, f2)[c("hamming_loss", "subset_accuracy", "average_precision",
+                       "micro_fmeasure", "macro_fmeasure")] %>% unlist %>% round(4)
+perf3 <- mldr_evaluate(D, f3)[c("hamming_loss", "subset_accuracy", "average_precision",
+                       "micro_fmeasure", "macro_fmeasure")] %>% unlist %>% round(4)
 
 df <- cbind(perf1, perf2, perf3) %>% as.data.frame()
 
-rownames(df) <- c("hloss", "subsetacc", "AP^{example}", "$F_{1}^{micro}$", "$F_{1}^{macro}$")
+rownames(df) <- c("hloss", "subsetacc", "$AP^{example}$", "$F_{1}^{micro}$", "$F_{1}^{macro}$")
 colnames(df) <- c("$_{1}\\hat{h}$", "$_{2}\\hat{h}$", "$_{3}\\hat{h}$")
 
 df_print <- df
 
-df_print[1, df[1, ] == min(df[1, ])] <- paste0("**", df[1, df[1, ] == min(df[1, ])], "**")
-df_print[2, df[2, ] == max(df[2, ])] <- paste0("**", df[2, df[2, ] == max(df[2, ])], "**")
-df_print[3, df[3, ] == max(df[3, ])] <- paste0("**", df[3, df[3, ] == max(df[3, ])], "**")
-df_print[4, df[4, ] == max(df[4, ])] <- paste0("**", df[4, df[4, ] == max(df[4, ])], "**")
-df_print[5, df[5, ] == max(df[5, ])] <- paste0("**", df[5, df[5, ] == max(df[5, ])], "**")
+df_print[1,] <- cell_spec(df[1, ], bold = ifelse(df[1,] == min(df[1,]), T, F))
+df_print[2,] <- cell_spec(df[2, ], bold = ifelse(df[2,] == min(df[2,]), T, F))
+df_print[3,] <- cell_spec(df[3, ], bold = ifelse(df[3,] == max(df[3,]), T, F))
+df_print[4,] <- cell_spec(df[4, ], bold = ifelse(df[4,] == max(df[4,]), T, F))
+df_print[5,] <- cell_spec(df[5, ], bold = ifelse(df[5,] == max(df[5,]), T, F))
 
-kable(df_print, booktabs = TRUE, escape = FALSE, digits = 4,
+
+kable(df_print, booktabs = TRUE, digits = 4, format ='latex', escape = FALSE,
       caption="Performance of the toy predictions in \\autoref{tab:toymlpred}.\\label{tab:toymlmet}")
 
 ```
@@ -607,8 +608,8 @@ Some important observations from this example:
 
 + No one classifier is best in terms of all metrics.
 + There is no difference between the classifiers in terms of the hamming loss.
-+ $_{1}\hat{h}$ and $_{3}\hat{h}$ is equivalent in terms of both hamming loss and subset accuracy, whereas $_{3}\hat{h}$ has the better $AP^{example}$ and $_{1}\hat{h}$ the better $F_{1}^{micro}$ and $F_{1}^{macro}$.
-+ $F_{1}^{micro}$ and $F_{1}^{macro}$ measure different aspects of the predictions.
++ $_{1}\hat{h}$ and $_{3}\hat{h}$ are equivalent in terms of hamming loss, subset accuracya and $F_{1}^{macro}$, whereas $_{1}\hat{h}$ has the better $AP^{example}$ and $_{3}\hat{h}$ the better $F_{1}^{micro}$.
++ $F_{1}^{micro}$ and $F_{1}^{macro}$ measure different things.
 
 A final comment about multi-label metrics is that they are usually non-convex and discontinuous [@Zhang2014] and therefore multi-label classifiers resort to optimising surrogate metrics which are easier to optimise. Most multi-label classifiers learn from the training observations by explicity or implicitly optimising one specific metric [@Zhang2014]. That is why in [@Dembcz2012] the authors reccomended specifying which of the metrics a new proposed algorithm aims to optimise in order to show if it is succesful. But at the same time it is important to test the algorithm on numerous metrics for fair comparisons against other algorithms [@Zhang2014, @Madjarov2012].
 

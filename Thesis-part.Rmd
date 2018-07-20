@@ -2,12 +2,13 @@
 output: 
   pdf_document:
     citation_package: natbib
-    template: us_template2.tex
+    template: ustemplate2.tex
     toc: true
     toc_depth: 3
     number_sections: true
     keep_tex: no
-bibliography: library_clean.bib
+bibliography: libraryclean.bib
+always_allow_html: yes # make sure I want this
 documentclass: memoir
 lang: afrikaans,UKenglish
 fontsize: 12pt
@@ -51,18 +52,6 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE, echo=FALSE)
 ```
 
 ```{r child = 'chapter3.Rmd'}
-```
-
-```{r child = 'chapter4.Rmd'}
-```
-
-```{r child = 'chapter5.Rmd'}
-```
-
-```{r child = 'chapter6.Rmd'}
-```
-
-```{r child = 'chapter7.Rmd'}
 ```
 
 \appendix

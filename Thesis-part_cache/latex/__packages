@@ -6,11 +6,11 @@ tidyr
 readr
 purrr
 dplyr
-kableExtra
-knitr
 stringr
+forcats
+knitr
+kableExtra
 bindrcpp
 cowplot
 ggcorrplot
-data.tree
 mldr
