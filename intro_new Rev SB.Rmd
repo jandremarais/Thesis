@@ -1,0 +1,421 @@
+# Introduction
+\label{chp:intro}
+
+## Motivation \label{sec:moti}
+
+*Image Classification* concerns the task of assigning one (or more) label(s) to an input image. This seemingly simple task is one of the core problems in *Computer Vision*, and also has a large variety of practical applications. Examples of such applications include detecting deforestation in the Amazon from satellite images [^Amazon], or autonomous lung disease diagnosis from chest X-rays [@Wang2017]. Image classification is a thoroughly researched topic and already regarded by many to be a 'solved' problem. This progress is mainly attributed to the yearly large-scale image classification competition, called *ImageNet*[^imagenet], providing researchers with millions of labelled images to train their image classification models.
+
+[^Amazon]: https://www.kaggle.com/c/planet-understanding-the-amazon-from-space
+[^imagenet]: http://www.image-net.org/
+
+The other driver of the recent success of image classification systems is the development of *Deep Learning* [@Lecun2015], a subfield of Machine Learning. Deep Learning (by means of *deep neural networks*, or DNNs) extends upon artificial neural networks, which were designed in an attempt to mimic the structure and function of the human brain. The type of DNNs proven best suited for image classification problems is the class of *Convolutional Neural Networks* (CNNs). The distinguishing feature of CNNs is the ability to 'learn' highly discriminative feature representations of input images, whereas more conventional approaches require one to manually hand-craft features for each specific task (for example in SIFT [cite] and BoW [cite]). Consider \autoref{fig:ImNet} for an illustration of the impact that CNNs have made in image classification.
+
+```{r, include=FALSE}
+library(tidyverse)
+p <- data.frame(Year = 2010:2017, Error = c(0.28191, 0.25770, 0.16422, 0.1174, 0.0666, 0.03567, 0.02991, 0.02251)) %>% 
+  ggplot(aes(Year, Error)) + geom_line() + geom_point() + theme_minimal() +
+  ggtitle("Error rate of winning ImageNet model by year") + 
+  geom_hline(yintercept = 0.051, linetype = "dashed") + 
+  scale_x_continuous(breaks = 2010:2017, minor_breaks = NULL) +
+  scale_y_continuous(breaks = seq(0, 0.3, 0.05)) +
+  annotate("text", x = 2012.1, y = 0.16422, label = "First CNN", hjust = 0) +
+  annotate("text", x = 2010, y = 0.06, label = "Human performance", hjust = 0)
+
+ggsave('figures/IN_perf.png', p, device = "png")
+```
+
+![Classification error rates of the winning ImageNet models by year\label{fig:ImNet}. ](figures/IN_perf.png)
+
+Notice the large decrease from 2011 to 2012 when the first CNN [@Krizhevsky2012] was used in this competition. Thereafter all of the winning solutions made use of CNNs. CNNs are now able to surpass human level performace on this task.
+
+Until recently, the main focus of deep learning approaches for image classification was on problems where each image is annotated with only a single label. *Multi-Label Classification* (MLC) [@Zhang2014] of images generalises this task to allow images to be simultaneously annotated with more than one label. The number of labels to associate with each image is unknown, and differs across images. By definition, multi-label image classification is much more challenging than conventional (single-label) classification. Moreover, since the majority of real-world images contain more than one object, multi-label image classification is a more generally occurring problem in practice than single-label classification. In research, it was only fairly recently that more attention was paid to multi-label image classification (for example in [@Wei2014]). Therefore the field is regarded far from the level of maturity of its single-label counterpart. Since DNNs have proven to be so successful in the case of single-label image classification, it seems reasonable to ask whether their use may not also be extended to successfully annotate images with multiple labels.
+
+Extending CNNs and other DNNs to handle images with multiple labels is not a trivial task. Thus far only a handful of proposals regarding how to tackle multi-label image classification have been published (for example in [@Gong2013], [@Wei2014], [@Wang2016], [@Zhu2017], [@Chen2017], more?). These contributions were however mostly made in isolation of one another – hence no comprehensive comparison of these methods (whether theoretical or empirical) can be found. Also, the majority of proposals stem from a deep learning background and could possibly gain from insights and methods already discovered in the MLC field.
+
+In summary, the relevance of multi-label image classification in terms of its wide range of useful practical applications, combined with the power of deep learning methods for image classification tasks, forms the main motivation for the chosen research topic. Deep learning for multi-label image classification constitutes a research area that seems still to be relatively under-explored. As such, it may well be that a comprehensive understanding and review of the subject could lead to novel contributions. 
+
+## Objectives \label{sec:obj}
+
+The core objective of this study is to learn how to effectively apply DNNs in a multi-label image classification context. In its pursuit, a thorough understanding of the following research areas seems essential:
+
++ **The image classification problem** - Since this is the application domain of the envisioned research, a good understanding of the problem forms a solid foundation for further study in the domain. Through a discussion of current approaches to the problem, challenges and possible shortcomings in multi-label image classification may be identified.
+
++ **Deep neural networks** - Being the class of algorithms which the study focuses on, an understanding of DNNs is essential to further explore ways in which to extend this class of models. Attention should be paid to the typical structures of DNNs in the context of image classification. Another important aspect is the way in which variations in DNN architectures influence the effectiveness of algorithms in scenarios of interest. Moreover, learning about the limitations of current networks may aid in directing the study.
+
++ **The multi-label classification framework** - This is the *supervised learning* paradigm within which the research takes place. Although many contributions have been made to the MLC field, most MLC procedures only recently became more popular. Knowledge of the underlying concepts (especially those that may be considered novel relative to single-label classification), and insight into state-of-the art algorithms and challenges in the field, should guide the research. Although the focus will mainly be guided by the application domain, a review of previous work on multi-label image classification (other than DNNs) may also prove insightful.
+
+The above objectives regarding the literature review are of course complementary to the main objective of the study, which may be partitioned as follows: 
+
++ **Extensions of DNNs to the MLC problem domain ** - Despite sparse literature contributions in this regard, there exists a sufficient body of proposals in order to warrant a review on the subject. The aim will be to obtain a thorough understanding of each proposal in terms of both the way in which it solves the MLC problem, and in terms of its effectiveness in doing so. Conceptual differences among the approaches should form an important focus. If proposals for DNNs in MLC with other application domains are found, the possibility of transferring them to image classification should also be considered.
+
++ **Improvements to existing approaches** - Learning from the strengths and weaknesses of each existing approach should provide a good basis for further research in terms of either extensions of existing approaches, or in terms of entirely novel proposals. The possibility of transferring ideas in pure MLC to deep learning to improve upon existing approaches should also be explored.
+
++ **Empirical evaluation and comparison of approaches** - The literature review and theoretical comparisons should be complemented by empirical evaluations. Existing and proposed classification procedures may be evaluated and compared by means of benchmark image datasets. The practical implementation of algorithms may highlight challenges that may not necessarily be found in the literature. 
+
+Through the above objectives, the thesis should guide a reader to a thorough understanding of recent work on DNNs for multi-label image classification. Given a certain multi-label image classification problem, one should be able to recommend some approaches above others, know their advantages and limitations, and be able to effectively implement them.
+
+## Contributions
+
+> hierdie afdeling moet eerder aan einde kom. Nog onvoltooid.
+
+Novel contributions made to the literature by this thesis:
+
++ First review of multi-label DNNs - there are a few papers on ML-CNN. They are usually compared to only a limited number of other approaches, on limited number of datasets and limited number of metrics. To the best of our knowledge, at the time of completing this thesis, no other work provides such an extensive review of the literature.
+
++ Some of the proposed algorithms empirical evaluations are lacking completeness. Usually they lack combinations of either or all of the following:
+
+    + evaluated on multiple benchmark datasets
+    + evaluated in terms of a representative set of multi-label evaluation metrics
+    + estimated errors provided with standard errors
+    + compared with a wide range of state-of-the-art algortihms
+
++ improvements on existing approaches?
+
+## Code and Reproducibility
+
+Note that all of the code used in the thesis, including the source documents, is made available in the Thesis Github repository [^repo]. More instructions on how to implement the code is contained in the file named `README.md`, in the repository.
+
+
+[^repo]: https://github.com/jandremarais/Thesis
+
+## Background and Important Concepts
+
+In this thesis, the three key topics of this study, *viz*. image classification, deep neural networks and multi-label classification, will be introduced in their own chapters (image classification here, and the other in the following two chapters). Subsequently, a discussion of the combination of the above topics, in order to conceptualise image classification by means of DNNs for MLC, will follow.
+
+Since we are interested in applying DNNs for MLC in the image classification domain, some background on image classification is first required. Image classification is an example of a *superivised learning* task, hence in the remainder of this chapter, we start with a brief introduction to supervised learning followed by the general problem of image classification. Discussions of DNNs and of MLC follow in Chapters \ref{chp:dnn} and \ref{chp:mlc} respectively. A more comprehensive outline of the thesis may be found in \Cref{sec:outline}.
+
+### Statistical Learning \label{sec:Slearning}
+
+Machine or statistical learning algorithms (used interchangably) are used to perform certain task that are too difficult or inefficient to solve with fixed rule-based programs. These algorithms are able to learn how to perform a task from data. For an algorithm to learn from data means that it can improve its ability in performing an assigned *task*, with respect to some *performance measure*, by processing *data*. This section gives a brief look at some of the important types of tasks, data and performance measures in the field of statistical learning.
+
+A learning task describes the way an algorithm should process an observation. An observation is a collection of features that have been measured from some object or event that we want the system to process, for example an image. We will represent an observation by a vector $\boldsymbol{x}\in\mathbb{R}^{p}$ where each element $x_{j}$ of the vector is an observed value of the $j$-th feature, $j=1,\dots,p$. For example, the features of an image are usually the color intensity values of the pixels in the image.
+
+Many kinds of tasks can be solved with statistical learning. One of the most common learning tasks is that of *classification*, where it is expected of an algorithm to determine which of $K$ categories an input belongs to. To solve the classification task, the learning algorithm is usually asked to produce a function $f:\mathbb{R}^{p}\to \{1,\dots,K\}$. When $y=f(\boldsymbol{x})$, the model assigns an input described by the vector $\boldsymbol{x}$ to a category identified by the numeric code $y$, called the *output* or *response*. In other variants of the classification task, $f$ may output a probability distribution over the possible classes.
+
+*Regression* is the other main learning task and requires the algorithm to predict a continuous value given some input. This task requires a function $f:\mathbb{R}^{p}\to\mathbb{R}$, where the only difference to classification is the format of its output.
+
+Learning algorithms can learn to perform such tasks by observing a relevant set of data points, *i.e.* a dataset. A dataset containing $N$ observations of $p$ features is commonly described as a design matrix $X:N\times p$, where each row of the matrix represents a different observation and each column corresponds to a different feature of the observations, *i.e.*
+
+$$
+X = 
+\begin{bmatrix}
+x_{11} & x_{12} & \dots & x_{1p}\\
+x_{21} & x_{22} & \dots & x_{2p}\\
+\vdots & \vdots & \ddots & \vdots\\
+x_{N1} & x_{N2} & \dots & x_{Np}
+\end{bmatrix}.
+$$
+Often the dataset includes annotations for each observation in the form of a label (classification) or a target value (regression). The $N$ annotations are represented by the vector $\boldsymbol{y}$, where element $y_{i}$ is associated with the $i$-th row of $X$. Therefore the response vector may be denoted by
+
+$$
+\boldsymbol{y}=
+\begin{bmatrix}
+y_{1}\\
+y_{2}\\
+\vdots\\
+y_{N}
+\end{bmatrix}.
+$$
+Note that in the case of multiple labels or targets, a matrix representation $Y:N\times K$ is required.
+
+Statistical learning algorithms can be divided into two main categories, *supervised* and *unsupervised* algorithms, determined by the presence (or absence) of annotations in the dataset to be analysed. Unsupervised learning algorithms learn from data consisting only of features, $X$, and are used to find useful properties and structure in the dataset [see @Hastie2009, Ch. 14]. On the other hand, superivised learning algorithms learn from datasets which consist of both features and annotations, $(X,Y)$, with the aim to model the relationship between them. Therefore, both classification and regression are considered to be supervised learning tasks.
+
+In order to evaluate the ability of a learning algorithm to perform its assigned task, we have to design a quantitative performance measure. For example, in a classification task we are usually interested in the accuracy of the algorithm, *i.e.* the percentage of times that the algorithm makes the correct classification. We are mostly interested in how well the learning algorithm performs on data that it has not seen before, since this demonstrates how well it will perform in real-world situations. Thus we evaluate the algorithm on a *test set* of data points, independent of the *training set* of data points used during the learning process.
+
+For a more concrete example of supervised learning, and keeping in mind that the linear model is one of the main building blocks of neural networks, consider the learning task underlying *linear regression*. The objective here is to construct a system which takes a vector $\boldsymbol{x}\in \mathbb{R}^{p}$ as input and predicts the value of a scalar $y\in \mathbb{R}$ in response. In the case of linear regression, we assume the output be a linear function of the input. Let $\hat{y}$ be the predicted response. We define the output to be 
+
+$$
+\hat{y}=\hat{\boldsymbol{w}}^{T}\boldsymbol{x},
+$$
+where $\hat{\boldsymbol{w}}=[w_{0},w_{1},\dots,w_{p}]$ is a vector of parameters and $\boldsymbol{x}=[1,x_{1},x_{2},\dots,x_{p}]$. Note that an intercept is included in the model (also known as a *bias* in machine learning). The parameters are values that control the behaviour of the system. We can think of them as a set of *weights* that determine how each feature affects the prediction. Hence the learning task can be defined as predicting $y$ from $\boldsymbol{x}$ through $\hat{y}=\hat{\boldsymbol{w}}^{T}\boldsymbol{x}$.
+
+We of course need to define a performance measure to evaluate the linear predictions. For a set of observations, an evaluation metric tells us how (dis)similar the predicted output is to the actual response values. A very common measure of performance in regression is the *mean squared error* (MSE), given by
+
+$$
+MSE = \frac{1}{N}\sum_{i=1}^{N}(y_{i}-\hat{y}_{i})^{2}.
+$$
+The process of learning from the data (or fitting a model to the data) can be reduced to the following optimisation problem: find the set of weights, $\hat{\boldsymbol{w}}$, which produces a $\hat{\boldsymbol{y}}$ that minimises the MSE. Of course this problem has a closed form solution and can quite trivially be found by means of *ordinary least squares* (OLS) [see @Hastie2009, p. 12]. However, we have mentioned that we are more interested in the algorithm's performance evaluated on a test set. Unfortunately the least squares solution does not guarantee the solution to be optimal in terms of the MSE on a test set, rendering statistical learning to be much more than a pure optimisation problem.
+
+The ability of a model to perform well on previously unobserved inputs is referred to as its *generalisation* ability. Generalisation is the key challenge of statistical learning. One way of improving the generalisation ability of a linear regression model is to modify the optimisation criterion $J$, to include a *weight decay* (or *regularisation*) term. That is, we want to minimise
+
+$$
+J(\boldsymbol{w})=MSE_{\text{train}} +\lambda\boldsymbol{w}^{T}\boldsymbol{w},
+$$
+where $J(\boldsymbol{w})$ now expresses preference for smaller weights. The parameter $\lambda$ is non-negative and needs to be specified ahead of time. It controls the strength of the preference by determining how much influence the penalty term, $\boldsymbol{w}^{T}\boldsymbol{w}$, has on the optimisation criterion. If $\lambda=0$, no preference is imposed, and the solution is equivalent to the OLS solution. Larger values of $\lambda$ force the weights to decrease, and thus referred to as a so-called *shrinkage* method ([*cf*. for example @Hastie2009, pp. 61-79] and @Goodfellow2016. 
+
+We can further generalise linear regression to the classification scenario. First, note the different types of classification schemes. Consider $\mathcal{G}$, the discrete set of values which may be assumed by $G$, where $G$ is used to denote a categorical output variable (instead of $Y$). Let $|\mathcal{G}|=K$ denote the number of discrete categories in the set $\mathcal{G}$. The simplest form of classification is known as binary classification and refers to scenarios where the input is associated with only one of two possible classes, *i.e.* $K=2$. When $K>2$, the task is known as multiclass classification. In multi-label classification an input may be associated with multiple classes (out of $K$ available classes), where the number of classes that each observation belongs to, is unknown. A thorough discussion of MLC methods is given in \Cref{chp:mlc}. Here we start by introducing the two single label classification setups, *viz*. binary and multiclass classification.
+
+In multiclass classification, given the input values $\boldsymbol{X}$, we would like to accurately predict the output, $G$, which we denote by $\hat{G}$. One approach would be to represent $G$ by an indicator vector $\boldsymbol{Y}_{G}:K\times1$, with elements all zero except in the $G$-th position, where it is assigned a 1, *i.e.* $Y_{k}=1$ for $k=G$ and $Y_{k}=0$ for $k\neq G$, $k=1,2,...,K$. We may then treat each of the elements in $\boldsymbol{Y}_{G}$ as quantitative outputs, and predict values for them, denoted by $\hat{\boldsymbol{Y}}=[\hat{Y}_{1},\dots,\hat{Y}_{K}]$. The class with the highest predicted value will then be the final categorical prediction of the classifer, *i.e.* $\hat{G}=\arg\max_{k\in\{1,\dots,K\}}\hat{Y}_{k}$.
+
+Within the above framework we therefore seek a function of the inputs which is able to produce accurate predictions of the class scores, *i.e.*
+
+$$
+\hat{Y}_{k}=\hat{f}_{k}(\boldsymbol{X}),
+$$
+for $k=1,\dots, K$. Here $\hat{f}_{k}$ is an estimate of the true function, $f_{k}$, which is meant to capture the relationship between the inputs and output of class $k$. As with the linear regression case described above, we can use a linear model $\hat{f}_{k}(\boldsymbol{X})=\hat{\boldsymbol{w}}_{k}^{T}\boldsymbol{X}$ to approximate the true function. The linear model for classification divides the input space into a collection of regions labelled according to the classification, where the division is done by linear *decision boundaries* (see \autoref{fig:sgd} for an illustration). The decision boundary between classes $k$ and $l$ is the set of points for which $\hat{f}_{k}(\boldsymbol{x})=\hat{f}_{l}(\boldsymbol{x})$. These set of points form an affine set or hyperplane in the input space.
+
+After the weights are estimated from the data, an observation represented by $\boldsymbol{x}$ (including the unit element) can be classified as follows:
+
++ Compute $\hat{f}_{k}(\boldsymbol{x})=\hat{\boldsymbol{w}}_{k}^{T}\boldsymbol{x}$ for all $k=1,\dots,K$.
++ Identify the largest component and classify to the corresponding class, *i.e.* $\hat{G}=\arg\max_{k\in\{1,\dots,K\}}\hat{f}_{k}(\boldsymbol{x})$.
+
+One may view the predicted class scores as estimates of the conditional class probabilities (or posterior probabilities), *i.e.* $P(G=k|\boldsymbol{X}=\boldsymbol{x})\approx \hat{f}_{k}(\boldsymbol{x})$. However, these values are not the best estimates of posterior probabilities. Although the values sum to 1, they do not lie within [0,1]. A way to overcome this problem is to estimate the posterior probabilities
+using the *logit transform* of $\hat{f}_{k}(\boldsymbol{x})$. That is,
+
+$$
+P(G=k|\boldsymbol{X}=\boldsymbol{x})\approx\frac{e^{\hat{f}_{k}(\boldsymbol{x})}}{\sum_{l=1}e^{\hat{f}_{l}(\boldsymbol{x})}}.
+$$
+Through this transformation, the estimates of the posterior probabilities both sum to 1 and are squeezed into [0,1]. The above model is the well-known *logistic regression* model [@Hastie2009, p. 119]. With this formulation there is no closed form solution for the weights. Instead, the weight estimates may be searched for by maximising the log-likelihood function. One way of doing this is by minimising the negative log-likelihood using gradient descent, which will be discussed in the following section.
+
+Finally in this section, note that any supervised learning problem can also be viewed as a function approximation problem. Suppose we are trying to predict a variable $Y$ given an input vector $\boldsymbol{X}$, where we assume the true relationship between them to be given by
+$$
+Y=f(\boldsymbol{X})+\epsilon,
+$$
+where $\epsilon$ represents the part of $Y$ that is not predictable from $\boldsymbol{X}$, because of, for example, incomplete features or noise present in the labels. Then in function approximation we are estimating $f$ with an estimate $\hat{f}$. In parametric function approximation, for example in linear regression, estimation of $f(\boldsymbol{X},\theta)$ is equivalent to estimating the optimal set of weights, $\hat{\theta}$. In the remainder of the thesis, we refer to $\hat{f}$ as the *model*, *classifier* or *learner*.
+
+### Optimisation \label{sec:optimisation}
+
+As mentioned before, fitting a linear regression model can be reduced to finding the optimal weights to minimise the MSE function (with or without weight decay). In fact, typically model training procedures can be described as the search for its internal parameters that minimises or maximises some *objective function*. Therefore statistical learning and optimisation are closely related. Optimisation refers to the task of either minimising or maximising some function $J(x)$ by altering $x$. The function we want to optimise is called the objective function. When we are minimising the objective function, we may also refer to the objective function as the *cost* or *loss function*. These terms will be used interchangeably throughout the remainder of the thesis.
+
+As mentioned in the previous section, parameter estimation (or optimisation) of a linear (or logistic regression) model is usually done using OLS or maximum likelihood estimation (MLE). In this section, however, we discuss an alternative parameter estimation method which is also relevant for the optimisation of neural networks.
+
+Consider the MSE loss function:
+
+$$
+\begin{aligned}
+L&=\sum_{i=1}^{N}L_{i}\\
+&=\sum_{i=1}^{N}\sum_{k=1}^{K}(y_{ik}-f_{k}(\boldsymbol{x}_{i}))^{2}\\
+&=\sum_{i=1}^{N}\sum_{k=1}^{K}(y_{ik}-\boldsymbol{w}_{k}^{T}\boldsymbol{x}_{i})^{2},
+\end{aligned}
+$$
+where $f_{k}(\cdot)$ in this case is the linear model used to predict the $k$-th class posterior probability. Although the MSE loss is mostly used in a regression setup and not really well suited for classification, we make use of it here for illustration purposes.
+
+To find the weights, $\boldsymbol{w}$, that minimise $L$, we can follow a process of iterative refinement. That is, starting with a random initialisation of $\boldsymbol{w}$, one iteratively updates the values such that $L$ decreases. The updating steps are repeated until the loss converges. In order to minimise $L$ with respect to $\boldsymbol{w}$, we calculate the gradient of the loss function at the point $L(\boldsymbol{x};\boldsymbol{w})$. The gradient (or slope) of the loss function indicates the direction in which the function has the steepest rate of increase. Therefore, once we have determined this direction, we can update the weights by a step in the opposite direction - thereby reaching a smaller value of $L$.
+
+The gradient of $L_{i}$ is computed by obtaining the partial derivative of $L_{i}$ with respect to $\boldsymbol{w}_{k}$, *i.e.*:
+
+$$
+\frac{\partial L_{i}}{\partial\boldsymbol{w_{k}}}=-2(y_{ik}-\boldsymbol{w}_{k}^{T}\boldsymbol{x}_{i})\boldsymbol{x}_{i}.
+$$
+After obtaining the above ${N}$ partial derivatives, an update at the $(r+1)$-th iteration may be obtained as follows:
+
+$$
+\boldsymbol{w}_{k}^{(r+1)}=\boldsymbol{w}_{k}^{(r)}-\gamma\sum_{i=1}^{n}\frac{\partial L_{i}}{\partial\boldsymbol{w_{k}^{(r)}}},
+$$
+where $\gamma$ is called the *learning rate* and determines the size of the step taken toward the optimal direction. One typically would like to set the learning rate small enough so that one does not overshoot the minimum, but large enough to limit the number of iterations before convergence. This value can be determined via a line search but is not always ideal since this may render the training time of DNNs too long. Another option is to reduce the learning rate after every fixed number of iterations. More detail regarding the implication of the learning rate will be given in \Cref{chp:dnn}.
+
+The procedure of repeatedly evaluating the gradient of the objective function and then performing a parameter update, is called *gradient descent* [Cauchy, 1847]. Gradient descent forms the basis of the optimisation procedure for neural networks.
+
+Note that a weight update is made by evaluating the gradient over a set of observations, $\{\boldsymbol{x}_{i},i=1,\dots,n\}$. One of the advantages of gradient descent is that at an iteration, the gradient need not be computed over the complete training dataset, *i.e.* $n\le N$. When updates are iteratively determined by using subsets of the data, the process is called *mini-batch gradient descent*. This is extremely helpful in large-scale applications, since it obviates computation of the full loss function over the entire dataset. This leads to faster convergence, because of more frequent parameter updates, and allows processing of data sets that are too large to fit into a computer's memory. The choice regarding batch size depends on the available computation power. Typically a batch consists of 64, 128 or 256 data points, since in practice many vectorised operation implementations work faster when their inputs are sized in powers of 2. The gradient obtained using mini-batches is only an approximation of the gradient of the full loss but it seems to be sufficient in practice [@Li2014]. Note at this point that the collection of iterations needed to make one sweep through the training data set is called an *epoch*.
+
+The extreme case of mini-batch gradient descent is when the batch size is selected to be 1. This is called *Stochastic Gradient Descent* (SGD). Recently SGD has been used much less, since it is more efficient to calculate the gradient in larger batches compared to only using one example. However, note that it remains common to use the term SGD when actually referring to mini-batch gradient descent. Gradient descent in general has often been regarded as slow or unreliable but it works well for optimising DNNs. SGD will most probably not find even a local minimum of the objective function. It typically however finds a very low value of the cost function quickly enough to be useful.
+
+### Optimisation Example
+
+To illustrate the SGD algorithm, consider the linear model in a classification context. Suppose we are given a training data set with two-dimensional inputs and only two possible classes. Let the data be generated in the same way as described in [@Hastie2009, pp. 16-17]. 
+
+> Need to please state how the data was generated in Hastie 2009.
+
+We want to fit a linear regression model to the data such that we can classify an observation to the class with the highest predicted score. In the binary case it is only necessary to model one class probability and then assign an observation to that class if the score exceeds some threshold (usually 0.5), otherwise it is assigned to the other class. Therefore the decision boundary is given by $\{\boldsymbol{x}:\boldsymbol{x}^{T}\hat{\boldsymbol{w}}=0.5\}$.
+
+The example is illustrated in \autoref{fig:sgd}. The colour shaded regions represent the parts of the input space classified to the respective classes, as determined by the decision boundary based upon OLS parameter estimates. Gradient descent was applied to the determine the optimal weights using a learning rate of 0.001. Since the total number of training observations are small, it is not necessary to use SGD. In \autoref{fig:sgd}, the dashed lines represent the decision boundary defined by the gradient descent parameter estimates at different iterations. We observe that initially the estimated decision boundary is far from the OLS solution, but as the update iterations proceed, the decision boundary is rotated and translated until finally matching the OLS line. It took 29 iterations for the procedure to reach convergence.
+
+```{r, cache=TRUE, fig.cap = "Plots of the gradient descent example. (a) The data points in input space. The shades in the background represent the class division in input space, with the decision boundary determined by linear least squares estimation. The dashed lines represent the decision boundaries learned at different iterations. (b) The loss calculated at each iteration. \\label{fig:sgd}"}
+# generate the data
+set.seed(1)
+
+K <- 2
+m <- lapply(list(c(1, 0), c(0, 1), c(3, 3))[1:K], 
+            function(a) mvrnorm(n = 10, mu = a, Sigma = diag(2)))
+
+X <- lapply(m, function(b) {
+  t(sapply(1:100, function(a) {
+    mvrnorm(n = 1, mu = b[sample(10, 1), ], Sigma = diag(2)/5)
+  }))
+})
+
+D <- data.frame(X = do.call("rbind", X), Y = rep(0:(K-1), each = 100))
+D <- cbind(X.0 = 1, D)
+#D[, -3] <- scale(D[, -3])
+
+# SGD
+lin_model <- function(x, b) sum(x * b)
+L <- function(y, yhat) sum((y - yhat)^2)
+
+set.seed(125)
+B <- mvrnorm(1, mu = c(0, 0, 0), Sigma = diag(3))
+B_mat <- B
+yhat <- apply(D[, -3], 1, function(a) lin_model(a, B))
+loss <- L(D$Y, yhat)
+lr <- 0.001
+for(i in 1:200) {
+  gradient <- c(-2*t(as.matrix(D[, -4])) %*% (D$Y - yhat))
+  B_new <- B - lr * gradient
+  
+  yhat <- apply(D[, -4], 1, function(a) lin_model(a, B_new))
+  loss <- c(loss, L(D$Y, yhat))
+  
+  if(abs(loss[i+1] - loss[i]) < 0.00001) {
+    return()
+  } else {
+    B <- B_new
+    B_mat <- rbind(B_mat, B_new)
+  }
+  #B <- B_new
+}
+
+x <- as.matrix(D[, -4])
+Bhat <- solve(t(x)%*%x)%*%t(x)%*%D$Y
+
+d_bounds <- t(apply(B_mat, 1, function(a) c(slope = -a[2]/a[3], intercept = (0.5-a[1])/a[3])))
+rownames(d_bounds) <- NULL
+d_bounds <- data.frame(iteration = 0:(nrow(d_bounds)-1), d_bounds)
+d_bounds <- d_bounds[c(1, 5, 10, 30), ]
+
+xlims <- range(D$X.1) * 1.1
+ylims <- range(D$X.2) * 1.1
+
+shade_x <- seq(xlims[1], xlims[2], len = 100)
+shade_y <- -shade_x*Bhat[2]/Bhat[3] + (0.5 - Bhat[1])/Bhat[3]
+shade_y[shade_y>ylims[2]] <- ylims[2]
+
+db_coords <- t(sapply(1:nrow(d_bounds), function(a) {
+  ycut <- xlims[2] * d_bounds[a, "slope"] + d_bounds[a, "intercept"]
+  if(ycut < ylims[2]) {
+    c(xlims[2], ycut)
+  } else {
+    c((ylims[2] - d_bounds[a, "intercept"])/ d_bounds[a, "slope"], ylims[2])
+  }
+}))
+colnames(db_coords) <- c("dx", "dy")
+d_bounds <- cbind(d_bounds, db_coords)
+
+library(latex2exp)
+# Plot
+p <- D %>% 
+  ggplot() + 
+  geom_point(aes(X.1, X.2, color = factor(Y)), show.legend = FALSE)+
+  #coord_fixed() +
+  theme(panel.background = element_rect(fill = "white")) +
+  geom_abline(data = d_bounds, aes(slope = slope, intercept = intercept), linetype = "dashed") +
+  geom_ribbon(data = data.frame(shade_x, shade_y),
+            aes(x = shade_x, ymin = ylims[1], ymax = shade_y), alpha = 0.15, fill = "red") +
+  geom_ribbon(data = data.frame(shade_x, shade_y),
+            aes(x = shade_x, ymin = shade_y, ymax = ylims[2]), alpha = 0.15, fill = "blue") +
+  scale_y_continuous(expand = c(0, 0), name = TeX("$X_2$"), breaks = NULL) + 
+  scale_x_continuous(expand = c(0, 0), name = TeX("$X_1$"), breaks = NULL) +
+  geom_text(data = d_bounds, aes(dx, dy, label = paste0("i=", iteration)), hjust = c(1, rep(0, 3)), 
+            vjust = c(0, rep(1, 3)), nudge_y = c(0, rep(-0.02, 3)), nudge_x = c(-0.02, rep(0, 3))) +
+  panel_border(colour = "black")
+
+loss_data <- data.frame(loss = loss, iteration = 0:(length(loss) - 1)) 
+library(ggthemes)
+p_loss <- loss_data %>% 
+  ggplot(aes(iteration, loss)) + 
+  geom_line(color = "blue") +
+  theme(axis.ticks.y = element_blank()) +
+  # theme(panel.background = element_rect(fill = "white"),
+  #       axis.ticks.x = element_blank()) +
+  geom_segment(data = loss_data[c(1,5,10,30), ], aes(x = iteration, xend = iteration, yend = 0), linetype = "dashed") +
+  scale_y_continuous(expand = c(0, 0), labels = NULL) + 
+  scale_x_continuous(expand = c(0.05, 0), breaks = c(0, 4, 9, 29))
+
+plot_grid(p, p_loss, labels = c("(a)", "(b)"), nrow = 1, align = "vh", rel_widths = c(3,2))
+```
+
+Along the same lines as our discussion thus far, statistical learning using DNNs (or *deep learning*) requires a model, loss function, optimisation procedure and of course, a data set. We have discussed all of these ingredients in simple and general terms, and are now ready to narrow our focus to deep learning methods. The following section on image classification introduces the application domain in this thesis.
+
+
+### Image Classification
+
+We have introduced the statistical learning task of classification. As can be derived by its name, image classification refers to this task, but narrowed down to the case where the inputs are images, *i.e* the task is to assign labels to images. As with classification in general, until recently, the main focus was classification of images associated with a single label. The more general case, and the focus of this thesis, where images can belong to more than one class simultaneously (for example images containing more than one object), is still relatively new. In this section we will mostly consider the single-label classification case, but most of the concepts are transferable to multi-label image classification. The novel concepts and challenges of multi-label image classification will be introduced in \Cref{chp:mlc} and \Cref{chp:DNN-MLC}.
+
+Before the era of deep learning, the main point of consideration for image classification was how to numerically represent images in such a way that an image classifier can distinguish between its classes, *i.e.* what features to extract from the images to be used as input. Before answering this question, we need a better understanging of the nature of images as inputs and how they can be represented in digital format.
+
+An image is made up of a grid of many tiny squares (or cells) with different colors. These cells are known as pixels and one pixel represents one color. A grayscale image, 32 pixels wide and 32 pixels long, can be represented by a $32\times 32$ matrix of integers, where each integer represents the 'brightness' (or intensity) of each pixel. These integers usually lie within $[0,255]$, such that the greater the integer, the brighter the pixel. For example, a pixel with an intensity of 0 is totally black, and a pixel with an intensity of 255 is totally white. \autoref{fig:img_mat} illustrates this representation. Note that a standard color image consists of three spectral bands, *viz*. red, green and blue (RGB). This means that the color of one pixel is determined by three integers in $[0,255]$, each representing the intensity of the colors red, green and blue. Thus a $32\times32$ image is represented by an array of size $32\times32\times3$.
+
+```{r,fig.cap="A low resolution grayscale profile of a man's head and shoulders, with pixel values overlayed onto the image.\\label{fig:img_mat}", cache=TRUE, fig.width=3, fig.height=3}
+load.image("figures/wim.jpeg") %>% 
+  grayscale %>% 
+  resize(16, 16) %>% 
+  as.data.frame %>% 
+  ggplot(aes(x, y)) + 
+  geom_raster(aes(fill = value), show.legend = FALSE) +
+  scale_y_continuous(trans=scales::reverse_trans(), expand = c(0, 0)) +
+  scale_x_continuous(expand = c(0, 0)) + 
+  scale_fill_gradient(low = "black", high = "white") +
+  coord_fixed() +
+  theme(text = element_blank(), line = element_blank()) +
+  geom_text(aes(label = round(value * 256), color = value), show.legend = FALSE, size = 2) +
+  scale_color_gradient(low = "white", high = "black")
+```
+
+A straightforward approach to transforming an array of pixel intensities to a compatible representation for conventional classifiers, is to *flatten* each array into a vector of size $width \times height \times channels$. 
+
+> Ek neem aan die channels is die spectral bands? Dalk net duidelik maak.
+
+For example a hypothetical grayscale image of size $3\times 3\times1$ is transformed as
+
+$$
+\begin{bmatrix}
+x_{1} & x_{2} & x_{3}\\
+x_{4} & x_{5} & x_{6}\\
+x_{7} & x_{8} & x_{9}
+\end{bmatrix}
+\to
+\begin{bmatrix}
+x_{1} & x_{2} & x_{3} &x_{4} & x_{5} & x_{6} & x_{7} & x_{8} & x_{9}
+\end{bmatrix}.
+$$
+
+Needless to say, the above representation is not very effective. Firstly, this transformation discards most of the shape and structural information of an image. In addition, flattened vectors are very high-dimensional ($p = 256\times 256 \times 3 = 196608$ for a colour image of size $256\times 256$). This abdicates the classifier to the *curse of dimensionality* [@Hastie2009, pp. 22-27], a well-known problem in statistical learning.
+
+On top of that, in a typical image classification scenario, the images in its raw representation can have high intra-class variance and/or very low inter-class variance - rendering it extremely difficult for even state-of-the-art classifiers, such as Random Forests, Support Vector Machines or Boosting to discriminate between classes. Intra-class variation occurs within the same class of images, and typically stems from images of the same objects being taken from different viewpoints, using different scales, and with varying illumination and backgrounds, amongst others (see \autoref{fig:intra-inter}). On the other hand, inter-class variation occurs between classes. Suppose the task is to distinguish between the image of an ostrich and the image of an emu. Here the inter-class variation may be very low, due to images of the two species appearing very similar.
+
+```{r, echo=FALSE, cache=TRUE, fig.cap="ImageNet examples of ostriches (a) and emus (b), illustrating high the intra-class variation and low inter-class variation. Notice the variation among images from the same class, and the similarity among images belonging to different classes\\label{fig:intra-inter}."}
+library(png)
+library(grid)
+library(gridExtra)
+library(cowplot)
+library(tidyverse)
+
+plot_png <- function(fname, interpolated = TRUE){
+
+  img <- readPNG(fname) %>%
+    rasterGrob(interpolate = interpolated)# enable/disable linear interpolation
+  ggplot() +
+    annotation_custom(img,
+                      xmin = -Inf,
+                      xmax = Inf,
+                      ymin = -Inf,
+                      ymax = Inf)
+
+}
+
+img1 <- plot_png("figures/ostrich2.png")
+img2 <- plot_png("figures/emu.png")
+#grid.arrange(img1, img2, ncol = 2)
+
+plot_grid(img1, img2, labels = c('(a)', '(b)'), vjust = 2.5)
+```
+
+Toward alleviating the above problem, one may attempt to extract features from images with lower intra-class variation and higher inter-class variation. Before we had the computational power to optimise DNNs, this was the standard procedure in image classification - designing feature representations of images that are much easier for conventional classifiers to learn from than raw pixel data. Constructing such feature representations can however become quite complex. Prior to deep learning, the most popular representation for classification was the Bag-of-Visual (BoV) words [@Csurka2004]. Very briefly, the BoV approach entails the extraction a set of local descriptors of images (see *Scale Invariant Feature Transform* (SIFT) [@Lowe2004] and *Histogram of Oriented Gradients* (HOG) [@Dalal2005]), encoding them into a high-dimensional vector (see *Fisher Vectors* [@Sanchez2013]), and then pooling them into an image level signature (see *Spatial Pyramid Pooling* [@Lazebnik2006]).
+
+> Maak asb net seker van bogaande verwysings - sommige van die hakies lyk bietjie uit plek uit
+
+As mentioned before, this approach to image classification is not trivial, with many complex facets to the modelling process. It usually requires considerable engineering skill and/or domain expertise. In addition, these feature representations are only suited for a narrow subset of image classification tasks and do not generalise well. This is where deep learning methods prove to be superior, since it has the ability to learn these feature representations from the data. This is discussed in detail in the next chapter. Hopefully now the reader has a better understanding of the image classification problem in general, which will most likely lead to a better appreciation of the power and effectiveness of deep learning methods.
+
+## Outline \label{sec:outline}
+
+> gaan eers weer hierna kyk as tesis klaar is
+
+
+The remainer of the thesis is structured as follows. \Cref{chp:dnn} introduces deep neural networks for image classifcation. Convolutional neural networks are specifically good at image classification and therefore most of the chapter will deal with them. The main focus is on the different structures and layers of the networks and how these influence performance (review this sentence - probably need to elaborate). 
+
+\Cref{chp:mlc} starts with the fundamentals of multi-label classification. It includes a formal definition and emphasis on the important concepts, such as multi-label evaluation metrics and the modelling of label dependencies (maybe add class imbalance here). The chapter also includes a review of the state-of-the-art algorithms for MLC. A discussion is given on the challenges and ongoing research of the field. One of the objectives of this chapter is to find approaches that could help extend DNNs for multi-label image classification. 
+
+\Cref{chp:dnn_mlc} reviews deep learning approaches for multi-label image classification. It looks at practically all of the proposals in the latest literature, how they attempt to model multiple labels and what are their shortcomings. The extensions are mostly adaptions of loss functions to be optimised or structural changes of the networks. An extensive comparision of the approaches is an important part of the chapter. Should I make proposals in this chapter?
+
+\Cref{chp:results} evaluates the highlighted approaches in previous chapter on popular benchmark image datasets. Note that more on the benchmark datasets are given in \Cref{app:data}. The goal is to give a comprehensive empirical comparison of the best representative approaches in terms of many multi-label evaluation metrics (with standard errors). It includes discussions on the challenges of implementing these approaches and how the results correlate with the literature. The experiments done in this chapter are made as reproducible as possible with additional information on the code and software given in \Cref{app:code}.
+
+The thesis is concluded in \Cref{chp:conc} with a summary of the work done in this project, general discussion of the literature and results and what directions can be followed for future research. It includes a section on the limitations of this study.
