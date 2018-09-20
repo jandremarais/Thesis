@@ -15,6 +15,7 @@
 \acro{mAP}{Mean Average Precision}
 \acro{ML-kNN}{Multi-Label $k$-Nearest Neighbour}
 \acro{MLC}{Multi-Label Classification}
+\acro{MLIC}{Multi-Label Image Classification}
 \acro{PT}{Problem Transformation}
 \acro{RAkEL}{Random $k$-Labelsets}
 \acro{SGD}{Stochastic Gradient Descent}

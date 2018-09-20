@@ -1,0 +1,127 @@
+# Experiments and Results \label{chp:results}
+
+\chapterprecishere{"For us, the most important part of rigor is better empiricism, not more mathematical theories."\par\raggedleft--- \textup{Ali Rahimi and Ben Recht}, NIPS 2017}
+
+## Introduction
+
+Write introduction here.
+
+
+## Evaluation of Approaches?
+
+### Evaluatution Metrics
+
+We chose the following metrics to measure the performance of the model on the data:
+
+- Label-based macro $F_{1}$-score ($F_{1}^{\text{macro}}$),
+- Label-based micro $F_{1}$-score ($F_{1}^{\text{micro}}$),
+- example-based average precision (AP), and 
+- Label-based macro ROC-AUC
+
+By using these four metrics we will get an all-round estimate of the performance the models.
+This is a diverse set of metrics.
+Includes label-based and example-based metrics, $F$-score, AP and ROC-AUC metrics and micro- and macro-average metrics.
+The $F$-score metric variants are popular choices for evaluating MLC models.
+The AP metric is common in the Computer Vison domain.
+The ROC-AUC is chosen mainly to be able to compare the models to other work reported on this dataset.
+ROC-AUC is also a convenient option since it is independent of the classification threshold chosen.
+When applicable, we will inspect the performance of the models on a per label basis. 
+
+When possible, the chosen set of metrics will be reported after each epoch in the form of line graphs.
+We do it this way because the point of convergence for the loss function being trained on might not be the same as the metric reported.
+Thus, if we only report the performance of the final (converged) model, we might not see the best possible performance for each of the metrics.
+The performance of the best (and/or final - I must still choose) models for each training phase will be reported in tabular form.
+
+The final model evaluations will be reported on both the validation and testing sets. 
+No model selection will be done on the test set evaluations.
+
+Where possible we will include the time taken to train until convergence. 
+Also time taken to make a prediciton for a single image.
+
+
+### Validation Approach
+
+The data is split into a training, validation and test set.
+Since our dataset is large and our computing resources limited, we are comfortable not to use cross-validation. 
+We will use the exact same split as in (paper) for fairer comparisons.
+The split was made randomly by patient in the following ratios: 70% training, 10% validation, 20% testing.
+There is no overlap between the patients in different splits to ensure uniqueness of the validation and testing examples.
+
+
+## Training Procedure
+
+1Cycle policy with learning rate finder.
+
+
+### How will the policy parameters be chosen? 
+
+See paper. 
+Parameters: 
+
+- ratio between minimum and maximum learning rate, 
+- decay rate
+- momentum decay
+- weight decay?
+
+
+### Fine-Tuning or Global Tuning
+
+Prefer fine-tuning where possible to save time.
+Will not be as accurate as global tuning.
+Can precompute the activations before the classification head to be tuned, which saves a lot of repetitive computing.
+Will do complete global tuning for specific models where appropriate.
+Will use appropriate data augmentation techniques when precomputed activations are not used.
+
+
+## Model Architecture
+
+Will have an initial experiment to compare different architectures.
+The majority of the experiments we will run using the smallest version of the chosen architecture type to reduce computational demand.
+We assume the conclusions are applicable to the larger models unless specified otherwise.
+
+
+## Base Experiments
+
+### Validation Split Experiment
+
+Will it bias results to split data randomly?
+
+
+### Architecture Experiment
+
+Which of the following architectures perform the best on our data ResNets, DenseNets, SEResNet, DarkNet?
+
+
+### Transfer Learning Experiment
+
+Does it help to do transfer learning vs training from scratch?
+
+
+## Multi-Label Experiments
+
+### Loss Function Experiment
+
+By training on which loss function will result in the best metrics?
+
+
+### Classification Head Experiment
+
+Which classification head architecture obtains the best results?
+Does it learn label dependence?
+
+
+
+
+
+## Summary
+
+Write summary here.
+
+
+
+
+
+
+
+
+
