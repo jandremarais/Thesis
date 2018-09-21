@@ -4,25 +4,7 @@
 
 ## Introduction
 
-The main aim of this chapter is to empirically compare some of the deep learning for multi-label image classification approaches proposed in the literature in a standardised fashion. We will also attempt to empirically answer some of the questions that arose in the literature study. 
 
-Multi-label image classification with CNNs is still a relatively new research area. No work has been done to provide an extensive and robust comparison of the existing approaches in the literature. Typically, when a new approach is proposed it is empirically compared to other previous proposed approaches. But these evaluations of the approaches are not in a standardised fashion. The base networks and optimisation procedures are just some of the learning components that vary accross the proposed approaches. This makes it difficult to determine whether or not a proposed approach performs empirically better than another because of its ability to model multi-label images or because of the latest general developments of training CNNs. 
-
-Take the Spatial Regularisation Network (SRN) in the previous chapter as an example. The SRN is an extension of a base CNN that is supposed to help exploiting spatial relations amongs labels. The SRN shows favourable empirical results over all other proposed approaches. However, it also uses a much deeper base CNN (ResNet-101) than the other approaches in the literature. This makes it difficult to determine whether or not the performance boost comes from the SRN or the deeper CNN. 
-
-For this reason, we want to provide a standardised and robust comparison of the some the most promising approaches in the literature. To standardise the comparisons, we will evaluate the chosen approaches using the same base CNN and optimisation procedure. To ensure robustness, we will evaluate the methods on two very distinct multi-label image datasets (described in Appendix \ref{app:data}), using multiple diverse evaluation metrics and using cross-validation for a better estimate of generalisation ability which will also allow us to report standard deviations of errors.
-
-There are 4 main question we attempt to answer in this chapter. They are:
-
-1. How do the different loss functions act as a surrogate for the micro and macro F-score? (bce vs weighted bce vs rank loss vs retina loss)
-
-2. Does multi-level predictions help to detect small objects?
-
-3. Which extension works best to explicitly model label correlations? CG vs chaining vs SE-module
-
-4. How does learnable label calibration modules compare to brute force search?
-
-After getting closer to the answers of these questions we will train a final model taking into considerations the empirical findings to see how accurate we can get on both datasets.
 
 + what am I going to do with SRN?
 
@@ -46,7 +28,7 @@ Unless explicitly stated otherwise, the general experimental methodology will be
 
 ## Loss Functions for Multi-Label Image Classification
 
-The goal of this experiment is to find out which multi-label loss function is a more suitable surrogate for our chosen multi-label evaluation metrics. We compare the binary cross-entropy loss, weighted binary cross-entropy loss, focal loss and LSEP loss. We only use one ranking based loss function since there was significant proof given in [@Li2017] that LSEP loss outperforms the other ranking based loss functions. We will also experiment with the focal loss weighted as in $\text{W-CE}$. This is the first time the focal loss is used with multi-label image classification and the first time LSEP loss is compared to cross-entropy based loss functions.
+
 
 For comparing the above mentioned loss functions, we will follow a transfer learning like approach. We will use a ResNet-50 pretrained on ImageNet to extract features for each image (of size $224\times 224$), where the features we choose to extract is in the last layer before the classification layer of the ResNet. Thus we will get a 2048-dimensional vector for each image. The only training we will do is of a fully connected layer connecting the 2048-dimensional input to a $K$-dimensional output which is then passed through a sigmoid activation function (Revise number of layers during experiments). This network will be trained using SGD with an initial learning rate of 0.1 which is reduced by a factor of 10 when the loss plateaus. For each loss function we will only run 50 epochs. The rest of the details follow as in \Cref{sec:meth}. Although, we will not look at the precision and recall, because they are summarised by the $F_{1}$-scores.
 

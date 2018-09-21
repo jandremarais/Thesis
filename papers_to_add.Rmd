@@ -1,0 +1,10 @@
+## Can Artificial Intelligence Reliably Report Chest X-Rays?
+
++ https://arxiv.org/pdf/1807.07455.pdf
++ see if I can get access to data
++ 1.2m images
++ look how they evaluate the model for clinical purposes (section 2.4.1)
+    - think this is only for comparing to radiologists.
++ they mention pretraining on a different x-ray based task (2.1.2)
++ insightful discussion
++ mention this paper in introducion to show how it can perform better than humans if there is enough data.

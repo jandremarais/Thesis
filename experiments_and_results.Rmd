@@ -4,8 +4,31 @@
 
 ## Introduction
 
-Write introduction here.
+We want all of this experiments to be as reproducible as possible.
 
+Old introduction:
+
+> The main aim of this chapter is to empirically compare some of the deep learning for multi-label image classification approaches proposed in the literature in a standardised fashion. We will also attempt to empirically answer some of the questions that arose in the literature study. 
+
+> Multi-label image classification with CNNs is still a relatively new research area. No work has been done to provide an extensive and robust comparison of the existing approaches in the literature. Typically, when a new approach is proposed it is empirically compared to other previous proposed approaches. But these evaluations of the approaches are not in a standardised fashion. The base networks and optimisation procedures are just some of the learning components that vary accross the proposed approaches. This makes it difficult to determine whether or not a proposed approach performs empirically better than another because of its ability to model multi-label images or because of the latest general developments of training CNNs. 
+
+> Take the Spatial Regularisation Network (SRN) in the previous chapter as an example. The SRN is an extension of a base CNN that is supposed to help exploiting spatial relations amongs labels. The SRN shows favourable empirical results over all other proposed approaches. However, it also uses a much deeper base CNN (ResNet-101) than the other approaches in the literature. This makes it difficult to determine whether or not the performance boost comes from the SRN or the deeper CNN. 
+
+> For this reason, we want to provide a standardised and robust comparison of the some the most promising approaches in the literature. To standardise the comparisons, we will evaluate the chosen approaches using the same base CNN and optimisation procedure. To ensure robustness, we will evaluate the methods on two very distinct multi-label image datasets (described in Appendix \ref{app:data}), using multiple diverse evaluation metrics and using cross-validation for a better estimate of generalisation ability which will also allow us to report standard deviations of errors.
+
+> There are 4 main question we attempt to answer in this chapter. They are:
+
+> 1. How do the different loss functions act as a surrogate for the micro and macro F-score? (bce vs weighted bce vs rank loss vs retina loss)
+
+> 2. Does multi-level predictions help to detect small objects?
+
+> 3. Which extension works best to explicitly model label correlations? CG vs chaining vs SE-module
+
+> 4. How does learnable label calibration modules compare to brute force search?
+
+> After getting closer to the answers of these questions we will train a final model taking into considerations the empirical findings to see how accurate we can get on both datasets.
+
+End of old introduction.
 
 ## Evaluation of Approaches?
 
@@ -27,6 +50,11 @@ The ROC-AUC is chosen mainly to be able to compare the models to other work repo
 ROC-AUC is also a convenient option since it is independent of the classification threshold chosen.
 When applicable, we will inspect the performance of the models on a per label basis. 
 
+For the $F$-scores, we will need to threshold the outputs coming from the CNN.
+We will not search for the optimal threshold for every experiment.
+Rather use a standard threshold of 0.5 when comparing between models.
+BUt if we want to squeeze out more accuracy, we will search for the optimal threshold.
+
 When possible, the chosen set of metrics will be reported after each epoch in the form of line graphs.
 We do it this way because the point of convergence for the loss function being trained on might not be the same as the metric reported.
 Thus, if we only report the performance of the final (converged) model, we might not see the best possible performance for each of the metrics.
@@ -42,7 +70,8 @@ Also time taken to make a prediciton for a single image.
 ### Validation Approach
 
 The data is split into a training, validation and test set.
-Since our dataset is large and our computing resources limited, we are comfortable not to use cross-validation. 
+Since our dataset is large and our computing resources limited, we are comfortable not to use cross-validation.
+We can do a cross-validation of the final model to have a better estimate of it's performance.
 We will use the exact same split as in (paper) for fairer comparisons.
 The split was made randomly by patient in the following ratios: 70% training, 10% validation, 20% testing.
 There is no overlap between the patients in different splits to ensure uniqueness of the validation and testing examples.
@@ -51,6 +80,7 @@ There is no overlap between the patients in different splits to ensure uniquenes
 ## Training Procedure
 
 1Cycle policy with learning rate finder.
+Adam optimiser.
 
 
 ### How will the policy parameters be chosen? 
@@ -71,6 +101,7 @@ Will not be as accurate as global tuning.
 Can precompute the activations before the classification head to be tuned, which saves a lot of repetitive computing.
 Will do complete global tuning for specific models where appropriate.
 Will use appropriate data augmentation techniques when precomputed activations are not used.
+Give a more detailed explanation.
 
 
 ## Model Architecture
@@ -78,6 +109,9 @@ Will use appropriate data augmentation techniques when precomputed activations a
 Will have an initial experiment to compare different architectures.
 The majority of the experiments we will run using the smallest version of the chosen architecture type to reduce computational demand.
 We assume the conclusions are applicable to the larger models unless specified otherwise.
+
+Sometime we will use smaller versions of the x-ray, say 128x128 to make the experiments run faster.
+Which again we assume the same conclusions will hold for the original x-ray sizes.
 
 
 ## Base Experiments
@@ -95,6 +129,7 @@ Which of the following architectures perform the best on our data ResNets, Dense
 ### Transfer Learning Experiment
 
 Does it help to do transfer learning vs training from scratch?
+Does it help to pretrain on another x-ray based dataset?
 
 
 ## Multi-Label Experiments
@@ -103,6 +138,8 @@ Does it help to do transfer learning vs training from scratch?
 
 By training on which loss function will result in the best metrics?
 
+The goal of this experiment is to find out which multi-label loss function is a more suitable surrogate for our chosen multi-label evaluation metrics. We compare the binary cross-entropy loss, weighted binary cross-entropy loss, focal loss and LSEP loss. We only use one ranking based loss function since there was significant proof given in [@Li2017] that LSEP loss outperforms the other ranking based loss functions. We will also experiment with the focal loss weighted as in $\text{W-CE}$. This is the first time the focal loss is used with multi-label image classification and the first time LSEP loss is compared to cross-entropy based loss functions.
+
 
 ### Classification Head Experiment
 
@@ -110,6 +147,16 @@ Which classification head architecture obtains the best results?
 Does it learn label dependence?
 
 
+## Thresholding Experiment
+
+Can the network learn the optimal threshold?
+
+
+## Other Experiments
+
+### Spatial Pyramid Pooling
+
+Does it help to make predictions from multiple layers of the CNN?
 
 
 
